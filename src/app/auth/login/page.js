@@ -93,6 +93,10 @@ export default function Auth() {
               maxAge: 24 * 60 * 60,
               path: "/",
             });
+            setCookie("TakSess", getResponse.accessTakroToken, {
+              maxAge: 24 * 60 * 60,
+              path: "/",
+            });
 
             setCookie("aUo", getResponse.role, {
               maxAge: 24 * 60 * 60,
