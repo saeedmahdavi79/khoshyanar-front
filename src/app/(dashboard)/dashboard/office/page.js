@@ -4,7 +4,7 @@ import ButtonAfra from "@/app/components/modules/Buttons";
 import CardStat from "@/app/components/modules/Card";
 import InputCom from "@/app/components/modules/Inputs";
 import SelectCombo from "@/app/components/modules/SelectCombo";
-import { Modal, Table, Tag, notification } from "antd";
+import { Modal, Table, Tag, Tree, notification } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LuChevronLeft } from "react-icons/lu";
 import dynamic from "next/dynamic";
@@ -15,11 +15,14 @@ import { axiosReq } from "@/utils/axios";
 import upUrl from "@/utils/upUrl";
 import TableAfra from "@/app/components/modules/TableAfra";
 import ChartOrg from "@/app/components/modules/OrgChart";
+import OrganizationChartData from "@/app/components/modules/OrgChart";
 
 const pageOffice = () => {
   const JoditEditor = dynamic(() => import("jodit-react"), {
     ssr: false,
   });
+
+  const { DirectoryTree } = Tree;
 
   const [getCookieAccess, setGetAccess] = useState("");
 
@@ -1288,13 +1291,13 @@ const pageOffice = () => {
                 مرخصی ها
                 <LuChevronLeft />
               </span>
-              {/* <span
+              <span
                 onClick={handleShowOrgChart}
                 className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
               >
                 چارت سازمانی
                 <LuChevronLeft />
-              </span> */}
+              </span>
             </div>
           </div>
           <div className="w-4/5">
