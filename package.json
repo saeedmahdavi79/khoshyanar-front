@@ -46,7 +46,7 @@
     "ngx-bar-rating": "^7.0.1",
     "persian-datepicker": "^1.2.0",
     "react": "^18",
-    "react-apexcharts": "^1.4.1",
+    "react-apexcharts": "^1.7.0",
     "react-arborist": "^3.4.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-calendar": "^5.1.0",

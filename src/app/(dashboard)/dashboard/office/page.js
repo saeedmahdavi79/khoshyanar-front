@@ -1138,6 +1138,107 @@ const pageOffice = () => {
       });
   };
 
+  const [chartTitle, setChartTitle] = useState("");
+  const [chartActor, setChartActor] = useState("");
+  const [chartParent, setChartParent] = useState(undefined);
+  const [chartSlug, setChartSlug] = useState("");
+
+  const [dataPersonelAppChart, setDataPersonelAppChart] = useState([]);
+  const [dataChart, setDataChart] = useState([]);
+  const [showLoad3, setShowLoad3] = useState(false);
+
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "ثبت موفق بود",
+      description: "ثبت داده با موفقیت انجام شد",
+    });
+  };
+
+  const openNotificationWithDelete = (type) => {
+    api[type]({
+      message: "حذف موفق بود",
+      description: "حذف داده با موفقیت انجام شد",
+    });
+  };
+
+  const changeUserHandler = (e) => {
+    setChartTitle(e.label);
+    setChartSlug(e.value);
+  };
+
+  const changeInpHandler = (e) => {
+    setChartActor(e.target.value);
+  };
+
+  const onSelectUser = (keys, info) => {
+    setChartParent(info.node.key);
+  };
+
+  const addChart = async () => {
+    const getCookiess = await getCookie("WuZiK");
+    setShowLoad3(true);
+    try {
+      try {
+        const postDatas = await fetch(baseUrl("/office/create-chart"), {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${getCookiess}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: chartTitle,
+            actor: chartActor,
+            parent: chartParent,
+            slug: chartSlug,
+          }),
+        });
+
+        const getResponses = await postDatas.json();
+
+        if (getResponses.status == 200) {
+          setShowLoad3(false);
+          openNotificationWithIcon("success");
+          dataRefresh();
+        } else {
+          setShowLoad3(false);
+          openNotificationWithIcon("error");
+        }
+      } catch (error) {
+        setShowLoad3(false);
+        openNotificationWithIcon("error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const dataRefresh = () => {
+    const token = getCookie("WuZiK");
+
+    fetch(baseUrl("/office/get-chart"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setDataChart([]) : setDataChart(data.data.dataGet);
+      });
+  };
+
+  useEffect(() => {
+    const token = getCookie("WuZiK");
+    fetch(baseUrl("/office/get-personel-chat"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        !data.data
+          ? setDataPersonelAppChart([])
+          : setDataPersonelAppChart(data.data.dataGet)
+      );
+  }, []);
+
   return (
     <>
       <div className="w-full flex flex-col  h-full px-6 gap-4 py-1">
@@ -1919,6 +2020,114 @@ const pageOffice = () => {
                               text={"ثبت مرخصی"}
                             />
                             <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                }
+              />
+            ) : (
+              ""
+            )}
+
+            {showChartOrg ? (
+              <CardStat
+                type={"10"}
+                title={"چارت سازمانی"}
+                des={"چارت سازمانی خود را در این بخش مشاهده کنید"}
+                data={
+                  <>
+                    <div className="w-full" dir="rtl">
+                      <div
+                        role="tablist"
+                        className="tabs w-full grid-cols-7 tabs-bordered"
+                      >
+                        <input
+                          type="radio"
+                          name="my_tabs_1"
+                          role="tab"
+                          className="tab"
+                          aria-label="مشاهده چارت"
+                          defaultChecked
+                        />
+                        <div
+                          role="tabpanel"
+                          dir="ltr"
+                          className="tab-content px-3 py-3"
+                        >
+                          {dataChart.length == 0 ? (
+                            <>
+                              <div className="w-full h-full flex justify-center items-center">
+                                موردی وجود ندارد
+                              </div>
+                            </>
+                          ) : (
+                            <OrganizationChartData data={dataChart} />
+                          )}
+                        </div>
+                        <input
+                          type="radio"
+                          name="my_tabs_1"
+                          role="tab"
+                          className="tab"
+                          aria-label="ایجاد چارت"
+                        />
+                        <div role="tabpanel" className="tab-content px-3 py-3">
+                          <div className="w-full grid grid-cols-1 gap-3">
+                            <Tag color="red" className="p-1">
+                              *نکته : برای افزودن زیر مجموعه به یک شخص ، شخص
+                              مورد نظر را از نمودار درختی پائین انتخاب کنید.
+                            </Tag>
+
+                            <div className="w-full grid grid-cols-4 gap-3 items-end">
+                              <SelectCombo
+                                onChange={changeUserHandler}
+                                placeholder={"انتخاب پرسنل"}
+                                options={dataPersonelAppChart.map((k) => ({
+                                  label: k.name + " " + k.lastName,
+                                  value: k._id,
+                                }))}
+                              />
+                              <InputCom
+                                onChenge={changeInpHandler}
+                                type={"req"}
+                                placeholder={"سمت"}
+                              />
+                              <ButtonAfra
+                                showLoad={showLoad3}
+                                onClick={addChart}
+                                type={"green"}
+                                text={"ثبت در چارت"}
+                              />
+                              <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                            </div>
+                            <div className="w-full">
+                              {dataChart.length == 0 ? (
+                                <>
+                                  <div className="w-full h-full mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 overflow-auto section-layout justify-center items-center ">
+                                    موردی وجود ندارد
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 h-full overflow-auto section-layout">
+                                  <DirectoryTree
+                                    multiple
+                                    defaultExpandAll
+                                    onSelect={onSelectUser}
+                                    treeData={dataChart.map((data) => ({
+                                      title: data.title,
+                                      key: data._id,
+                                      children: data.children.map((data) => ({
+                                        title: data.title,
+                                        key: data._id,
+                                        children: data.children,
+                                      })),
+                                    }))}
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

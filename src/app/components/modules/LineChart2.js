@@ -4,9 +4,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-const SalesChart = ({ data }) => {
-  const arraData = [];
-  arraData.push(data.map((o) => o.vis));
+const SalesChart2 = ({ data, anbar }) => {
   const lineChartOptions = {
     chart: {
       toolbar: {
@@ -94,8 +92,12 @@ const SalesChart = ({ data }) => {
   };
   const lineChartData = [
     {
-      name: "مشتری",
-      data: arraData[0],
+      name: "محصول",
+      data: data,
+    },
+    {
+      name: "انبار",
+      data: anbar,
     },
   ];
 
@@ -110,4 +112,4 @@ const SalesChart = ({ data }) => {
   );
 };
 
-export default SalesChart;
+export default SalesChart2;

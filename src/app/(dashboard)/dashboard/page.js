@@ -14,6 +14,11 @@ import { Table } from "antd";
 import { IranMap } from "react-iran-map";
 import mapData from "@/utils/mapData";
 import TableAfra from "@/app/components/modules/TableAfra";
+import SalesChart from "@/app/components/modules/LineChart";
+
+import SalesChart2 from "@/app/components/modules/LineChart2";
+import PieChartNew from "@/app/components/modules/PieChartNew";
+
 const DashboardMain = () => {
   const [dataCount, setDataCount] = useState("");
   const [dataLeadCount, setDataLeadCount] = useState("");
@@ -34,6 +39,12 @@ const DashboardMain = () => {
 
   const [tData, setTdata] = useState([]);
   const [tPieData, setTPiedata] = useState();
+
+  const [pData, setPdata] = useState([]);
+  const [sData, setSdata] = useState([]);
+  const [personelData, setPersonelData] = useState("");
+  const [lettersData, setLettersData] = useState("");
+  const [leavesData, setLeavesData] = useState("");
 
   const [lData, setLdata] = useState([]);
   const [lPieData, setLeiedata] = useState();
@@ -86,6 +97,39 @@ const DashboardMain = () => {
 
   //personel
   const [dataPersonelApp, setDataPersonelApp] = useState([]);
+  const [loadCustomersState, setCustomersState] = useState({
+    ardabil: 0,
+    isfahan: 0,
+    alborz: 0,
+    ilam: 0,
+    eastAzerbaijan: 0,
+    westAzerbaijan: 0,
+    bushehr: 0,
+    tehran: 0,
+    chaharmahalandBakhtiari: 0,
+    southKhorasan: 0,
+    razaviKhorasan: 0,
+    northKhorasan: 0,
+    khuzestan: 0,
+    zanjan: 0,
+    semnan: 0,
+    sistanAndBaluchestan: 0,
+    fars: 0,
+    qazvin: 0,
+    qom: 0,
+    kurdistan: 0,
+    kerman: 0,
+    kohgiluyehAndBoyerAhmad: 0,
+    kermanshah: 0,
+    golestan: 0,
+    gilan: 0,
+    lorestan: 0,
+    mazandaran: 0,
+    markazi: 0,
+    hormozgan: 0,
+    hamadan: 0,
+    yazd: 0,
+  });
 
   useEffect(() => {
     const token = getCookie("WuZiK");
@@ -101,6 +145,33 @@ const DashboardMain = () => {
         } else {
           setGetAccess(data.customer ? "10" : data.user.access);
         }
+      });
+
+    fetch(baseUrl("/contact/get-customers-state"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setCustomersState({}) : setCustomersState(data.data);
+      });
+
+    fetch(baseUrl("/office/get-letters-count"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setLettersData(0) : setLettersData(data.data);
+      });
+
+    fetch(baseUrl("/office/get-leaves-Count"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setLeavesData(0) : setLeavesData(data.data);
       });
 
     fetch(baseUrl("/office/get-personel"), {
@@ -145,15 +216,39 @@ const DashboardMain = () => {
         !data.data ? setDataTask([]) : setDataTask(data.data.dataGet)
       );
 
-    fetch(baseUrl("/visitor/get-visitor-in-month"), {
+    fetch(baseUrl("/product/get-product-in-month"), {
       method: "GET",
       headers: { Authorization: `Bearer ${getCookies}` },
     })
       .then((response) => response.json())
       .then((data) => {
         !data.data
-          ? setTdata([])
-          : setTdata([
+          ? setPdata([])
+          : setPdata([
+              data.data.farvardin,
+              data.data.ordibehesht,
+              data.data.khordad,
+              data.data.tir,
+              data.data.mordad,
+              data.data.shahrivar,
+              data.data.mehr,
+              data.data.aban,
+              data.data.azar,
+              data.data.dey,
+              data.data.bahman,
+              data.data.esfand,
+            ]);
+      });
+
+    fetch(baseUrl("/product/get-source-in-month"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data
+          ? setSdata([])
+          : setSdata([
               data.data.farvardin,
               data.data.ordibehesht,
               data.data.khordad,
@@ -289,6 +384,7 @@ const DashboardMain = () => {
       .then((response) => response.json())
       .then((data) => {
         !data.data ? setCountPer("0") : setCountPer(data.data.toString());
+        !data.data ? setPersonelData(0) : setPersonelData(data.data);
       });
   }, []);
 
@@ -552,33 +648,91 @@ const DashboardMain = () => {
                   type={"8-2"}
                   data={
                     <>
-                      <ChartColumn data={fData} />
-                      <span className="w-full flex gap-3 justify-center items-center mt-10">
-                        <span className="w-4 h-4 rounded-full bg-[#ff6e40]"></span>
+                      <SalesChart data={fData} />
+                      {/* <ChartColumn data={fData} /> */}
+                      <span className=" text-[var(--color-blue)] w-full flex gap-3 justify-center items-center mt-10">
+                        <span className="w-5 h-5 bg-[var(--color-green)] rounded-full"></span>
                         <span>مشتریان بر اساس ماه</span>
                       </span>
                     </>
                   }
                 />
+
                 <CardStat
-                  title={"گزارش ها و آمار فروش  بر اساس استان"}
+                  title={"گزارش های بخش اداری و پرسنل"}
                   des={
-                    "در این بخش گزارشات و آمار های فروش بر اساس استان را ببینید"
+                    "در این بخش گزارشات و آمار های بخش اداری و پرسنل را مشاهده کنید"
+                  }
+                  type={"8-2"}
+                  data={
+                    <>
+                      <div className="w-full mx-auto">
+                        <PieChartNew
+                          letters={lettersData}
+                          leaves={leavesData}
+                          personels={personelData}
+                        />
+                        {/* <ChartColumn data={fData} /> */}
+                        <div className="w-full flex gap-3 items-center text-[var(--color-blue)]">
+                          <span className="w-full flex gap-3 justify-center items-center mt-10">
+                            <span className="w-5 h-5 bg-[var(--color-green)] rounded-full"></span>
+                            <span>مکاتبات</span>
+                          </span>
+                          <span className="w-full flex gap-3 justify-center items-center mt-10">
+                            <span className="w-5 h-5 bg-[var(--color-blue)] rounded-full"></span>
+                            <span>کارکنان</span>
+                          </span>
+                          <span className="w-full flex gap-3 justify-center items-center mt-10">
+                            <span className="w-5 h-5 bg-[#EFF4FB] rounded-full"></span>
+                            <span>مرخصی ها</span>
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  }
+                />
+
+                <CardStat
+                  title={"گزارش ها و آمار کالا و انبار"}
+                  des={
+                    "در این بخش گزارشات و آمار های کالا و انبار بر اساس ماه را ببینید"
+                  }
+                  type={"8-2"}
+                  data={
+                    <>
+                      <SalesChart2 data={pData} anbar={sData} />
+                      {/* <ChartColumn data={fData} /> */}
+                      <div className="w-full flex gap-3 items-center">
+                        <span className="text-[var(--color-blue)] w-full flex gap-3 justify-center items-center mt-10">
+                          <span className="w-5 h-5 bg-[var(--color-blue)] rounded-full"></span>
+                          <span>انبار</span>
+                        </span>
+                        <span className="text-[var(--color-blue)] w-full flex gap-3 justify-center items-center mt-10">
+                          <span className="w-5 h-5 bg-[var(--color-green)] rounded-full"></span>
+                          <span>کالا</span>
+                        </span>
+                      </div>
+                    </>
+                  }
+                />
+                <CardStat
+                  title={"گزارش ها و آمار مشتریان  بر اساس استان"}
+                  des={
+                    "در این بخش گزارشات و آمار های مشتریان  بر اساس استان را ببینید"
                   }
                   type={"8"}
                   data={
                     <>
                       <div>
                         <IranMap
-                          data={mapData}
-                          colorRange="30, 70, 181"
+                          data={loadCustomersState}
+                          colorRange="255 , 0 , 65"
                           width={600}
-                          textColor="#000"
+                          textColor="#fff"
                           defaultSelectedProvince="tehran"
-                          deactiveProvinceColor="#eee"
-                          selectedProvinceColor="#3bcc6d"
+                          deactiveProvinceColor="#1a243e"
+                          selectedProvinceColor="#ff0041"
                           tooltipTitle="تعداد:"
-                          selectProvinceHandler={selectProvinceHandler}
                         />
                       </div>
                     </>
