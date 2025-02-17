@@ -124,11 +124,25 @@ const produtionPage = () => {
 
   const [datePrd, setDatePrd] = useState([]);
 
-  const getCookieAccess = getCookie("UiS");
+  //const getCookieAccess = getCookie("UiS");
 
+  const [getCookieAccess, setGetAccess] = useState("");
 
   useEffect(() => {
     const getCookies = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.customer ? "10" : data.user.access);
+        }
+      });
 
     fetch(baseUrl("/product/get"), {
       method: "GET",
@@ -136,8 +150,6 @@ const produtionPage = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        
-        
         !data.data ? setDatePrd([]) : setDatePrd(data.data.dataGet);
       });
   }, []);
@@ -304,7 +316,7 @@ const produtionPage = () => {
       sourceId: data.sourceId,
       sourceName: data.sourceName,
       des: data.des,
-       price: data.price,
+      price: data.price,
       parent: undefined,
     });
 
@@ -1788,7 +1800,7 @@ const produtionPage = () => {
   return (
     <>
       <div className="w-full flex flex-col  h-full px-6 gap-4 py-1">
-        <div className="w-full flex justify-between items-center">
+        {/* <div className="w-full flex justify-between items-center">
           <span className="text-black text-3xl py-6 font-bold">
             تولید و برنامه ریزی
           </span>
@@ -1797,7 +1809,7 @@ const produtionPage = () => {
               <ButtonAfra type={"green"} text={"پشتیبانی"} />
             </a>
           </span>
-        </div>
+        </div> */}
         <div className="w-full flex gap-3 h-full">
           <div className="bg-white flex flex-col rounded-lg w-1/5 h-[calc(100%-5rem)] p-5 border border-zinc-200">
             <ButtonAfra
@@ -2296,13 +2308,9 @@ const produtionPage = () => {
                               ? "-"
                               : visitor.sourceName,
                             type: !visitor.id ? "-" : visitor.id,
-                            vahed: !visitor.vahed
-                              ? "-"
-                              : visitor.vahed,
+                            vahed: !visitor.vahed ? "-" : visitor.vahed,
                             dama: !visitor.dama ? "-" : visitor.dama,
-                            des: !visitor.sourceDes
-                              ? "-"
-                              : visitor.sourceDes,
+                            des: !visitor.sourceDes ? "-" : visitor.sourceDes,
                             exp: !visitor.expireDate
                               ? "ندارد"
                               : visitor.expireDate,
@@ -3466,13 +3474,12 @@ const produtionPage = () => {
             </div>
 
             <InputCom
-                onChenge={changeHandlerEdit}
-                name={"price"}
-                type={"req"}
-                value={data2Edit.price}
-                placeholder={"قیمت را وارد کنید"}
-              />
-
+              onChenge={changeHandlerEdit}
+              name={"price"}
+              type={"req"}
+              value={data2Edit.price}
+              placeholder={"قیمت را وارد کنید"}
+            />
 
             <SelectCombo
               defaultValue={data2Edit.sourceName}
@@ -3484,8 +3491,6 @@ const produtionPage = () => {
               onChange={changeHandlerSourceEdit}
               placeholder={"انبار مورد استفاده را انتخاب کنید"}
             />
-
-
 
             <SelectCombo
               defaultValue={data2Edit.erpCount}
@@ -3647,9 +3652,9 @@ const produtionPage = () => {
                     : visitor.mainCount == "NaN"
                       ? 0
                       : visitor.mainCount,
-                      price: !visitor.price ? 0 : visitor.price,
-                      vahed: !visitor.vahed ? 0 : visitor.vahed,
-                  
+                  price: !visitor.price ? 0 : visitor.price,
+                  vahed: !visitor.vahed ? 0 : visitor.vahed,
+
                   opr: (
                     <>
                       <div className="w-full flex gap-3 justify-center">
@@ -3928,22 +3933,25 @@ const produtionPage = () => {
         }
         footer={
           <div className="w-full flex justify-center gap-3 items-end mt-3">
-            {getCookieAccess == "1" ?  <div
-              className={`w-2/3 ${factorStatus == "true" ? "hidden" : ""} flex gap-3 items-end`}
-            >
-              <InputCom
-                onChenge={(e) => setSignCode(e.target.value)}
-                type={"req"}
-                placeholder={"کد امضای مدیر جهت تایید فاکتور"}
-              />
-              <ButtonAfra
-                onClick={confirmFactor}
-                type={"blue"}
-                showLoad={loadEstelam}
-                text={"استعلام و احراز مدیر"}
-              />
-            </div> : ""}
-          
+            {getCookieAccess == "1" ? (
+              <div
+                className={`w-2/3 ${factorStatus == "true" ? "hidden" : ""} flex gap-3 items-end`}
+              >
+                <InputCom
+                  onChenge={(e) => setSignCode(e.target.value)}
+                  type={"req"}
+                  placeholder={"کد امضای مدیر جهت تایید فاکتور"}
+                />
+                <ButtonAfra
+                  onClick={confirmFactor}
+                  type={"blue"}
+                  showLoad={loadEstelam}
+                  text={"استعلام و احراز مدیر"}
+                />
+              </div>
+            ) : (
+              ""
+            )}
 
             <div className="w-1/3 flex gap-3 items-end">
               <ButtonAfra
@@ -4113,7 +4121,6 @@ const produtionPage = () => {
           <div className="w-[90%] flex gap-3">
             <p>نمایش فاکتور</p>
 
-           
             {factorStatusHavale == "true" ? (
               <Tag color="green">فاکتور تائید شده</Tag>
             ) : (
@@ -4123,22 +4130,25 @@ const produtionPage = () => {
         }
         footer={
           <div className="w-full flex justify-center gap-3 items-end mt-3">
-          {getCookieAccess == "1" ?   <div
-              className={`w-2/3 ${factorStatusHavale == "true" ? "hidden" : ""} flex gap-3 items-end`}
-            >
-              <InputCom
-                onChenge={(e) => setSignCode(e.target.value)}
-                type={"req"}
-                placeholder={"کد امضای مدیر جهت تایید فاکتور"}
-              />
-              <ButtonAfra
-                onClick={confirmFactorHavale}
-                type={"blue"}
-                showLoad={loadEstelam}
-                text={"استعلام و احراز مدیر"}
-              />
-            </div>:""}
-          
+            {getCookieAccess == "1" ? (
+              <div
+                className={`w-2/3 ${factorStatusHavale == "true" ? "hidden" : ""} flex gap-3 items-end`}
+              >
+                <InputCom
+                  onChenge={(e) => setSignCode(e.target.value)}
+                  type={"req"}
+                  placeholder={"کد امضای مدیر جهت تایید فاکتور"}
+                />
+                <ButtonAfra
+                  onClick={confirmFactorHavale}
+                  type={"blue"}
+                  showLoad={loadEstelam}
+                  text={"استعلام و احراز مدیر"}
+                />
+              </div>
+            ) : (
+              ""
+            )}
 
             <div className="w-1/3 flex gap-3 items-end">
               <ButtonAfra
@@ -4457,9 +4467,6 @@ const produtionPage = () => {
           </div>
         </div>
       </Modal>
-
-
- 
 
       {contextHolder}
     </>

@@ -21,8 +21,7 @@ const pageOffice = () => {
     ssr: false,
   });
 
-  const getCookieAccess = getCookie("UiS");
-
+  const [getCookieAccess, setGetAccess] = useState("");
 
   const Toast = Swal.mixin({
     toast: true,
@@ -50,7 +49,6 @@ const pageOffice = () => {
   const [factorStatus, setfactorStatus] = useState("");
 
   const [api, contextHolder] = notification.useNotification();
-
 
   const handleShowName = () => {
     setShowName(true);
@@ -162,7 +160,7 @@ const pageOffice = () => {
     //   dataIndex: "role",
     //   key: "role",
     // },
-   
+
     {
       title: "دسترسی",
       dataIndex: "access",
@@ -179,7 +177,7 @@ const pageOffice = () => {
       dataIndex: "userName",
       key: "userName",
     },
-   
+
     {
       title: "عملیات",
       dataIndex: "operation",
@@ -265,6 +263,20 @@ const pageOffice = () => {
 
   useEffect(() => {
     const token = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.customer ? "10" : data.user.access);
+        }
+      });
+
     fetch(baseUrl("/roles/get"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -292,12 +304,8 @@ const pageOffice = () => {
   });
   const [showLoadPersonel, setShowLoadPersonel] = useState(false);
 
-
   const [loadPersonel, setLoadPersonel] = useState(false);
   const [openPersonel, setOpenPersonel] = useState(false);
-
-
-
 
   const changeHandlerPersonel = (e) => {
     setDataPersonel({ ...dataPersonel, [e.target.name]: e.target.value });
@@ -363,11 +371,10 @@ const pageOffice = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
-      .then((data) =>{
-
-         !data.data
-           ? setDataPersonelApp([])
-           : setDataPersonelApp(data.data.dataGet)
+      .then((data) => {
+        !data.data
+          ? setDataPersonelApp([])
+          : setDataPersonelApp(data.data.dataGet);
       });
   }, []);
 
@@ -412,16 +419,16 @@ const pageOffice = () => {
     password: "",
   });
 
-
-
-  const changeHandlerUpdatePersonel = (e)=>{
+  const changeHandlerUpdatePersonel = (e) => {
     setDataPersonelUpdate({ ...dataPersonelUpdate, access: e.value });
-
-  }
-  const changeHandlerPersonelUpdate = (e) => {
-    setDataPersonelUpdate({ ...dataPersonelUpdate, [e.target.name]: e.target.value });
   };
- 
+  const changeHandlerPersonelUpdate = (e) => {
+    setDataPersonelUpdate({
+      ...dataPersonelUpdate,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const changeHandlerPersonelDateUpdate = (e) => {
     const dateVal = e.$jy + "-" + e.$jM + "-" + e.$jD;
 
@@ -442,10 +449,6 @@ const pageOffice = () => {
   };
 
   const updatePersonel = async () => {
-
-    console.log(dataPersonelUpdate);
-    
-
     const token = getCookie("WuZiK");
 
     const sendData = await fetch(baseUrl("/office/edit-personel"), {
@@ -458,22 +461,20 @@ const pageOffice = () => {
     });
     const getResponse = await sendData.json();
 
-    if(getResponse.status == 200){
-      openNotificationWithUpdate("success")
-    }else{
-      openNotificationWithUpdate2("error")
-
+    if (getResponse.status == 200) {
+      openNotificationWithUpdate("success");
+    } else {
+      openNotificationWithUpdate2("error");
     }
+  };
 
+  const showPersonDetail = (data) => {
+    setLoadPersonel(true);
+    setOpenPersonel(true);
 
-  }
-
-  
-  const showPersonDetail = (data)=>{
-    setLoadPersonel(true)
-    setOpenPersonel(true)
-
-    setDataPersonelUpdate({ ...dataPersonelUpdate, sex: "",
+    setDataPersonelUpdate({
+      ...dataPersonelUpdate,
+      sex: "",
       sex: data.sex,
       name: data.name,
       lastName: data.lastName,
@@ -483,16 +484,10 @@ const pageOffice = () => {
       email: data.email,
       type: data.type,
       _id: data._id,
-      });
+    });
 
-    setTimeout(()=>setLoadPersonel(false),2000)
-
-
-  }
-
-
-
-
+    setTimeout(() => setLoadPersonel(false), 2000);
+  };
 
   //zonkan
 
@@ -757,7 +752,6 @@ const pageOffice = () => {
     document.body.innerHTML = originalContents;
   }
 
-
   const openNotificationWithIconSign = (type) => {
     api[type]({
       message: "احراز موفق",
@@ -1016,51 +1010,42 @@ const pageOffice = () => {
       });
   };
 
+  //chart
 
-  
-//chart
+  const [title, setTitle] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [parent, setParent] = useState("");
+  const [slug, setSlug] = useState("");
 
-const [title, setTitle] = useState("");
-const [userId, setUserId] = useState("");
-const [userName, setUserName] = useState("");
-const [parent, setParent] = useState("");
-const [slug, setSlug] = useState("");
-
- 
-const dataHandlerValed = (e)=>{
-
-
-  setParent(e.value)
-}
-
-const dataHandlerUsers = (e)=>{
- 
-  
-  setUserName(e.label)
-  setUserId(e.value)
-}
-
-
-  const handleSave = async () => {
-
-    const token = getCookie("WuZiK");
-   const getData =  await fetch(baseUrl("/auth/create-chart"), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-         title, parent , slug ,userId ,userName
-      })
-    });
- 
-    const getRes = await getData.json()
-    
-
-
+  const dataHandlerValed = (e) => {
+    setParent(e.value);
   };
 
+  const dataHandlerUsers = (e) => {
+    setUserName(e.label);
+    setUserId(e.value);
+  };
+
+  const handleSave = async () => {
+    const token = getCookie("WuZiK");
+    const getData = await fetch(baseUrl("/auth/create-chart"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title,
+        parent,
+        slug,
+        userId,
+        userName,
+      }),
+    });
+
+    const getRes = await getData.json();
+  };
 
   useEffect(() => {
     const token = getCookie("WuZiK");
@@ -1069,20 +1054,94 @@ const dataHandlerUsers = (e)=>{
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
-      .then((data) =>
-       {
-       // console.log(data);
-        
-       }
-      );
+      .then((data) => {
+        // console.log(data);
+      });
   }, []);
 
+  //office
 
+  const openNotificationWithUpdateSign = (type) => {
+    api[type]({
+      message: "افزودن حق امضا موفق",
+      description: "افزودن حق امضا موفق بود",
+    });
+  };
+
+  const openNotificationWithUpdateSign2 = (type) => {
+    api[type]({
+      message: "افزودن حق ناموفق",
+      description: "افزودن حق امضا ناموفق بود",
+    });
+  };
+
+  const openNotificationWithUpdateSign12 = (type) => {
+    api[type]({
+      message: "حذف حق امضا موفق",
+      description: "حذف حق امضا موفق بود",
+    });
+  };
+
+  const openNotificationWithUpdateSign22 = (type) => {
+    api[type]({
+      message: "حذف حق ناموفق",
+      description: "حذف حق امضا ناموفق بود",
+    });
+  };
+
+  const addSignStatus = (data) => {
+    const token = getCookie("WuZiK");
+    fetch(baseUrl("/office/create-sign"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signStatus: "1",
+        _id: data._id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithUpdateSign("success");
+          personelRefresh();
+        } else {
+          openNotificationWithUpdateSign2("error");
+        }
+        // console.log(data);
+      });
+  };
+  const removeSignStatus = (data) => {
+    const token = getCookie("WuZiK");
+    fetch(baseUrl("/office/create-sign"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signStatus: "0",
+        _id: data._id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithUpdateSign12("success");
+          personelRefresh();
+        } else {
+          openNotificationWithUpdateSign22("error");
+        }
+        // console.log(data);
+      });
+  };
 
   return (
     <>
       <div className="w-full flex flex-col  h-full px-6 gap-4 py-1">
-        <div className="w-full flex justify-between items-center">
+        {/* <div className="w-full flex justify-between items-center">
           <span className="text-black text-3xl py-6 font-bold">
             اداری و پرسنل
           </span>
@@ -1091,7 +1150,7 @@ const dataHandlerUsers = (e)=>{
               <ButtonAfra type={"green"} text={"پشتیبانی"} />
             </a>
           </span>
-        </div>
+        </div> */}
         <div className="w-full flex gap-3 h-full">
           <div className="bg-white flex flex-col rounded-lg w-1/5 h-[calc(100%-5rem)] p-5 border border-zinc-200">
             <ButtonAfra
@@ -1109,14 +1168,18 @@ const dataHandlerUsers = (e)=>{
                 نامه ها و مکاتبات
                 <LuChevronLeft />
               </span>
-             {getCookieAccess == "1" || getCookieAccess == "2" ? <span
-                onClick={handleShowPersonel}
-                className={`w-full cursor-pointer p-2 ${handleActive2} flex justify-between items-center rounded-lg`}
-              >
-                کارکنان
-                <LuChevronLeft />
-              </span>:<></>}
-              
+              {getCookieAccess == "1" || getCookieAccess == "2" ? (
+                <span
+                  onClick={handleShowPersonel}
+                  className={`w-full cursor-pointer p-2 ${handleActive2} flex justify-between items-center rounded-lg`}
+                >
+                  کارکنان
+                  <LuChevronLeft />
+                </span>
+              ) : (
+                <></>
+              )}
+
               <span
                 onClick={handleShowLeave}
                 className={`w-full cursor-pointer p-2 ${handleActive3} flex justify-between items-center rounded-lg`}
@@ -1145,63 +1208,71 @@ const dataHandlerUsers = (e)=>{
                       role="tablist"
                       className="tabs w-full grid-cols-7 tabs-bordered"
                     >
-                      {getCookieAccess == "1" ? <>
-                        <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="لیست کل مکاتبات"
-                        defaultChecked
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                        <TableAfra
-                          type={"green"}
-                          data={dataLetterApp.map((data) => ({
-                            name: !data.subject ? "-" : data.subject,
+                      {getCookieAccess == "1" ? (
+                        <>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="لیست کل مکاتبات"
+                            defaultChecked
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
+                            <TableAfra
+                              type={"green"}
+                              data={dataLetterApp.map((data) => ({
+                                name: !data.subject ? "-" : data.subject,
 
-                            creator: !data.adminUserName
-                              ? "-"
-                              : data.adminUserName,
-                            zonkan: !data.zonkan ? "-" : data.zonkan,
-                            letterNum: !data.number ? "-" : data.number,
-                            status:
-                              data.status == "false"
-                                ? "تایید نشده"
-                                : "تایید مدیریت",
-                            date: !data.createDate ? "-" : data.createDate,
+                                creator: !data.adminUserName
+                                  ? "-"
+                                  : data.adminUserName,
+                                zonkan: !data.zonkan ? "-" : data.zonkan,
+                                letterNum: !data.number ? "-" : data.number,
+                                status:
+                                  data.status == "false"
+                                    ? "تایید نشده"
+                                    : "تایید مدیریت",
+                                date: !data.createDate ? "-" : data.createDate,
 
-                            createDate: !data.createDate
-                              ? "-"
-                              : data.createDate,
-                            operation: (
-                              <>
-                                <div className="w-full flex  justify-center items-center gap-3">
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => showLetter(data)}
-                                    color="blue"
-                                  >
-                                    مشاهده / تائید
-                                  </Tag>
-                                 {getCookieAccess == "1" ?  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => removeLetter(data._id)}
-                                    color="red"
-                                  >
-                                    حذف
-                                  </Tag>:""}
-                                  
-                                </div>
-                              </>
-                            ),
-                          }))}
-                          columns={columns}
-                        />
-                      </div>
-                      </>:<></>}
-                      
-                      
+                                createDate: !data.createDate
+                                  ? "-"
+                                  : data.createDate,
+                                operation: (
+                                  <>
+                                    <div className="w-full flex  justify-center items-center gap-3">
+                                      <Tag
+                                        className=" cursor-pointer"
+                                        onClick={() => showLetter(data)}
+                                        color="blue"
+                                      >
+                                        مشاهده / تائید
+                                      </Tag>
+                                      {getCookieAccess == "1" ? (
+                                        <Tag
+                                          className=" cursor-pointer"
+                                          onClick={() => removeLetter(data._id)}
+                                          color="red"
+                                        >
+                                          حذف
+                                        </Tag>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </div>
+                                  </>
+                                ),
+                              }))}
+                              columns={columns}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <></>
+                      )}
 
                       <input
                         type="radio"
@@ -1255,36 +1326,46 @@ const dataHandlerUsers = (e)=>{
                         />
                       </div>
 
-                     {getCookieAccess == "1" ?  (
-                     
-                       <><input
-                          type="radio"
-                          name="my_tabs_1"
-                          role="tab"
-                          className="tab"
-                          aria-label="دپارتمان یا زونکن" /><div role="tabpanel" className="tab-content px-3 py-3">
+                      {getCookieAccess == "1" ? (
+                        <>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="دپارتمان یا زونکن"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
                             <div className="w-full grid grid-cols-5 gap-3 items-end">
                               <InputCom
                                 onChenge={changeHandlerZonkan}
                                 name={"zonkanName"}
                                 type={"req"}
-                                placeholder={"نام دپارتمان"} />
+                                placeholder={"نام دپارتمان"}
+                              />
                               <InputCom
                                 onChenge={changeHandlerZonkan}
                                 name={"des"}
                                 type={"req"}
-                                placeholder={"توضیحات دپارتمان"} />
+                                placeholder={"توضیحات دپارتمان"}
+                              />
                               <ButtonAfra
                                 showLoad={showLoadZonkan}
                                 onClick={sendDataToServerZonkan}
                                 text={"ثبت"}
-                                type={"green"} />
+                                type={"green"}
+                              />
                             </div>
                             <div className="w-full mt-3">
                               <TableAfra
                                 type={"green"}
                                 data={dataZonkanApp.map((data) => ({
-                                  name: !data.zonkanName ? "-" : data.zonkanName,
+                                  name: !data.zonkanName
+                                    ? "-"
+                                    : data.zonkanName,
 
                                   des: !data.des ? "-" : data.des,
 
@@ -1302,12 +1383,14 @@ const dataHandlerUsers = (e)=>{
                                     </>
                                   ),
                                 }))}
-                                columns={columns_zonkan} />
+                                columns={columns_zonkan}
+                              />
                             </div>
-                          </div></>
-                        )
-                        :<></>}
-                     
+                          </div>
+                        </>
+                      ) : (
+                        <></>
+                      )}
 
                       <input
                         type="radio"
@@ -1391,11 +1474,11 @@ const dataHandlerUsers = (e)=>{
                 des={"کارکنان و پرسنل خود را در این بخش ببینید"}
                 data={
                   <div>
-                   <div className="w-full">
-                        <Tag color="red">
-*نکته : رمز عبور پیشفرض تمامی پرسنل 123456 می باشد
-                        </Tag>
-                   </div>
+                    <div className="w-full">
+                      <Tag color="red">
+                        *نکته : رمز عبور پیشفرض تمامی پرسنل 123456 می باشد
+                      </Tag>
+                    </div>
                     <div
                       role="tablist"
                       className="tabs mt-3 w-full grid-cols-7 tabs-bordered"
@@ -1417,27 +1500,75 @@ const dataHandlerUsers = (e)=>{
                               : data.name + " " + data.lastName,
 
                             sex: !data.sex ? "-" : data.sex,
-                            birth: !data.birth ? "-" : data.birth == "" ? "-" : data.birth,
-                            
+                            birth: !data.birth
+                              ? "-"
+                              : data.birth == ""
+                                ? "-"
+                                : data.birth,
+
                             phone: !data.phone ? "-" : data.phone,
-                            
+
                             userName: !data.userName ? "-" : data.userName,
                             role: !data.role ? "-" : data.role,
-                            access: !data.access ? "-" : data.access == "6" ? "کاربر معمولی" : data.access == "1" ?"مدیریت" :data.access == "2" ? "اداری و پرسنل" : data.access == "3" ? "مالی و فروش" : data.access =="4" ? "بخش تولید" : data.access == "5"? "بخش وظایف":"",
+                            access: !data.access
+                              ? "-"
+                              : data.access == "6"
+                                ? "کاربر معمولی"
+                                : data.access == "1"
+                                  ? "مدیریت"
+                                  : data.access == "2"
+                                    ? "اداری و پرسنل"
+                                    : data.access == "3"
+                                      ? "مالی و فروش"
+                                      : data.access == "4"
+                                        ? "بخش تولید"
+                                        : data.access == "5"
+                                          ? "بخش وظایف"
+                                          : "",
                             createDate: !data.createDate
                               ? "-"
                               : data.createDate,
                             operation: (
                               <>
                                 <div className="w-full flex  justify-center items-center gap-3">
-                                  <Tag onClick={()=>showPersonDetail(data)} className="cursor-pointer" color="blue">ویرایش / مشاهده</Tag>
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => deletePerson(data._id)}
-                                    color="red"
-                                  >
-                                    حذف
-                                  </Tag>
+                                  {getCookieAccess == "1" ? (
+                                    <>
+                                      {data.signStatus == "1" ? (
+                                        <Tag
+                                          onClick={() => removeSignStatus(data)}
+                                          className="cursor-pointer"
+                                          color="orange"
+                                        >
+                                          حذف حق امضا
+                                        </Tag>
+                                      ) : (
+                                        <Tag
+                                          onClick={() => addSignStatus(data)}
+                                          className="cursor-pointer"
+                                          color="green"
+                                        >
+                                          افزودن حق امضا
+                                        </Tag>
+                                      )}
+
+                                      <Tag
+                                        onClick={() => showPersonDetail(data)}
+                                        className="cursor-pointer"
+                                        color="blue"
+                                      >
+                                        ویرایش / مشاهده
+                                      </Tag>
+                                      <Tag
+                                        className=" cursor-pointer"
+                                        onClick={() => deletePerson(data._id)}
+                                        color="red"
+                                      >
+                                        حذف
+                                      </Tag>
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
                                 </div>
                               </>
                             ),
@@ -1551,7 +1682,7 @@ const dataHandlerUsers = (e)=>{
                                 value: "4",
                                 label: "انبار",
                               },
-                                                       
+
                               {
                                 value: "6",
                                 label: "دسترسی محدود کارمندان",
@@ -1647,77 +1778,89 @@ const dataHandlerUsers = (e)=>{
                       role="tablist"
                       className="tabs w-full grid-cols-7 tabs-bordered"
                     >
-                     {getCookieAccess == "1"|| getCookieAccess == "2" ?  <><input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="لیست مرخصی ها"
-                        defaultChecked /><div role="tabpanel" className="tab-content px-3 py-3">
-                          <TableAfra
-                            type={"green"}
-                            data={dataLeaves.map((newPRD) => ({
-                              key: newPRD._id,
-                              name: newPRD.requesterName,
-                              res: newPRD.des,
-                              type: newPRD.type,
-                              time: newPRD.length,
-                              stat: newPRD.status == "false"
-                                ? "تائید نشده"
-                                : "تائید شده",
-                              opr: (
-                                <>
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => showLeaveDetail(newPRD)}
-                                    color="blue"
-                                  >
-                                    مشاهده / تائید یا رد
-                                  </Tag>
-                                </>
-                              ),
-                            }))}
-                            columns={[
-                              {
-                                title: "نام درخواست کننده",
-                                dataIndex: "name",
-                                key: "name",
-                                sorter: true,
-                              },
+                      {getCookieAccess == "1" || getCookieAccess == "2" ? (
+                        <>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="لیست مرخصی ها"
+                            defaultChecked
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
+                            <TableAfra
+                              type={"green"}
+                              data={dataLeaves.map((newPRD) => ({
+                                key: newPRD._id,
+                                name: newPRD.requesterName,
+                                res: newPRD.des,
+                                type: newPRD.type,
+                                time: newPRD.length,
+                                stat:
+                                  newPRD.status == "false"
+                                    ? "تائید نشده"
+                                    : "تائید شده",
+                                opr: (
+                                  <>
+                                    <Tag
+                                      className=" cursor-pointer"
+                                      onClick={() => showLeaveDetail(newPRD)}
+                                      color="blue"
+                                    >
+                                      مشاهده / تائید یا رد
+                                    </Tag>
+                                  </>
+                                ),
+                              }))}
+                              columns={[
+                                {
+                                  title: "نام درخواست کننده",
+                                  dataIndex: "name",
+                                  key: "name",
+                                  sorter: true,
+                                },
 
-                              {
-                                title: "علت مرخصی",
-                                dataIndex: "res",
-                                key: "res",
-                                sorter: true,
-                              },
-                              {
-                                title: "نوع مرخصی",
-                                dataIndex: "type",
-                                key: "type",
-                                sorter: true,
-                              },
-                              {
-                                title: "مدت مرخصی",
-                                dataIndex: "time",
-                                key: "time",
-                                sorter: true,
-                              },
-                              {
-                                title: "وضعیت مرخصی",
-                                dataIndex: "stat",
-                                key: "stat",
-                                sorter: true,
-                              },
-                              {
-                                title: "عملیات",
-                                dataIndex: "opr",
-                                key: "opr",
-                                sorter: true,
-                              },
-                            ]} />
-                        </div></>: <></>}
-                     
+                                {
+                                  title: "علت مرخصی",
+                                  dataIndex: "res",
+                                  key: "res",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "نوع مرخصی",
+                                  dataIndex: "type",
+                                  key: "type",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "مدت مرخصی",
+                                  dataIndex: "time",
+                                  key: "time",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "وضعیت مرخصی",
+                                  dataIndex: "stat",
+                                  key: "stat",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "عملیات",
+                                  dataIndex: "opr",
+                                  key: "opr",
+                                  sorter: true,
+                                },
+                              ]}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <></>
+                      )}
 
                       <input
                         type="radio"
@@ -1877,23 +2020,26 @@ const dataHandlerUsers = (e)=>{
                 buttons={
                   <>
                     <div className="w-full items-end flex gap-3 ">
-                    
-            {getCookieAccess == "1" ?  <div
-                        className={`w-[500px] ${factorStatus == "true" ? "invisible" : ""} flex gap-3 items-end`}
-                      >
-                        <InputCom
-                          onChenge={(e) => setSignCode(e.target.value)}
-                          type={"req"}
-                          placeholder={"کد امضای مدیر جهت تایید مکاتبه"}
-                        />
-                        <ButtonAfra
-                          onClick={confirmLetter}
-                          type={"blue"}
-                          showLoad={showLoadLetterDetail}
-                          text={"استعلام و احراز مدیر"}
-                        />
-                      </div> :''}
-                    
+                      {getCookieAccess == "1" ? (
+                        <div
+                          className={`w-[500px] ${factorStatus == "true" ? "invisible" : ""} flex gap-3 items-end`}
+                        >
+                          <InputCom
+                            onChenge={(e) => setSignCode(e.target.value)}
+                            type={"req"}
+                            placeholder={"کد امضای مدیر جهت تایید مکاتبه"}
+                          />
+                          <ButtonAfra
+                            onClick={confirmLetter}
+                            type={"blue"}
+                            showLoad={showLoadLetterDetail}
+                            text={"استعلام و احراز مدیر"}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
+
                       <div className="flex items-end gap-3 w-[300px]">
                         <ButtonAfra
                           text={"پرینت"}
@@ -1949,22 +2095,23 @@ const dataHandlerUsers = (e)=>{
           <div className="w-full flex gap-3 mt-5 items-end">
             {dataLeaveLoad.status == "false" ? (
               <>
-               
-               {getCookieAccess == "1" ? <>
-               
-                <InputCom
-                  onChenge={(e) => setDataLeaveSign(e.target.value)}
-                  type={"req"}
-                  placeholder={"رمز مدیر"}
-                />
-                <ButtonAfra
-                  onClick={confirmLeave}
-                  showLoad={showLoadLeaveSign}
-                  type={"green"}
-                  text={"تائید"}
-                />
-               </>:""}
-              
+                {getCookieAccess == "1" ? (
+                  <>
+                    <InputCom
+                      onChenge={(e) => setDataLeaveSign(e.target.value)}
+                      type={"req"}
+                      placeholder={"رمز مدیر"}
+                    />
+                    <ButtonAfra
+                      onClick={confirmLeave}
+                      showLoad={showLoadLeaveSign}
+                      type={"green"}
+                      text={"تائید"}
+                    />
+                  </>
+                ) : (
+                  ""
+                )}
               </>
             ) : (
               ""
@@ -2017,8 +2164,8 @@ const dataHandlerUsers = (e)=>{
         </div>
       </Modal>
 
-  {/* Modal Show Detail Personel */}
-  <Modal
+      {/* Modal Show Detail Personel */}
+      <Modal
         title={
           <div className="w-[90%] flex gap-3">
             <p>نمایش اطلاعات پرسنل</p>
@@ -2026,8 +2173,7 @@ const dataHandlerUsers = (e)=>{
         }
         footer={
           <div className="w-full flex gap-3 mt-5 items-end">
-           
-           <ButtonAfra
+            <ButtonAfra
               onClick={updatePersonel}
               type={"green"}
               text={"ثبت ویرایش"}
@@ -2054,7 +2200,6 @@ const dataHandlerUsers = (e)=>{
               <Tag color="red">
                 هنگام ویرایش دقتی کنید نقش و رمز عبور خالی نماند.
               </Tag>
-
             </div>
 
             <div className="w-full mt-3 grid grid-cols-2 gap-3 items-end">
@@ -2062,16 +2207,14 @@ const dataHandlerUsers = (e)=>{
                 type={"req"}
                 name={"name"}
                 onChenge={changeHandlerPersonelUpdate}
-                placeholder={
-                  "نام :" + " " + dataPersonelUpdate.name 
-                }
+                placeholder={"نام :" + " " + dataPersonelUpdate.name}
               />
-               <InputCom
+              <InputCom
                 type={"req"}
                 name={"lastName"}
                 onChenge={changeHandlerPersonelUpdate}
                 placeholder={
-                  "نام خانوادگی :" + " " + dataPersonelUpdate.lastName 
+                  "نام خانوادگی :" + " " + dataPersonelUpdate.lastName
                 }
               />
 
@@ -2081,14 +2224,14 @@ const dataHandlerUsers = (e)=>{
                 onChenge={changeHandlerPersonelDateUpdate}
                 placeholder={"تاریخ تولد :" + " " + dataPersonelUpdate.birth}
               />
-               <InputCom
+              <InputCom
                 type={"req"}
                 name={"userName"}
                 onChenge={changeHandlerPersonelUpdate}
                 placeholder={"نام کاربری :" + " " + dataPersonelUpdate.userName}
               />
-             
-                <InputCom
+
+              <InputCom
                 type={"req"}
                 name={"phone"}
                 onChenge={changeHandlerPersonelUpdate}
@@ -2098,97 +2241,114 @@ const dataHandlerUsers = (e)=>{
                 type={"req"}
                 name={"email"}
                 onChenge={changeHandlerPersonelUpdate}
-                placeholder={"ایمیل :" + " " + (!dataPersonelUpdate.email ? "-" :dataPersonelUpdate.email == "" ? "-" :dataPersonelUpdate.email)}
+                placeholder={
+                  "ایمیل :" +
+                  " " +
+                  (!dataPersonelUpdate.email
+                    ? "-"
+                    : dataPersonelUpdate.email == ""
+                      ? "-"
+                      : dataPersonelUpdate.email)
+                }
               />
               <InputCom
                 type={"req"}
                 name={"password"}
                 onChenge={changeHandlerPersonelUpdate}
-                placeholder={"رمز عبور" }
+                placeholder={"رمز عبور"}
               />
 
-            
+              <SelectCombo
+                placeholder={
+                  "نقش :" +
+                  " " +
+                  (dataPersonelUpdate.access == "6"
+                    ? "کاربر معمولی"
+                    : dataPersonelUpdate.access == "1"
+                      ? "مدیریت"
+                      : dataPersonelUpdate.access == "2"
+                        ? "اداری و پرسنل"
+                        : dataPersonelUpdate.access == "3"
+                          ? "مالی و فروش"
+                          : dataPersonelUpdate.access == "4"
+                            ? "بخش تولید"
+                            : dataPersonelUpdate.access == "5"
+                              ? "بخش وظایف"
+                              : "")
+                }
+                onChange={changeHandlerUpdatePersonel}
+                options={[
+                  {
+                    value: "1",
+                    label: "مدیرعامل",
+                  },
+                  {
+                    value: "1",
+                    label: "بازرگانی",
+                  },
+                  {
+                    value: "3",
+                    label: "مسئول فروش",
+                  },
+                  {
+                    value: "3",
+                    label: "حسابدار فروش",
+                  },
+                  {
+                    value: "3",
+                    label: "کارشناس فروش",
+                  },
+                  {
+                    value: "3",
+                    label: "مدیر فروش",
+                  },
+                  {
+                    value: "3",
+                    label: "مدیر مالی",
+                  },
+                  {
+                    value: "3",
+                    label: "حسابدار",
+                  },
+                  {
+                    value: "2",
+                    label: "اداری",
+                  },
+                  {
+                    value: "2",
+                    label: "پرسنل",
+                  },
+                  {
+                    value: "2",
+                    label: "منابع انسانی",
+                  },
+                  {
+                    value: "4",
+                    label: "مسئول کنترل کیفی",
+                  },
+                  {
+                    value: "4",
+                    label: "مدیر تولید",
+                  },
+                  {
+                    value: "4",
+                    label: "کارمند تولید",
+                  },
+                  {
+                    value: "4",
+                    label: "انبار",
+                  },
 
-<SelectCombo
-                            placeholder={"نقش :" + " " + (dataPersonelUpdate.access == "6" ? "کاربر معمولی" : dataPersonelUpdate.access == "1" ?"مدیریت" :dataPersonelUpdate.access == "2" ? "اداری و پرسنل" : dataPersonelUpdate.access == "3" ? "مالی و فروش" : dataPersonelUpdate.access =="4" ? "بخش تولید" : dataPersonelUpdate.access == "5"? "بخش وظایف":"")}
-                            onChange={changeHandlerUpdatePersonel}
-                            
-                            options={[
-                              {
-                                value: "1",
-                                label: "مدیرعامل",
-                              },
-                              {
-                                value: "1",
-                                label: "بازرگانی",
-                              },
-                              {
-                                value: "3",
-                                label: "مسئول فروش",
-                              },
-                              {
-                                value: "3",
-                                label: "حسابدار فروش",
-                              },
-                              {
-                                value: "3",
-                                label: "کارشناس فروش",
-                              },
-                              {
-                                value: "3",
-                                label: "مدیر فروش",
-                              },
-                              {
-                                value: "3",
-                                label: "مدیر مالی",
-                              },
-                              {
-                                value: "3",
-                                label: "حسابدار",
-                              },
-                              {
-                                value: "2",
-                                label: "اداری",
-                              },
-                              {
-                                value: "2",
-                                label: "پرسنل",
-                              },
-                              {
-                                value: "2",
-                                label: "منابع انسانی",
-                              },
-                              {
-                                value: "4",
-                                label: "مسئول کنترل کیفی",
-                              },
-                              {
-                                value: "4",
-                                label: "مدیر تولید",
-                              },
-                              {
-                                value: "4",
-                                label: "کارمند تولید",
-                              },
-                              {
-                                value: "4",
-                                label: "انبار",
-                              },
-                                                       
-                              {
-                                value: "6",
-                                label: "دسترسی محدود کارمندان",
-                              },
-                            ]}
-                          />
-
-              
+                  {
+                    value: "6",
+                    label: "دسترسی محدود کارمندان",
+                  },
+                ]}
+              />
             </div>
-            
           </div>
         </div>
       </Modal>
-
 
       {contextHolder}
     </>

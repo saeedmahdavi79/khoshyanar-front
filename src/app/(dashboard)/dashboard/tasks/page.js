@@ -109,11 +109,9 @@ const tasksPage = () => {
   const [showLoad, setShowLoad] = useState(false);
   const [showLoad2, setShowLoad2] = useState(false);
   const [showLoad3, setShowLoad3] = useState(false);
+  const [getCookieAccess, setGetAccess] = useState("");
 
-
-  const getCookieAccess = getCookie("UiS");
-
-
+  //const getCookieAccess = getCookie("UiS");
 
   const showDetail = (tasks) => {
     setNameTask(tasks.taskTitle);
@@ -213,8 +211,7 @@ const tasksPage = () => {
           if (getResponses.status == 202) {
             openNotificationWithIcon("success");
             setShowLoad2(false);
-             refreshData();
-            
+            refreshData();
           } else {
             openNotificationWithIcon2("error");
             setShowLoad2(false);
@@ -242,6 +239,20 @@ const tasksPage = () => {
 
   useEffect(() => {
     const token = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.customer ? "10" : data.user.access);
+        }
+      });
+
     fetch(baseUrl("/office/get-personel"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -407,7 +418,7 @@ const tasksPage = () => {
   return (
     <>
       <div className="w-full flex flex-col  h-full px-6 gap-4 py-1">
-        <div className="w-full flex justify-between items-center">
+        {/* <div className="w-full flex justify-between items-center">
           <span className="text-black text-3xl py-6 font-bold">
             وظایف و کانبان
           </span>
@@ -416,7 +427,7 @@ const tasksPage = () => {
               <ButtonAfra type={"green"} text={"پشتیبانی"} />
             </a>
           </span>
-        </div>
+        </div> */}
         <div className="w-full flex gap-3 h-full">
           <div className="bg-white flex flex-col rounded-lg w-1/5 h-[calc(100%-5rem)] p-5 border border-zinc-200">
             <ButtonAfra
@@ -793,15 +804,22 @@ const tasksPage = () => {
         }
         footer={
           <div className="w-full flex gap-3">
-            {getCookieAccess == "1" ?             <ButtonAfra type={"blue-dark"} text={"ویرایش"} />
-:""}
-           {getCookieAccess == "1" ? <ButtonAfra
-              onClick={() => showDelete(idTask)}
-              type={"red"}
-              text={"حذف"}
-              showLoad={showLoad}
-            />: ""}
-            
+            {getCookieAccess == "1" ? (
+              <ButtonAfra type={"blue-dark"} text={"ویرایش"} />
+            ) : (
+              ""
+            )}
+            {getCookieAccess == "1" ? (
+              <ButtonAfra
+                onClick={() => showDelete(idTask)}
+                type={"red"}
+                text={"حذف"}
+                showLoad={showLoad}
+              />
+            ) : (
+              ""
+            )}
+
             <ButtonAfra
               onClick={() => setOpen(false)}
               type={"green"}

@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }) {
       )}
 
       <NextTopLoader
-        color="#ff6e40"
+        color="#ff0041"
         initialPosition={0.08}
         crawlSpeed={200}
         height={5}

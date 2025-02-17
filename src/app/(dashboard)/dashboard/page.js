@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import baseUrl from "@/utils/baseUrl";
-import {  Tag } from "antd";
+import { Tag } from "antd";
 import ButtonAfra from "@/app/components/modules/Buttons";
 import ConvertEnNumberToPersian from "@/utils/numberConv";
 import ChartColumn from "@/app/components/modules/ChartNew";
 import ChartPie from "@/app/components/modules/ChartPieNew";
-import {  Table } from "antd";
+import { Table } from "antd";
 import { IranMap } from "react-iran-map";
 import mapData from "@/utils/mapData";
 import TableAfra from "@/app/components/modules/TableAfra";
@@ -28,8 +28,9 @@ const DashboardMain = () => {
   const [countDataPer, setCountPer] = useState("");
 
   const router = useRouter();
-  const getCookieAccess = getCookie("UiS");
+  const getCookieAccess2 = getCookie("UiS");
 
+  const [getCookieAccess, setGetAccess] = useState("");
 
   const [tData, setTdata] = useState([]);
   const [tPieData, setTPiedata] = useState();
@@ -69,7 +70,6 @@ const DashboardMain = () => {
       dataIndex: "birth",
       key: "birth",
     },
-   
 
     {
       title: "تلفن",
@@ -89,6 +89,20 @@ const DashboardMain = () => {
 
   useEffect(() => {
     const token = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.customer ? "10" : data.user.access);
+        }
+      });
+
     fetch(baseUrl("/office/get-personel"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -166,7 +180,7 @@ const DashboardMain = () => {
           : setFdata([
               {
                 month: "فروردین",
-                vis: data.data.farvardin
+                vis: data.data.farvardin,
               },
               {
                 month: "اردیبهشت",
@@ -174,7 +188,7 @@ const DashboardMain = () => {
               },
               {
                 month: "خرداد",
-                vis:    data.data.khordad,
+                vis: data.data.khordad,
               },
               {
                 month: "تیر",
@@ -190,7 +204,7 @@ const DashboardMain = () => {
               },
               {
                 month: "مهر",
-                vis:  data.data.mehr,
+                vis: data.data.mehr,
               },
               {
                 month: "آبان",
@@ -212,17 +226,6 @@ const DashboardMain = () => {
                 month: "اسفند",
                 vis: data.data.esfand,
               },
-              
-           
-              
-              
-              
-             
-              
-              
-              
-              
-              
             ]);
       });
 
@@ -344,127 +347,150 @@ const DashboardMain = () => {
           </span>
         </div> */}
         <div className="w-full grid grid-cols-4  gap-3">
-        {getCookieAccess == "1" ?     <><CardStat
-            type={"8-main-data-2"}
-            data={<>
-              <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
-                <div className="w-full flex justify-between items-center">
-                  <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
-                    <span className="font-bold text-base text-[#202224]">
-                      تعداد مشتریان
-                    </span>
-                    <span className="text-[var(--color-green)] text-3xl font-black text-justify">
-                      {ConvertEnNumberToPersian(dataCountContact)}
-                    </span>
-                  </div>
-                  <div className="bg-[#E5E4FF] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
-                    <svg
-                      width="32"
-                      height="24"
-                      viewBox="0 0 32 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        opacity="0.587821"
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M6.66667 5.33333C6.66667 8.27885 9.05449 10.6667 12 10.6667C14.9455 10.6667 17.3333 8.27885 17.3333 5.33333C17.3333 2.38781 14.9455 0 12 0C9.05449 0 6.66667 2.38781 6.66667 5.33333ZM20 10.6667C20 12.8758 21.7909 14.6667 24 14.6667C26.2091 14.6667 28 12.8758 28 10.6667C28 8.45753 26.2091 6.66667 24 6.66667C21.7909 6.66667 20 8.45753 20 10.6667Z"
-                        fill="#8280FF" />
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M11.9778 13.3333C5.68255 13.3333 0.517678 16.5687 0.000868912 22.9323C-0.0272823 23.2789 0.635616 24 0.970003 24H22.9956C23.9972 24 24.0128 23.194 23.9972 22.9333C23.6065 16.3909 18.3616 13.3333 11.9778 13.3333ZM31.2746 24L26.1333 24C26.1333 20.9988 25.1417 18.2291 23.4683 16.0008C28.0103 16.0505 31.7189 18.3469 31.998 23.2C32.0092 23.3955 31.998 24 31.2746 24Z"
-                        fill="#8280FF" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="w-full flex justify-center items-center">
-                  <span className="text-zinc-500 text-[14px]">
-                    تعداد کلی تمامی مشتریان ثبت شده
-                  </span>
-                </div>
-              </div>
-            </>} /><CardStat
-              type={"8-main-data-2"}
-              data={<>
-                <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
-                  <div className="w-full flex justify-between items-center">
-                    <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
-                      <span className="font-bold text-base text-[#202224]">
-                        تعداد پرسنل و کارکنان
-                      </span>
-                      <span className="text-[var(--color-green)] text-3xl font-black text-justify">
-                        {ConvertEnNumberToPersian(countDataPer)}
-                      </span>
+          {getCookieAccess == "1" ? (
+            <>
+              <CardStat
+                type={"8-main-data-2"}
+                data={
+                  <>
+                    <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
+                      <div className="w-full flex justify-between items-center">
+                        <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
+                          <span className="font-bold text-base text-[#202224]">
+                            تعداد مشتریان
+                          </span>
+                          <span className="text-[var(--color-green)] text-3xl font-black text-justify">
+                            {ConvertEnNumberToPersian(dataCountContact)}
+                          </span>
+                        </div>
+                        <div className="bg-[#E5E4FF] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
+                          <svg
+                            width="32"
+                            height="24"
+                            viewBox="0 0 32 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              opacity="0.587821"
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M6.66667 5.33333C6.66667 8.27885 9.05449 10.6667 12 10.6667C14.9455 10.6667 17.3333 8.27885 17.3333 5.33333C17.3333 2.38781 14.9455 0 12 0C9.05449 0 6.66667 2.38781 6.66667 5.33333ZM20 10.6667C20 12.8758 21.7909 14.6667 24 14.6667C26.2091 14.6667 28 12.8758 28 10.6667C28 8.45753 26.2091 6.66667 24 6.66667C21.7909 6.66667 20 8.45753 20 10.6667Z"
+                              fill="#8280FF"
+                            />
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M11.9778 13.3333C5.68255 13.3333 0.517678 16.5687 0.000868912 22.9323C-0.0272823 23.2789 0.635616 24 0.970003 24H22.9956C23.9972 24 24.0128 23.194 23.9972 22.9333C23.6065 16.3909 18.3616 13.3333 11.9778 13.3333ZM31.2746 24L26.1333 24C26.1333 20.9988 25.1417 18.2291 23.4683 16.0008C28.0103 16.0505 31.7189 18.3469 31.998 23.2C32.0092 23.3955 31.998 24 31.2746 24Z"
+                              fill="#8280FF"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-center items-center">
+                        <span className="text-zinc-500 text-[14px]">
+                          تعداد کلی تمامی مشتریان ثبت شده
+                        </span>
+                      </div>
                     </div>
-                    <div className="bg-[#fceac1d4] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
-                      <svg
-                        width="30"
-                        height="34"
-                        viewBox="0 0 30 34"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M0 11.3165L12.9005 18.7646C13.0394 18.8448 13.1851 18.9027 13.3333 18.9395V33.3847L0.920065 26.0385C0.349784 25.701 0 25.0876 0 24.4249V11.3165ZM30 11.1185V24.4249C30 25.0876 29.6502 25.701 29.0799 26.0385L16.6667 33.3847V18.8129C16.6969 18.7978 16.7269 18.7817 16.7566 18.7646L30 11.1185Z"
-                          fill="#FEC53D" />
-                        <path
-                          opacity="0.499209"
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M0.405212 7.70142C0.562787 7.50244 0.761675 7.33426 0.993554 7.21076L14.1186 0.2201C14.6695 -0.0733665 15.3304 -0.0733665 15.8814 0.2201L29.0064 7.21076C29.1852 7.30596 29.3443 7.42771 29.48 7.56966L15.0899 15.8778C14.9953 15.9325 14.908 15.995 14.8285 16.064C14.749 15.995 14.6618 15.9325 14.5671 15.8778L0.405212 7.70142Z"
-                          fill="#FEC53D" />
-                      </svg>
+                  </>
+                }
+              />
+              <CardStat
+                type={"8-main-data-2"}
+                data={
+                  <>
+                    <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
+                      <div className="w-full flex justify-between items-center">
+                        <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
+                          <span className="font-bold text-base text-[#202224]">
+                            تعداد پرسنل و کارکنان
+                          </span>
+                          <span className="text-[var(--color-green)] text-3xl font-black text-justify">
+                            {ConvertEnNumberToPersian(countDataPer)}
+                          </span>
+                        </div>
+                        <div className="bg-[#fceac1d4] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
+                          <svg
+                            width="30"
+                            height="34"
+                            viewBox="0 0 30 34"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M0 11.3165L12.9005 18.7646C13.0394 18.8448 13.1851 18.9027 13.3333 18.9395V33.3847L0.920065 26.0385C0.349784 25.701 0 25.0876 0 24.4249V11.3165ZM30 11.1185V24.4249C30 25.0876 29.6502 25.701 29.0799 26.0385L16.6667 33.3847V18.8129C16.6969 18.7978 16.7269 18.7817 16.7566 18.7646L30 11.1185Z"
+                              fill="#FEC53D"
+                            />
+                            <path
+                              opacity="0.499209"
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M0.405212 7.70142C0.562787 7.50244 0.761675 7.33426 0.993554 7.21076L14.1186 0.2201C14.6695 -0.0733665 15.3304 -0.0733665 15.8814 0.2201L29.0064 7.21076C29.1852 7.30596 29.3443 7.42771 29.48 7.56966L15.0899 15.8778C14.9953 15.9325 14.908 15.995 14.8285 16.064C14.749 15.995 14.6618 15.9325 14.5671 15.8778L0.405212 7.70142Z"
+                              fill="#FEC53D"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-center items-center">
+                        <span className="text-zinc-500 text-[14px]">
+                          تعداد کلی تمامی پرسنل و کارکنان ثبت شده
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="w-full flex justify-center items-center">
-                    <span className="text-zinc-500 text-[14px]">
-                      تعداد کلی تمامی پرسنل و کارکنان ثبت شده
-                    </span>
-                  </div>
-                </div>
-              </>} /><CardStat
-              type={"8-main-data-2"}
-              data={<>
-                <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
-                  <div className="w-full flex justify-between items-center">
-                    <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
-                      <span className="font-bold text-base text-[#202224]">
-                        تعداد کالا ها
-                      </span>
-                      <span className="text-[var(--color-green)] text-3xl font-black text-justify">
-                        {ConvertEnNumberToPersian(countDataPrd)}
-                      </span>
+                  </>
+                }
+              />
+              <CardStat
+                type={"8-main-data-2"}
+                data={
+                  <>
+                    <div className="w-full h-full flex flex-col gap-6 justify-center items-center">
+                      <div className="w-full flex justify-between items-center">
+                        <div className="flex w-2/3 flex-col gap-3 justify-center items-start">
+                          <span className="font-bold text-base text-[#202224]">
+                            تعداد کالا ها
+                          </span>
+                          <span className="text-[var(--color-green)] text-3xl font-black text-justify">
+                            {ConvertEnNumberToPersian(countDataPrd)}
+                          </span>
+                        </div>
+                        <div className="bg-[#D9F7E8] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
+                          <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 28 28"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M3.11111 24.8889H26.4444C27.3036 24.8889 28 25.5853 28 26.4444C28 27.3036 27.3036 28 26.4444 28H1.55556C0.696446 28 0 27.3036 0 26.4444V1.55556C0 0.696446 0.696446 0 1.55556 0C2.41467 0 3.11111 0.696446 3.11111 1.55556V24.8889Z"
+                              fill="#4AD991"
+                            />
+                            <path
+                              opacity="0.5"
+                              d="M8.91263 18.175C8.32504 18.8018 7.34063 18.8335 6.71388 18.2459C6.08713 17.6584 6.05537 16.674 6.64295 16.0472L12.4763 9.82498C13.0445 9.21884 13.9888 9.16627 14.6209 9.7056L19.2249 13.6344L25.2235 6.03611C25.7559 5.36181 26.734 5.24673 27.4083 5.77907C28.0826 6.31141 28.1977 7.28959 27.6654 7.96389L20.6654 16.8306C20.1186 17.5231 19.1059 17.6227 18.4347 17.05L13.7306 13.0358L8.91263 18.175Z"
+                              fill="#4AD991"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-center items-center">
+                        <span className="text-zinc-500 text-[14px]">
+                          تعداد کلی کالا های ثبت شده
+                        </span>
+                      </div>
                     </div>
-                    <div className="bg-[#D9F7E8] flex justify-center items-center w-[60px] rounded-3xl h-[60px]">
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 28 28"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M3.11111 24.8889H26.4444C27.3036 24.8889 28 25.5853 28 26.4444C28 27.3036 27.3036 28 26.4444 28H1.55556C0.696446 28 0 27.3036 0 26.4444V1.55556C0 0.696446 0.696446 0 1.55556 0C2.41467 0 3.11111 0.696446 3.11111 1.55556V24.8889Z"
-                          fill="#4AD991" />
-                        <path
-                          opacity="0.5"
-                          d="M8.91263 18.175C8.32504 18.8018 7.34063 18.8335 6.71388 18.2459C6.08713 17.6584 6.05537 16.674 6.64295 16.0472L12.4763 9.82498C13.0445 9.21884 13.9888 9.16627 14.6209 9.7056L19.2249 13.6344L25.2235 6.03611C25.7559 5.36181 26.734 5.24673 27.4083 5.77907C28.0826 6.31141 28.1977 7.28959 27.6654 7.96389L20.6654 16.8306C20.1186 17.5231 19.1059 17.6227 18.4347 17.05L13.7306 13.0358L8.91263 18.175Z"
-                          fill="#4AD991" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="w-full flex justify-center items-center">
-                    <span className="text-zinc-500 text-[14px]">
-                      تعداد کلی کالا های ثبت شده
-                    </span>
-                  </div>
-                </div>
-              </>} /></>:""}
-      
+                  </>
+                }
+              />
+            </>
+          ) : (
+            ""
+          )}
+
           <CardStat
             type={"8-main-data-2"}
             data={
@@ -514,87 +540,93 @@ const DashboardMain = () => {
             }
           />
         </div>
-        {getCookieAccess == "1"?<>
-          <div className="w-full flex justify-center items-center">
-          <div className="w-full grid grid-cols-2 gap-3">
-            <CardStat
-              title={"گزارش ها و آمار مشتریان"}
-              des={
-                "در این بخش گزارشات و آمار های مشتریان بر اساس ماه را ببینید"
-              }
-              type={"8-2"}
-              data={
-                <>
-                  <ChartColumn data={fData} />
-                  <span className="w-full flex gap-3 justify-center items-center mt-10">
-                    <span className="w-4 h-4 rounded-full bg-[#ff6e40]"></span>
-                    <span>مشتریان بر اساس ماه</span>
-                  </span>
-                </>
-              }
-            />
-            <CardStat
-              title={"گزارش ها و آمار فروش  بر اساس استان"}
-              des={"در این بخش گزارشات و آمار های فروش بر اساس استان را ببینید"}
-              type={"8"}
-              data={
-                <>
-                  <div>
-                    <IranMap
-                      data={mapData}
-                      colorRange="30, 70, 181"
-                      width={600}
-                      textColor="#000"
-                      defaultSelectedProvince="tehran"
-                      deactiveProvinceColor="#eee"
-                      selectedProvinceColor="#3bcc6d"
-                      tooltipTitle="تعداد:"
-                      selectProvinceHandler={selectProvinceHandler}
-                    />
-                  </div>
-                </>
-              }
-            />
-          </div>
-        </div>
-        <div className="w-full flex justify-center items-center">
-          <div className="w-full grid grid-cols-1 gap-3">
-            
-            <CardStat
-              title={"لیست و اطلاعات کارکنان"}
-              des={"در این بخش لیست و اطلاعات کارکنان را ببینید"}
-              type={"8-2"}
-              data={
-                <>
-                  {/* <ChartBar /> */}
-                  <div className="h-full">
-                    <TableAfra
-                    type={"green"}
-                      data={dataPersonelApp.map((data) => ({
-                        name: !data.name
-                          ? "-"
-                          : data.name + " " + data.lastName,
+        {getCookieAccess == "1" ? (
+          <>
+            <div className="w-full flex justify-center items-center">
+              <div className="w-full grid grid-cols-2 gap-3">
+                <CardStat
+                  title={"گزارش ها و آمار مشتریان"}
+                  des={
+                    "در این بخش گزارشات و آمار های مشتریان بر اساس ماه را ببینید"
+                  }
+                  type={"8-2"}
+                  data={
+                    <>
+                      <ChartColumn data={fData} />
+                      <span className="w-full flex gap-3 justify-center items-center mt-10">
+                        <span className="w-4 h-4 rounded-full bg-[#ff6e40]"></span>
+                        <span>مشتریان بر اساس ماه</span>
+                      </span>
+                    </>
+                  }
+                />
+                <CardStat
+                  title={"گزارش ها و آمار فروش  بر اساس استان"}
+                  des={
+                    "در این بخش گزارشات و آمار های فروش بر اساس استان را ببینید"
+                  }
+                  type={"8"}
+                  data={
+                    <>
+                      <div>
+                        <IranMap
+                          data={mapData}
+                          colorRange="30, 70, 181"
+                          width={600}
+                          textColor="#000"
+                          defaultSelectedProvince="tehran"
+                          deactiveProvinceColor="#eee"
+                          selectedProvinceColor="#3bcc6d"
+                          tooltipTitle="تعداد:"
+                          selectProvinceHandler={selectProvinceHandler}
+                        />
+                      </div>
+                    </>
+                  }
+                />
+              </div>
+            </div>
+            <div className="w-full flex justify-center items-center">
+              <div className="w-full grid grid-cols-1 gap-3">
+                <CardStat
+                  title={"لیست و اطلاعات کارکنان"}
+                  des={"در این بخش لیست و اطلاعات کارکنان را ببینید"}
+                  type={"8-2"}
+                  data={
+                    <>
+                      {/* <ChartBar /> */}
+                      <div className="h-full">
+                        <TableAfra
+                          type={"green"}
+                          data={dataPersonelApp.map((data) => ({
+                            name: !data.name
+                              ? "-"
+                              : data.name + " " + data.lastName,
 
-                        sex: !data.sex ? "-" : data.sex,
-                        birth: !data.birth ? "-" : data.birth,
-                        contract: !data.type ? "-" : data.type,
-                        phone: !data.phone ? "-" : data.phone,
-                        contract: !data.type ? "-" : data.type,
-                        userName: !data.userName ? "-" : data.userName,
-                        role: !data.role ? "-" : data.role,
+                            sex: !data.sex ? "-" : data.sex,
+                            birth: !data.birth ? "-" : data.birth,
+                            contract: !data.type ? "-" : data.type,
+                            phone: !data.phone ? "-" : data.phone,
+                            contract: !data.type ? "-" : data.type,
+                            userName: !data.userName ? "-" : data.userName,
+                            role: !data.role ? "-" : data.role,
 
-                        createDate: !data.createDate ? "-" : data.createDate,
-                      }))}
-                      columns={columns_personel}
-                    />
-                  </div>
-                </>
-              }
-            />
-          </div>
-        </div>
-        </> : ""}
-       
+                            createDate: !data.createDate
+                              ? "-"
+                              : data.createDate,
+                          }))}
+                          columns={columns_personel}
+                        />
+                      </div>
+                    </>
+                  }
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );

@@ -218,7 +218,6 @@ export default function Auth() {
                 type={"green"}
                 disabled={isButtonDisabled} // غیرفعال کردن دکمه بر اساس وضعیت
               />
-             
             </div>
 
             {/* <div className="text-[15px] font-semibold flex justify-center items-center gap-2 mt-4">
@@ -344,11 +343,11 @@ export default function Auth() {
                                   type={"green"}
                                   disabled={isButtonDisabled} // غیرفعال کردن دکمه بر اساس وضعیت
                                 />
-                                <ButtonAfra
+                                {/* <ButtonAfra
                                   onClick={() => router.push("/auth/register")}
                                   text={"ایجاد پنل"}
                                   type={"blue-dark"}
-                                />
+                                /> */}
                               </div>
                               {/* <div className="w-full  flex xl:flex-row lg:flex-row md:flex-row sm:flex-col justify-center gap-1 items-center">
                               <span className="text-black text-[12px] font-normal">

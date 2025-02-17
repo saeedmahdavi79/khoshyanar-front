@@ -37,23 +37,42 @@
 // export default NotFound;
 "use client";
 import ButtonAfra from "@/app/components/modules/Buttons";
+import animationData from "../lottie/404.json";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import error1 from "../../public/image/error.png";
+import Lottie from "react-lottie";
 const error = () => {
   const router = useRouter();
   const GoDashboard = () => {
     location.replace("/dashboard");
   };
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   return (
     <>
-      <div className="bg-main absolute w-full flex justify-center items-center h-screen">
-        <div className=" flex flex-col justify-center items-center w-[630px]  bg-[#FFFFFF] border-[0.3px] border-[#B9B9B9] rounded-[24px] p-x[57px] py-[60px]">
-          <Image className="w-[390px] h-[298px]" src={error1} />
-          <div className="w-full  flex flex-col gap-3 rounded-[8px] pt-[70px] px-[106px] ">
-            <div className="w-full flex justify-center items-center pb-[10px] ">
+      <div className="bg-white absolute w-full flex justify-center items-center h-screen">
+        <div className=" flex flex-col justify-center items-center w-[630px]  bg-[#FFFFFF] rounded-[24px] px-[57px] py-[60px]">
+          <Lottie options={defaultOptions} height={450} width={450} />
+          <div className="w-full  flex flex-col gap-3 rounded-[8px] pt-[10px] px-[106px] ">
+            <div className="w-full flex flex-col gap-3 justify-center items-center pb-[10px] ">
+              <span className=" text-3xl font-bold text-[var(--color-green)] text-center flex justify-center items-center  w-full ">
+                404
+              </span>
               <span className=" text-[18px] font-bold text-[#202224] text-right flex justify-center items-center  w-full ">
                 صفحه مورد نظر شما یافت نشد ...
+              </span>
+              <span className=" text-[14px] font-bold text-zinc-500 text-right flex justify-center items-center  w-full ">
+                افراپرداز | جامع ترین نرم افزار مدیریت کسب و کار
               </span>
             </div>
             {/* <botton className="w-[418px] h-[56px] bg-[#FF6E40] rounded-[8px] flex justify-center items-center  ">

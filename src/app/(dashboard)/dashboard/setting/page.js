@@ -34,11 +34,10 @@ const SettingPage = () => {
     { title: "اطلاعات محرمانه" },
     { title: "اعلانات و اطلاع رسانی" },
     { title: "همگام سازی با تکروسیستم" },
-   
   ];
 
   const handleButton = (button) => {
-    if ( button == 3 || button == 4) {
+    if (button == 3 || button == 4) {
     } else {
       setActivButton(button);
       setShowFirstPage(button);
@@ -77,8 +76,6 @@ const SettingPage = () => {
     });
   };
 
-
-  
   const openSyncData = (type) => {
     api[type]({
       message: "همگام سازی موفق",
@@ -260,140 +257,122 @@ const SettingPage = () => {
       });
   };
 
-
   //sync
 
   const [syncLoad, setSyncLoad] = useState(false);
   const [syncCustomerLoad, setSyncCustomerLoad] = useState(false);
 
-
   const syncTakro = () => {
-
     const token = getCookie("WuZiK");
     const tokenTakro = getCookie("TakSess");
-    setSyncLoad(true)
+    setSyncLoad(true);
 
     fetch(baseUrl("/sync/get-personels"), {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` ,
-    'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        tokenTakro:tokenTakro
-      })
+        tokenTakro: tokenTakro,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-       
-       if(data.status == 200){
-        openSyncData("success");
-        setSyncLoad(false)
-
-       }else{
-        openSyncDatadel("error")
-        setSyncLoad(false)
-       }
+        if (data.status == 200) {
+          openSyncData("success");
+          setSyncLoad(false);
+        } else {
+          openSyncDatadel("error");
+          setSyncLoad(false);
+        }
       });
-
-  }
-
+  };
 
   const syncCustomerTakro = () => {
-
     const token = getCookie("WuZiK");
     const tokenTakro = getCookie("TakSess");
-    setSyncCustomerLoad(true)
+    setSyncCustomerLoad(true);
 
     fetch(baseUrl("/sync/get-customers"), {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` ,
-    'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        tokenTakro:tokenTakro
-      })
+        tokenTakro: tokenTakro,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-       
-       if(data.status == 200){
-        openSyncData("success");
-        setSyncCustomerLoad(false)
-
-       }else{
-        openSyncDatadel("error")
-        setSyncCustomerLoad(false)
-       }
+        if (data.status == 200) {
+          openSyncData("success");
+          setSyncCustomerLoad(false);
+        } else {
+          openSyncDatadel("error");
+          setSyncCustomerLoad(false);
+        }
       });
-
-  }
+  };
 
   const syncProductsTakro = () => {
-
     const token = getCookie("WuZiK");
     const tokenTakro = getCookie("TakSess");
-    setSyncCustomerLoad(true)
+    setSyncCustomerLoad(true);
 
     fetch(baseUrl("/sync/get-products"), {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` ,
-    'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        tokenTakro:tokenTakro
-      })
+        tokenTakro: tokenTakro,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-       
-       if(data.status == 200){
-
-        
-        
-
-        openSyncData("success");
-        setSyncCustomerLoad(false)
-
-       }else{
-        openSyncDatadel("error")
-        setSyncCustomerLoad(false)
-       }
+        if (data.status == 200) {
+          openSyncData("success");
+          setSyncCustomerLoad(false);
+        } else {
+          openSyncDatadel("error");
+          setSyncCustomerLoad(false);
+        }
       });
-
-  }
-
-
-  
+  };
 
   const syncStoreTakro = () => {
-
     const token = getCookie("WuZiK");
     const tokenTakro = getCookie("TakSess");
-    setSyncCustomerLoad(true)
+    setSyncCustomerLoad(true);
 
     fetch(baseUrl("/sync/get-stores"), {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` ,
-    'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        tokenTakro:tokenTakro
-      })
+        tokenTakro: tokenTakro,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-       
-       if(data.status == 200){
-        openSyncData("success");
-        setSyncCustomerLoad(false)
-
-       }else{
-        openSyncDatadel("error")
-        setSyncCustomerLoad(false)
-       }
+        if (data.status == 200) {
+          openSyncData("success");
+          setSyncCustomerLoad(false);
+        } else {
+          openSyncDatadel("error");
+          setSyncCustomerLoad(false);
+        }
       });
-
-  }
+  };
   return (
     <>
       <div className="w-full flex flex-col h-full px-6 gap-4 py-1">
-        <div className="w-full flex justify-between items-center">
+        {/* <div className="w-full flex justify-between items-center">
           <span className="text-black text-3xl py-6 font-bold">
             تنظیمات سیستم
           </span>
@@ -402,7 +381,7 @@ const SettingPage = () => {
               <ButtonAfra type={"green"} text={"پشتیبانی"} />
             </a>
           </span>
-        </div>
+        </div> */}
         <div className="w-full flex gap-3 h-full">
           <div className="bg-white flex flex-col rounded-lg w-1/5 h-[calc(100%-5rem)] p-5 border border-zinc-200">
             <ButtonAfra
@@ -701,7 +680,7 @@ const SettingPage = () => {
                 }
               />
             )}
-             {showFirstPage === 2 && (
+            {showFirstPage === 2 && (
               <CardStat
                 type={"10"}
                 title={"همگام سازی با تکروسیستم"}
@@ -721,20 +700,33 @@ const SettingPage = () => {
                         defaultChecked
                       />
                       <div role="tabpanel" className="tab-content px-3 py-3">
-                      <div className="w-full grid grid-cols-4 gap-3 items-end">
-                      
-                         <ButtonAfra
-                          // onClick={syncTakro}
-                           showLoad={syncLoad} type={"green"} text={"شروع همگام سازی پرسنل"}/>
-                         <ButtonAfra
-                          // onClick={syncCustomerTakro}
-                           showLoad={syncCustomerLoad} type={"green"} text={"شروع همگام سازی مشتریان"}/>
-                         <ButtonAfra onClick={syncProductsTakro} showLoad={syncCustomerLoad} type={"green"} text={"شروع همگام سازی کالا ها"}/>
-                         <ButtonAfra onClick={syncStoreTakro} showLoad={syncCustomerLoad} type={"green"} text={"شروع همگام سازی انبار ها"}/>
-
+                        <div className="w-full grid grid-cols-4 gap-3 items-end">
+                          <ButtonAfra
+                            // onClick={syncTakro}
+                            showLoad={syncLoad}
+                            type={"green"}
+                            text={"شروع همگام سازی پرسنل"}
+                          />
+                          <ButtonAfra
+                            // onClick={syncCustomerTakro}
+                            showLoad={syncCustomerLoad}
+                            type={"green"}
+                            text={"شروع همگام سازی مشتریان"}
+                          />
+                          <ButtonAfra
+                            onClick={syncProductsTakro}
+                            showLoad={syncCustomerLoad}
+                            type={"green"}
+                            text={"شروع همگام سازی کالا ها"}
+                          />
+                          <ButtonAfra
+                            onClick={syncStoreTakro}
+                            showLoad={syncCustomerLoad}
+                            type={"green"}
+                            text={"شروع همگام سازی انبار ها"}
+                          />
                         </div>
                       </div>
-                    
                     </div>
                   </>
                 }

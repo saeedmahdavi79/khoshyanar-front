@@ -28,11 +28,11 @@ const CustomerRegistration = () => {
   return (
     <>
       <div className="w-full flex flex-col h-full px-6 gap-4 py-1">
-        <div className="w-full flex justify-start items-center">
+        {/* <div className="w-full flex justify-start items-center">
           <span className="text-black text-3xl py-6 font-bold">
             دستیار هوشمند افراپرداز
           </span>
-        </div>
+        </div> */}
         <div className="w-full flex gap-3 h-full">
           <div className="bg-white flex flex-col rounded-lg w-1/5 h-[calc(100%-5rem)] p-5 border border-zinc-200">
             <ButtonAfra
