@@ -784,6 +784,12 @@ const sales = () => {
     setTableDataFrm(updatedData);
   };
 
+  const [dataIdCustomer, setDataIdCustomer] = useState("");
+
+  const changeCustomerName = (e) => {
+    setDataIdCustomer(e.value);
+  };
+
   const sendPrdToServer = () => {
     const getCookies = getCookie("WuZiK");
 
@@ -792,6 +798,7 @@ const sales = () => {
       body: JSON.stringify({
         title: "پیش فاکتور",
         products: tableFrm,
+        id: dataIdCustomer,
       }),
       headers: {
         Authorization: `Bearer ${getCookies}`,
@@ -2208,7 +2215,9 @@ const sales = () => {
                                 i.status == "false"
                                   ? "تائید نشده"
                                   : "تائید مدیریت",
-                              cr: i.adminName,
+                              cr: !i.creatorName ? i.adminName : i.creatorName,
+                              cu: !i.creatorName ? "-" : i.adminName,
+
                               opr: (
                                 <>
                                   <Tag
@@ -2248,6 +2257,12 @@ const sales = () => {
                                 sorter: true,
                               },
                               {
+                                title: "نام مشتری",
+                                dataIndex: "cu",
+                                key: "cu",
+                                sorter: true,
+                              },
+                              {
                                 title: "امضا توسط",
                                 dataIndex: "signOp",
                                 key: "signOp",
@@ -2276,7 +2291,14 @@ const sales = () => {
                           aria-label="افزودن سفارش"
                         />
                         <div role="tabpanel" className="tab-content px-3 py-3">
-                          <div className="w-full grid grid-cols-3 gap-3 items-end">
+                          <div className="w-full mt-3">
+                            <Tag color="red">
+                              *نکته : لطفا در صورتی که سفارش برای مشتری نیست
+                              مشتری خالی بماند
+                            </Tag>
+                          </div>
+
+                          <div className="w-full grid grid-cols-4 gap-3 items-end">
                             <SelectCombo
                               placeholder={"کالا را انتخاب کنید"}
                               options={datePrd.map((i) => ({
@@ -2286,6 +2308,20 @@ const sales = () => {
                               }))}
                               onChange={changePrdHandler}
                             />
+
+                            {getCookieAccessCustomer != 7 ? (
+                              <SelectCombo
+                                placeholder={"مشتری را انتخاب کنید"}
+                                options={customerData.map((i) => ({
+                                  value: i._id,
+                                  label: i.name,
+                                  data: i,
+                                }))}
+                                onChange={changeCustomerName}
+                              />
+                            ) : (
+                              ""
+                            )}
 
                             <InputCom
                               onChenge={(e) => setCountData(e.target.value)}
@@ -2297,7 +2333,7 @@ const sales = () => {
                               <ButtonAfra
                                 onClick={addProductToTableFrm}
                                 type={"green"}
-                                text={"افزودن کالا به پیش فاکتور"}
+                                text={"افزودن کالا"}
                               />
                               <ButtonAfra type={"blue-dark"} text={"انصراف"} />
                             </div>

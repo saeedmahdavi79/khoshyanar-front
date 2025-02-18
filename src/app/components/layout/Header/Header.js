@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 
-
 //iconNew
 import { LuAlignJustify, LuCircle, LuMenu } from "react-icons/lu";
 import { LuLayoutGrid } from "react-icons/lu";
@@ -38,7 +37,7 @@ import TopImage from "../../../../../public/image/afrapardaz.png";
 import TopImageSquare from "../../../../../public/image/square-logo.png";
 import ImageNotFound from "../../../../../public/image/404.svg";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import baseUrl from "@/utils/baseUrl";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
@@ -136,8 +135,6 @@ const HeaderDashboard = ({ child }) => {
   const [searchMenu, setSearchMenu] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-
-
 
   const [collapsed, setCollapsed] = useState(false);
   const [sidebar, setSideBar] = useState("w-full");
@@ -269,7 +266,28 @@ const HeaderDashboard = ({ child }) => {
           !data.data ? setSearchMenu([]) : setSearchMenu(data.data.dataGet);
         });
     }
+  }, [loadingShow]);
 
+  // const getDataNotifAuto = () => {
+  //   const getCookies = getCookie("WuZiK");
+
+  //   fetch(baseUrl("/auth/get-notif"), {
+  //     method: "GET",
+  //     headers: { Authorization: `Bearer ${getCookies}` },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       !data.data ? setDataNotif([]) : setDataNotif(data.data.dataGet);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   // const getIdChat = getCookie("XopL");
+  //   setTimeout(() => getDataNotifAuto, 4000);
+  // }, [dataNotif]);
+
+  useEffect(() => {
+    const getCookies = getCookie("WuZiK");
     fetch(baseUrl("/auth/get-notif"), {
       method: "GET",
       headers: { Authorization: `Bearer ${getCookies}` },
@@ -278,12 +296,7 @@ const HeaderDashboard = ({ child }) => {
       .then((data) => {
         !data.data ? setDataNotif([]) : setDataNotif(data.data.dataGet);
       });
-  }, [loadingShow]);
-
-  // useEffect(() => {
-  //   const getCookies = getCookie("WuZiK");
-
-  // }, []);
+  }, []);
 
   const items2 = [
     {
@@ -311,7 +324,6 @@ const HeaderDashboard = ({ child }) => {
       ),
     },
 
-  
     {
       key: "3",
       label:
@@ -434,8 +446,6 @@ const HeaderDashboard = ({ child }) => {
 
   return (
     <>
-     
-
       <div
         className={`z-[9999999] transition-all duration-300 fixed top-0 bottom-0 left-0 right-0 bg-white ${loadingShow} justify-center items-center`}
       >
@@ -567,8 +577,6 @@ const HeaderDashboard = ({ child }) => {
                 {dateShow}
               </span>
 
-             
-
               <span
                 onClick={showHelp}
                 className="w-10 h-10 flex justify-center items-center hover:scale-95 hover:text-white transition-all duration-300 cursor-pointer text-white rounded-full bg-[var(--color-blue)]"
@@ -681,18 +689,18 @@ const HeaderDashboard = ({ child }) => {
         open={open2}
         onCancel={() => setOpen2(false)}
       >
-        <div className="w-full flex flex-col gap-5 justify-center items-center">
-          <div role="tablist" className="tabs w-full grid-cols-6 tabs-bordered">
+        <div className="w-full  overflow-auto section-layout flex flex-col gap-5 justify-center items-center">
+          <div role="tablist" className="tabs w-full grid-cols-3 tabs-bordered">
             <input
               type="radio"
-              name="my_tabs_2"
+              name="my_tabs_not"
               role="tab"
               className="tab w-full"
               aria-label="همه"
               defaultChecked
             />
             <div role="tabpanel" className="tab-content px-3 py-3">
-              <div className="w-full flex flex-col  divide-y ">
+              <div className="w-full flex flex-col gap-5 justify-center items-center divide-y  h-[350px] overflow-auto section-layout">
                 {dataNotif.length == 0 ? (
                   <div className="w-full flex flex-col gap-3 justify-center items-center">
                     <Image src={ImageNotFound} className="w-52 mx-auto" />
@@ -701,41 +709,44 @@ const HeaderDashboard = ({ child }) => {
                     </span>
                   </div>
                 ) : (
-                  dataNotif.map((i) => (
-                    <div className="w-full h-[50px]  flex justify-between">
-                      <div className="flex justify-start items-center gap-3">
-                        <span className="w-8 h-8 flex justify-center items-center bg-orange-300 rounded-full">
-                          <Message01Icon color="#fff" size={"1.2rem"} />
-                        </span>
-                        <span className="text-black font-bold text-sm">
-                          {i.nameElan}
-                        </span>
+                  dataNotif
+                    .slice(-5)
+                    .reverse()
+                    .map((i) => (
+                      <div className="w-full h-[70px]  flex justify-between items-center">
+                        <div className="flex justify-start items-center gap-3">
+                          <span className="w-8 h-8 flex justify-center items-center bg-orange-300 rounded-full">
+                            <Message01Icon color="#fff" size={"1.2rem"} />
+                          </span>
+                          <span className="text-black font-bold text-sm">
+                            {i.nameElan}
+                          </span>
+                        </div>
+                        <div
+                          onClick={() => showElanContent(i)}
+                          className=" cursor-pointer flex gap-3 items-center"
+                        >
+                          <span className="text-[12px] text-blue-500">
+                            مشاهده
+                          </span>
+                          <span className="text-[12px] text-blue-500">
+                            <ArrowLeft01Icon size={"18px"} />
+                          </span>
+                        </div>
                       </div>
-                      <div
-                        onClick={() => showElanContent(i)}
-                        className=" cursor-pointer flex gap-3 items-center"
-                      >
-                        <span className="text-[12px] text-blue-500">
-                          مشاهده
-                        </span>
-                        <span className="text-[12px] text-blue-500">
-                          <ArrowLeft01Icon size={"18px"} />
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                    ))
                 )}
               </div>
             </div>
             <input
               type="radio"
-              name="my_tabs_2"
+              name="my_tabs_not"
               role="tab"
               className="tab w-full"
               aria-label="اعلان ها"
             />
             <div role="tabpanel" className="tab-content px-3 py-3">
-              <div className="w-full flex flex-col  divide-y ">
+              <div className="w-full flex flex-col gap-5 justify-center items-center divide-y h-[350px] overflow-auto section-layout">
                 {dataNotif.length == 0 ? (
                   <div className="w-full flex flex-col gap-3 justify-center items-center">
                     <Image src={ImageNotFound} className="w-52 mx-auto" />
@@ -744,29 +755,32 @@ const HeaderDashboard = ({ child }) => {
                     </span>
                   </div>
                 ) : (
-                  dataNotif.map((i) => (
-                    <div className="w-full h-[50px]  flex justify-between">
-                      <div className="flex justify-start items-center gap-3">
-                        <span className="w-8 h-8 flex justify-center items-center bg-orange-300 rounded-full">
-                          <Message01Icon color="#fff" size={"1.2rem"} />
-                        </span>
-                        <span className="text-black font-bold text-sm">
-                          {i.nameElan}
-                        </span>
+                  dataNotif
+                    .slice(-5)
+                    .reverse()
+                    .map((i) => (
+                      <div className="w-full h-[70px]  flex justify-between items-center">
+                        <div className="flex justify-start items-center gap-3">
+                          <span className="w-8 h-8 flex justify-center items-center bg-orange-300 rounded-full">
+                            <Message01Icon color="#fff" size={"1.2rem"} />
+                          </span>
+                          <span className="text-black font-bold text-sm">
+                            {i.nameElan}
+                          </span>
+                        </div>
+                        <div
+                          onClick={() => showElanContent(i)}
+                          className=" cursor-pointer flex gap-3 items-center"
+                        >
+                          <span className="text-[12px] text-blue-500">
+                            مشاهده
+                          </span>
+                          <span className="text-[12px] text-blue-500">
+                            <ArrowLeft01Icon size={"18px"} />
+                          </span>
+                        </div>
                       </div>
-                      <div
-                        onClick={() => showElanContent(i)}
-                        className=" cursor-pointer flex gap-3 items-center"
-                      >
-                        <span className="text-[12px] text-blue-500">
-                          مشاهده
-                        </span>
-                        <span className="text-[12px] text-blue-500">
-                          <ArrowLeft01Icon size={"18px"} />
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                    ))
                 )}
               </div>
             </div>
