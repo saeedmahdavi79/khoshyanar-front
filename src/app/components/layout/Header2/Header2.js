@@ -307,7 +307,30 @@ const Header2 = ({
             </a>
             {/* سفارش */}
 
-            {userAccess == "1" ? (
+            {userAccess != "1" ? (
+              <a className="w-full" href="/dashboard/office">
+                <div className="flex w-full   items-center cursor-pointer">
+                  <div
+                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshEdari.pointer}`}
+                  ></div>
+                  <div
+                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] gap-2 ${sideBarPadding} ${state.bakhshEdari.bg} flex ${sideBarJustify} items-center rounded-md`}
+                  >
+                    <div className="flex gap-4 items-center justify-center">
+                      <span
+                        className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
+                      >
+                        مکاتبات من
+                      </span>
+                    </div>
+                    <OfficeIcon
+                      style={{ color: state.bakhshEdari.icon }}
+                      size={"1.2rem"}
+                    />
+                  </div>
+                </div>
+              </a>
+            ) : userAccess == "1" ? (
               <a className="w-full" href="/dashboard/office">
                 <div className="flex w-full   items-center cursor-pointer">
                   <div
@@ -691,8 +714,6 @@ const Header2 = ({
             ) : (
               ""
             )}
-
-            
 
             <a className="w-full" href="/dashboard/afraai">
               <div className="flex  w-full   items-center cursor-pointer ">

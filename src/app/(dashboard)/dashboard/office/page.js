@@ -477,10 +477,9 @@ const pageOffice = () => {
     setLoadPersonel(true);
     setOpenPersonel(true);
 
-
     setDataPersonelUpdate({
       ...dataPersonelUpdate,
-      
+
       sex: data.sex,
       name: data.name,
       lastName: data.lastName,
@@ -588,6 +587,7 @@ const pageOffice = () => {
     subject: "",
     zonkan: "",
     recivers: "",
+    isSignNeed: "",
     doc: "",
     content: `<div id="letterDivId" style="direction:rtl;text-align:justify;width: 100%; padding:50px; padding-top:41px  !important; color: #000 !important;  line-height:33px; !important; font-size: 18px;" border="0">
     <table style="width: 100% !important; ">
@@ -615,6 +615,8 @@ const pageOffice = () => {
   });
   const [showLoadLetter, setShowLoadLetter] = useState(false);
   const [dataLetterContent, setDataLetterContent] = useState("");
+  const [downloadLink, setDownloadLink] = useState("");
+  const [isSignNeed, setIsSignNeed] = useState("");
 
   const changeHandlerLetter = (e) => {
     setDataLetter({ ...dataLetter, [e.target.name]: e.target.value });
@@ -641,6 +643,8 @@ const pageOffice = () => {
     setDataLetterContent(e.content);
     setfactorStatus(e.status);
     setLetterId(e._id);
+    setDownloadLink(e.doc);
+    setIsSignNeed(e.isSignNeed);
   };
   const showLetterPage = () => {
     setShowName(true);
@@ -735,6 +739,8 @@ const pageOffice = () => {
 
   const [dataLetterApp, setDataLetterApp] = useState([]);
 
+  const [dataLetterAppMe, setDataLetterAppMe] = useState([]);
+
   useEffect(() => {
     const token = getCookie("WuZiK");
     fetch(baseUrl("/office/get-letters"), {
@@ -747,7 +753,22 @@ const pageOffice = () => {
           ? setDataLetterApp([])
           : setDataLetterApp(data.data.mergedData);
       });
+
+    fetch(baseUrl("/office/get-letters-me"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data
+          ? setDataLetterAppMe([])
+          : setDataLetterAppMe(data.data.mergedData);
+      });
   }, []);
+
+  const changeHandlerConfirm = (e) => {
+    setDataLetter({ ...dataLetter, isSignNeed: e.value });
+  };
 
   function printDiv(divClass) {
     var printContents = document.getElementById(divClass).innerHTML;
@@ -1064,7 +1085,6 @@ const pageOffice = () => {
       .then((response) => response.json())
       .then((data) => {
         !data.data ? setDataChart([]) : setDataChart(data.data.dataGet);
-
       });
   }, []);
 
@@ -1297,13 +1317,25 @@ const pageOffice = () => {
                 مرخصی ها
                 <LuChevronLeft />
               </span>
-              <span
-                onClick={handleShowOrgChart}
-                className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
-              >
-                چارت سازمانی
-                <LuChevronLeft />
-              </span>
+              {getCookieAccess == "1" ? (
+                <span
+                  onClick={handleShowOrgChart}
+                  className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
+                >
+                  چارت سازمانی
+                  <LuChevronLeft />
+                </span>
+              ) : getCookieAccess == "2" ? (
+                <span
+                  onClick={handleShowOrgChart}
+                  className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
+                >
+                  چارت سازمانی
+                  <LuChevronLeft />
+                </span>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <div className="w-4/5">
@@ -1394,7 +1426,7 @@ const pageOffice = () => {
                       <div role="tabpanel" className="tab-content px-3 py-3">
                         <TableAfra
                           type={"green"}
-                          data={dataLetterApp.map((data) => ({
+                          data={dataLetterAppMe.map((data) => ({
                             name: !data.subject ? "-" : data.subject,
 
                             creator: !data.adminUserName
@@ -1550,6 +1582,22 @@ const pageOffice = () => {
                               درصورتی که به شماره نامه اختصاصی نیاز دارید آن را
                               درون کادر زیر تاریخ وارد کنید
                             </Tag>
+                            <span className="w-full mt-1">
+                              <SelectCombo
+                                placeholder={"آیا نیاز به تائید دارد؟"}
+                                onChange={changeHandlerConfirm}
+                                options={[
+                                  {
+                                    label: "بله",
+                                    value: "1",
+                                  },
+                                  {
+                                    label: "خیر",
+                                    value: "0",
+                                  },
+                                ]}
+                              />
+                            </span>
                           </div>
                           <div></div>
                           <div></div>
@@ -1617,7 +1665,7 @@ const pageOffice = () => {
                                 : data.birth,
 
                             phone: !data.phone ? "-" : data.phone,
-                            sign: data.signStatus=="1" ? data.signCode : "-",
+                            sign: data.signStatus == "1" ? data.signCode : "-",
                             userName: !data.userName ? "-" : data.userName,
                             role: !data.role ? "-" : data.role,
                             access: !data.access
@@ -2040,110 +2088,234 @@ const pageOffice = () => {
               ""
             )}
 
-            {showChartOrg ? (
-              <CardStat
-                type={"10"}
-                title={"چارت سازمانی"}
-                des={"چارت سازمانی خود را در این بخش مشاهده کنید"}
-                data={
-                  <>
-                    <div className="w-full" dir="rtl">
-                      <div
-                        role="tablist"
-                        className="tabs w-full grid-cols-7 tabs-bordered"
-                      >
-                        <input
-                          type="radio"
-                          name="my_tabs_1"
-                          role="tab"
-                          className="tab"
-                          aria-label="مشاهده چارت"
-                          defaultChecked
-                        />
+            {getCookieAccess == "1" ? (
+              showChartOrg ? (
+                <CardStat
+                  type={"10"}
+                  title={"چارت سازمانی"}
+                  des={"چارت سازمانی خود را در این بخش مشاهده کنید"}
+                  data={
+                    <>
+                      <div className="w-full" dir="rtl">
                         <div
-                          role="tabpanel"
-                          dir="ltr"
-                          className="tab-content px-3 py-3"
+                          role="tablist"
+                          className="tabs w-full grid-cols-7 tabs-bordered"
                         >
-                          {dataChart.length == 0 ? (
-                            <>
-                              <div className="w-full h-full flex justify-center items-center">
-                                موردی وجود ندارد
-                              </div>
-                            </>
-                          ) : (
-                            <OrganizationChartData data={dataChart} />
-                          )}
-                        </div>
-                        <input
-                          type="radio"
-                          name="my_tabs_1"
-                          role="tab"
-                          className="tab"
-                          aria-label="ایجاد چارت"
-                        />
-                        <div role="tabpanel" className="tab-content px-3 py-3">
-                          <div className="w-full grid grid-cols-1 gap-3">
-                            <Tag color="red" className="p-1">
-                              *نکته : برای افزودن زیر مجموعه به یک شخص ، شخص
-                              مورد نظر را از نمودار درختی پائین انتخاب کنید.
-                            </Tag>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="مشاهده چارت"
+                            defaultChecked
+                          />
+                          <div
+                            role="tabpanel"
+                            dir="ltr"
+                            className="tab-content px-3 py-3"
+                          >
+                            {dataChart.length == 0 ? (
+                              <>
+                                <div className="w-full h-full flex justify-center items-center">
+                                  موردی وجود ندارد
+                                </div>
+                              </>
+                            ) : (
+                              <OrganizationChartData data={dataChart} />
+                            )}
+                          </div>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="ایجاد چارت"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
+                            <div className="w-full grid grid-cols-1 gap-3">
+                              <Tag color="red" className="p-1">
+                                *نکته : برای افزودن زیر مجموعه به یک شخص ، شخص
+                                مورد نظر را از نمودار درختی پائین انتخاب کنید.
+                              </Tag>
 
-                            <div className="w-full grid grid-cols-4 gap-3 items-end">
-                              <SelectCombo
-                                onChange={changeUserHandler}
-                                placeholder={"انتخاب پرسنل"}
-                                options={dataPersonelAppChart.map((k) => ({
-                                  label: k.name + " " + k.lastName,
-                                  value: k._id,
-                                }))}
-                              />
-                              <InputCom
-                                onChenge={changeInpHandler}
-                                type={"req"}
-                                placeholder={"سمت"}
-                              />
-                              <ButtonAfra
-                                showLoad={showLoad3}
-                                onClick={addChart}
-                                type={"green"}
-                                text={"ثبت در چارت"}
-                              />
-                              <ButtonAfra type={"blue-dark"} text={"انصراف"} />
-                            </div>
-                            <div className="w-full">
-                              {dataChart.length == 0 ? (
-                                <>
-                                  <div className="w-full h-full mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 overflow-auto section-layout justify-center items-center ">
-                                    موردی وجود ندارد
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 h-full overflow-auto section-layout">
-                                  <DirectoryTree
-                                    multiple
-                                    defaultExpandAll
-                                    onSelect={onSelectUser}
-                                    treeData={dataChart.map((data) => ({
-                                      title: data.title,
-                                      key: data._id,
-                                      children: data.children.map((data) => ({
+                              <div className="w-full grid grid-cols-4 gap-3 items-end">
+                                <SelectCombo
+                                  onChange={changeUserHandler}
+                                  placeholder={"انتخاب پرسنل"}
+                                  options={dataPersonelAppChart.map((k) => ({
+                                    label: k.name + " " + k.lastName,
+                                    value: k._id,
+                                  }))}
+                                />
+                                <InputCom
+                                  onChenge={changeInpHandler}
+                                  type={"req"}
+                                  placeholder={"سمت"}
+                                />
+                                <ButtonAfra
+                                  showLoad={showLoad3}
+                                  onClick={addChart}
+                                  type={"green"}
+                                  text={"ثبت در چارت"}
+                                />
+                                <ButtonAfra
+                                  type={"blue-dark"}
+                                  text={"انصراف"}
+                                />
+                              </div>
+                              <div className="w-full">
+                                {dataChart.length == 0 ? (
+                                  <>
+                                    <div className="w-full h-full mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 overflow-auto section-layout justify-center items-center ">
+                                      موردی وجود ندارد
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 h-full overflow-auto section-layout">
+                                    <DirectoryTree
+                                      multiple
+                                      defaultExpandAll
+                                      onSelect={onSelectUser}
+                                      treeData={dataChart.map((data) => ({
                                         title: data.title,
                                         key: data._id,
-                                        children: data.children,
-                                      })),
-                                    }))}
-                                  />
-                                </div>
-                              )}
+                                        children: data.children.map((data) => ({
+                                          title: data.title,
+                                          key: data._id,
+                                          children: data.children,
+                                        })),
+                                      }))}
+                                    />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                }
-              />
+                    </>
+                  }
+                />
+              ) : (
+                ""
+              )
+            ) : getCookieAccess == "2" ? (
+              showChartOrg ? (
+                <CardStat
+                  type={"10"}
+                  title={"چارت سازمانی"}
+                  des={"چارت سازمانی خود را در این بخش مشاهده کنید"}
+                  data={
+                    <>
+                      <div className="w-full" dir="rtl">
+                        <div
+                          role="tablist"
+                          className="tabs w-full grid-cols-7 tabs-bordered"
+                        >
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="مشاهده چارت"
+                            defaultChecked
+                          />
+                          <div
+                            role="tabpanel"
+                            dir="ltr"
+                            className="tab-content px-3 py-3"
+                          >
+                            {dataChart.length == 0 ? (
+                              <>
+                                <div className="w-full h-full flex justify-center items-center">
+                                  موردی وجود ندارد
+                                </div>
+                              </>
+                            ) : (
+                              <OrganizationChartData data={dataChart} />
+                            )}
+                          </div>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="ایجاد چارت"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
+                            <div className="w-full grid grid-cols-1 gap-3">
+                              <Tag color="red" className="p-1">
+                                *نکته : برای افزودن زیر مجموعه به یک شخص ، شخص
+                                مورد نظر را از نمودار درختی پائین انتخاب کنید.
+                              </Tag>
+
+                              <div className="w-full grid grid-cols-4 gap-3 items-end">
+                                <SelectCombo
+                                  onChange={changeUserHandler}
+                                  placeholder={"انتخاب پرسنل"}
+                                  options={dataPersonelAppChart.map((k) => ({
+                                    label: k.name + " " + k.lastName,
+                                    value: k._id,
+                                  }))}
+                                />
+                                <InputCom
+                                  onChenge={changeInpHandler}
+                                  type={"req"}
+                                  placeholder={"سمت"}
+                                />
+                                <ButtonAfra
+                                  showLoad={showLoad3}
+                                  onClick={addChart}
+                                  type={"green"}
+                                  text={"ثبت در چارت"}
+                                />
+                                <ButtonAfra
+                                  type={"blue-dark"}
+                                  text={"انصراف"}
+                                />
+                              </div>
+                              <div className="w-full">
+                                {dataChart.length == 0 ? (
+                                  <>
+                                    <div className="w-full h-full mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 overflow-auto section-layout justify-center items-center ">
+                                      موردی وجود ندارد
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="mt-3 lg:w-full sm:w-full flex flex-col gap-4 rounded-lg p-3 bg-white border border-zinc-300 h-full overflow-auto section-layout">
+                                    <DirectoryTree
+                                      multiple
+                                      defaultExpandAll
+                                      onSelect={onSelectUser}
+                                      treeData={dataChart.map((data) => ({
+                                        title: data.title,
+                                        key: data._id,
+                                        children: data.children.map((data) => ({
+                                          title: data.title,
+                                          key: data._id,
+                                          children: data.children,
+                                        })),
+                                      }))}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  }
+                />
+              ) : (
+                ""
+              )
             ) : (
               ""
             )}
@@ -2238,7 +2410,11 @@ const pageOffice = () => {
                 buttons={
                   <>
                     <div className="w-full items-end flex gap-3 ">
-                      {getCookieAccess == "1" ? (
+                      {isSignNeed == "1" ? (
+                        <div className="w-[150px]">
+                          <ButtonAfra type={"blue"} text={"بدون نیاز تائید"} />
+                        </div>
+                      ) : getCookieAccess == "1" ? (
                         <div
                           className={`w-[500px] ${factorStatus == "true" ? "invisible" : ""} flex gap-3 items-end`}
                         >
@@ -2258,12 +2434,20 @@ const pageOffice = () => {
                         ""
                       )}
 
-                      <div className="flex items-end gap-3 w-[300px]">
+                      <div className="flex items-end gap-3 w-[450px]">
                         <ButtonAfra
                           text={"پرینت"}
                           onClick={() => printDiv("print-letter")}
                           type={"green"}
                         />
+                        <a
+                          href={downloadLink}
+                          target="_blank"
+                          className="w-full"
+                        >
+                          <ButtonAfra text={"دانلود پیوست"} type={"blue"} />
+                        </a>
+
                         <ButtonAfra
                           text={"بازگشت"}
                           onClick={showLetterPage}
