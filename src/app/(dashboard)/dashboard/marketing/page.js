@@ -346,6 +346,14 @@ const MarketingPage = () => {
                                   col={10}
                                   placeholder={"متن پیام"}
                                 />
+                                 <div className="mt-3 w-1/3 ">
+                                  <ButtonAfra
+                                    type={"green"}
+                                    text={"ثبت نهایی و ارسال"}
+                                    onClick={sendSMSFinal}
+                                    showLoad={showLoadMessage}
+                                  />
+                                </div>
                               </div>
                             </div>
                             <div className="w-1/4 h-full mt-6 overflow-auto section-layout border border-zinc-200 rounded-lg">
@@ -363,7 +371,7 @@ const MarketingPage = () => {
                                 </h2>
 
                                 <ul className=" absolute bottom-[4.5rem] top-14 w-full">
-                                  {customerData.map((user) => (
+                                  {customerData.filter((l)=>l.phone).map((user) => (
                                     // <li key={user._id}>
                                     //   <label className="w-full border-b border-b-zinc-300 h-[45px] flex justify-between items-center">
                                     //     <span className="text-[16px] h-[45px] flex  justify-between items-center text-zinc-800 ">
@@ -405,14 +413,7 @@ const MarketingPage = () => {
                                     </li>
                                   ))}
                                 </ul>
-                                <div className="mt-auto w-full absolute bottom-3 px-3">
-                                  <ButtonAfra
-                                    type={"green"}
-                                    text={"ثبت نهایی و ارسال"}
-                                    onClick={sendSMSFinal}
-                                    showLoad={showLoadMessage}
-                                  />
-                                </div>
+                               
                               </div>
                             </div>
                           </div>

@@ -1,7 +1,7 @@
 import "./globals.css";
 // import "antd/dist/antd.css";
 import "react-tabs/style/react-tabs.css";
-import "@mobiscroll/react/dist/css/mobiscroll.min.css";
+
 
 import "swiper/css";
 

@@ -37,32 +37,26 @@
 // export default NotFound;
 "use client";
 import ButtonAfra from "@/app/components/modules/Buttons";
-import animationData from "../lottie/404.json";
+
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import error1 from "../../public/image/error.png";
-import Lottie from "react-lottie";
+import notFoundImage from "../../public/image/404.svg";
+
 const error = () => {
   const router = useRouter();
   const GoDashboard = () => {
     location.replace("/dashboard");
   };
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  
 
   return (
     <>
       <div className="bg-white absolute w-full flex justify-center items-center h-screen">
         <div className=" flex flex-col justify-center items-center w-[630px]  bg-[#FFFFFF] rounded-[24px] px-[57px] py-[60px]">
-          <Lottie options={defaultOptions} height={450} width={450} />
+          <Image src={notFoundImage} className="w-52 h-52"/>
           <div className="w-full  flex flex-col gap-3 rounded-[8px] pt-[10px] px-[106px] ">
             <div className="w-full flex flex-col gap-3 justify-center items-center pb-[10px] ">
               <span className=" text-3xl font-bold text-[var(--color-green)] text-center flex justify-center items-center  w-full ">

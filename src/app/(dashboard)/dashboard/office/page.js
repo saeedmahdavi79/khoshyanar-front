@@ -158,11 +158,11 @@ const pageOffice = () => {
       dataIndex: "birth",
       key: "birth",
     },
-    // {
-    //   title: "گروه کاری",
-    //   dataIndex: "role",
-    //   key: "role",
-    // },
+    {
+      title: "کد امضا",
+      dataIndex: "sign",
+      key: "sign",
+    },
 
     {
       title: "دسترسی",
@@ -420,6 +420,8 @@ const pageOffice = () => {
     _id: "",
     access: "",
     password: "",
+    signStatus: "",
+    signCode: "",
   });
 
   const changeHandlerUpdatePersonel = (e) => {
@@ -475,15 +477,18 @@ const pageOffice = () => {
     setLoadPersonel(true);
     setOpenPersonel(true);
 
+
     setDataPersonelUpdate({
       ...dataPersonelUpdate,
-      sex: "",
+      
       sex: data.sex,
       name: data.name,
       lastName: data.lastName,
       userName: data.userName,
       phone: data.phone,
       birth: data.birth,
+      signStatus: data.signStatus,
+      signCode: data.signCode,
       email: data.email,
       type: data.type,
       _id: data._id,
@@ -1052,13 +1057,14 @@ const pageOffice = () => {
 
   useEffect(() => {
     const token = getCookie("WuZiK");
-    fetch(baseUrl("/auth/get-chart"), {
+    fetch(baseUrl("/office/get-chart"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
+        !data.data ? setDataChart([]) : setDataChart(data.data.dataGet);
+
       });
   }, []);
 
@@ -1611,7 +1617,7 @@ const pageOffice = () => {
                                 : data.birth,
 
                             phone: !data.phone ? "-" : data.phone,
-
+                            sign: data.signStatus=="1" ? data.signCode : "-",
                             userName: !data.userName ? "-" : data.userName,
                             role: !data.role ? "-" : data.role,
                             access: !data.access

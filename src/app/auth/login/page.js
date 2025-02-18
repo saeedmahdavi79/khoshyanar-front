@@ -13,7 +13,6 @@ import DialogPopup from "@/app/components/modules/Dialog";
 import { setCookie } from "cookies-next";
 import baseUrl from "@/utils/baseUrl";
 import CardStat from "@/app/components/modules/Card";
-import Lottie from "react-lottie";
 import animationData from "../../../lottie/login.json";
 import ImageLogo from "../../../../public/image/afrapardaz.png";
 import LogoImage from "../../../../public/image/text-logo.png";
@@ -37,14 +36,7 @@ export default function Auth() {
 
   //router
   const router = useRouter();
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [dialogType, setDialogType] = useState("1");
   const [dialogTitle, setDialogTitle] = useState("مشکلی پیش آمد");

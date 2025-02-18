@@ -1,8 +1,6 @@
 "use client";
 import Image from "next/image";
-import ImageLogo from "@/../../public/image/crm.png";
 
-import { HiRocketLaunch } from "react-icons/hi2";
 
 //iconNew
 import { LuAlignJustify, LuCircle, LuMenu } from "react-icons/lu";
@@ -40,15 +38,14 @@ import TopImage from "../../../../../public/image/afrapardaz.png";
 import TopImageSquare from "../../../../../public/image/square-logo.png";
 import ImageNotFound from "../../../../../public/image/404.svg";
 
-import { Children, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import baseUrl from "@/utils/baseUrl";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import SelectCombo from "../../modules/SelectCombo";
 import ButtonAfra from "../../modules/Buttons";
-import Lottie from "react-lottie";
-import animationData from "../../../../lottie/login.json";
+
 import { LuCoins } from "react-icons/lu";
 import { LuCreditCard } from "react-icons/lu";
 import { PiHandshakeLight } from "react-icons/pi";
@@ -140,14 +137,7 @@ const HeaderDashboard = ({ child }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
-  const defaultOptions = {
-    loop: false,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+
 
   const [collapsed, setCollapsed] = useState(false);
   const [sidebar, setSideBar] = useState("w-full");
@@ -388,9 +378,9 @@ const HeaderDashboard = ({ child }) => {
   const [dateShow, setDateShow] = useState("");
 
   //router
-  const router = useRouter();
-  const routerPath = usePathname();
-  let alertPackage;
+  // const router = useRouter();
+  // const routerPath = usePathname();
+  // let alertPackage;
 
   useEffect(() => {
     //url tab select
@@ -444,35 +434,7 @@ const HeaderDashboard = ({ child }) => {
 
   return (
     <>
-      {/* {routerPath == "/dashboard/premium" ||
-      routerPath == "/dashboard/premium/payment/callback" ? (
-        ""
-      ) : isPremium ? (
-        <div className="w-full fixed top-0 bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.85)] flex justify-center items-center z-[99999999]">
-          <div className="w-2/4 px-3 pr-16 bg-white h-[550px] rounded-xl flex justify-center items-center">
-            <div className="w-1/2 flex flex-col gap-5">
-              <span className="font-bold text-2xl">
-                پایان اعتبار نسخه آزمایشی
-              </span>
-              <span className="font-normal text-justify text-gray-400 text-lg">
-                مهلت استفاده شما از نسخه آزمایشی به پایان رسید ، لطفا جهت
-                استفاده از تمامی خدمات نرم افزار نرم افزار خود را به
-                <span className="font-bold"> نسخه پرمیوم</span> ارتقا دهید.
-              </span>
-              <div className="w-[200px]">
-                <Link href="/dashboard/premium">
-                  <ButtonAfra type={"green"} text={"ارتقا به نسخه پرمیوم"} />
-                </Link>
-              </div>
-            </div>
-            <div className="w-1/2">
-              <Lottie options={defaultOptions} height={380} width={380} />
-            </div>
-          </div>
-        </div>
-      ) : (
-        ""
-      )} */}
+     
 
       <div
         className={`z-[9999999] transition-all duration-300 fixed top-0 bottom-0 left-0 right-0 bg-white ${loadingShow} justify-center items-center`}
