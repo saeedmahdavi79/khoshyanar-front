@@ -634,32 +634,28 @@ const Header2 = ({
 
             {/* آمار */}
 
-            {userAccess == "1" ? (
-              <a className="w-full" href="/dashboard/messenger">
-                <div className="flex  w-full   items-center cursor-pointer ">
-                  <div
-                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.message.pointer}`}
-                  ></div>
-                  <div
-                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.message.bg} flex ${sideBarJustify} items-center rounded-md`}
-                  >
-                    <div className="flex gap-4 items-center justify-center">
-                      <span
-                        className={`text-[16px] ${hideText} ${state.message.font} ${state.message.text}`}
-                      >
-                        پیام رسان داخلی
-                      </span>
-                    </div>
-                    <Message01Icon
-                      style={{ color: state.message.icon }}
-                      size={"1.2rem"}
-                    />
+            <a className="w-full" href="/dashboard/messenger">
+              <div className="flex  w-full   items-center cursor-pointer ">
+                <div
+                  className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.message.pointer}`}
+                ></div>
+                <div
+                  className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.message.bg} flex ${sideBarJustify} items-center rounded-md`}
+                >
+                  <div className="flex gap-4 items-center justify-center">
+                    <span
+                      className={`text-[16px] ${hideText} ${state.message.font} ${state.message.text}`}
+                    >
+                      پیام رسان داخلی
+                    </span>
                   </div>
+                  <Message01Icon
+                    style={{ color: state.message.icon }}
+                    size={"1.2rem"}
+                  />
                 </div>
-              </a>
-            ) : (
-              ""
-            )}
+              </div>
+            </a>
 
             {userAccess == "1" ? (
               <a className="w-full" href="/dashboard/facilities">

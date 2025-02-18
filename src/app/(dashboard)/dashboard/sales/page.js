@@ -252,6 +252,8 @@ const sales = () => {
 
   const addCustomer = () => {
     const getCookies = getCookie("WuZiK");
+    const tokenTak = getCookie("TakSess");
+
     setLoadCustomer(true);
 
     fetch(baseUrl("/contact/create-customer"), {
@@ -281,6 +283,7 @@ const sales = () => {
         lon,
         lat,
         phone,
+        tokenTak,
       }),
     })
       .then((response) => response.json())
