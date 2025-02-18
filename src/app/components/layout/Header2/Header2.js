@@ -320,7 +320,7 @@ const Header2 = ({
                       <span
                         className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
                       >
-                        مکاتبات من
+                        مکاتبات و مرخصی ها
                       </span>
                     </div>
                     <OfficeIcon
