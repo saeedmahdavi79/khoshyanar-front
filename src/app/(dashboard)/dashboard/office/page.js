@@ -873,6 +873,8 @@ const pageOffice = () => {
 
   const [reasonLeave, setReasonleave] = useState("");
   const [timeLeave, setTimeleave] = useState("");
+  const [time1Leave, setTime1leave] = useState("");
+
   const [typeLeave, setTypeleave] = useState("");
   const [dataLeaves, setDataLeaves] = useState([]);
   const [showLoadLeave, setShowLoadLeave] = useState(false);
@@ -909,6 +911,10 @@ const pageOffice = () => {
     let fullDate = e.$jy + "-" + (e.$jM + 1) + "-" + e.$jD;
     setTimeleave(fullDate);
   };
+  const claendarLeaveStartHandler = (e) => {
+    let fullDate = e.$jy + "-" + (e.$jM + 1) + "-" + e.$jD;
+    setTime1leave(fullDate);
+  };
 
   const typeLeaveHandler = (e) => {
     setTypeleave(e.label);
@@ -926,6 +932,7 @@ const pageOffice = () => {
         des: reasonLeave,
         length: timeLeave,
         type: typeLeave,
+        startDate: time1Leave,
       }),
     })
       .then((response) => response.json())
@@ -1957,7 +1964,8 @@ const pageOffice = () => {
                                 name: newPRD.requesterName,
                                 res: newPRD.des,
                                 type: newPRD.type,
-                                time: newPRD.length,
+                                time: newPRD.startDate,
+                                time2: newPRD.length,
                                 stat:
                                   newPRD.status == "false"
                                     ? "تائید نشده"
@@ -1995,9 +2003,15 @@ const pageOffice = () => {
                                   sorter: true,
                                 },
                                 {
-                                  title: "مدت مرخصی",
+                                  title: "شروع مرخصی",
                                   dataIndex: "time",
                                   key: "time",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "پایان مرخصی",
+                                  dataIndex: "time2",
+                                  key: "time2",
                                   sorter: true,
                                 },
                                 {
@@ -2035,9 +2049,14 @@ const pageOffice = () => {
                             placeholder={"دلیل مرخصی"}
                           />
                           <InputCom
+                            onChenge={claendarLeaveStartHandler}
+                            type={"date"}
+                            placeholder={"تاریخ شروع مرخصی"}
+                          />
+                          <InputCom
                             onChenge={claendarLeaveHandler}
                             type={"date"}
-                            placeholder={"مدت مرخصی"}
+                            placeholder={"تاریخ پایان مرخصی"}
                           />
                           <SelectCombo
                             placeholder={"نوع مرخصی"}
@@ -2547,10 +2566,14 @@ const pageOffice = () => {
 
               <InputCom
                 type={"dis"}
-                value={"مدت مرخصی :" + " " + dataLeaveLoad.length}
+                value={"تاریخ شروع مرخصی :" + " " + dataLeaveLoad.startDate}
               />
             </div>
             <div className="w-full mt-3 flex flex-col gap-3">
+              <InputCom
+                type={"dis"}
+                value={"تاریخ پایان مرخصی :" + " " + dataLeaveLoad.length}
+              />
               <InputCom
                 type={"dis"}
                 value={"نوع مرخصی :" + " " + dataLeaveLoad.type}

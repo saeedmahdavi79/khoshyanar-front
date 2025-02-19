@@ -657,7 +657,7 @@ const Header2 = ({
               </div>
             </a>
 
-            {userAccess == "1" ? (
+            {userAccess == "1" || userAccess == "3" ? (
               <a className="w-full" href="/dashboard/facilities">
                 <div className="flex w-full   items-center cursor-pointer">
                   <div

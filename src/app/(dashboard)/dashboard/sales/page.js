@@ -746,6 +746,7 @@ const sales = () => {
   const [tableServerFrm, setTableDataServerFrm] = useState([]);
   const [selectedProductFrm, setSelectedProductFrm] = useState({});
   const [countData, setCountData] = useState("");
+  const [pricePrd, setPricePrd] = useState("");
 
   const changePrdHandler = (e) => {
     setSelectedProductFrm(e.data);
@@ -756,7 +757,7 @@ const sales = () => {
       name: selectedProductFrm.title,
       count: countData,
       vahed: selectedProductFrm.vahed,
-      price: selectedProductFrm.price,
+      price: pricePrd == "" ? 0 : pricePrd,
 
       opr: (
         <Tag
@@ -2310,15 +2311,22 @@ const sales = () => {
                             />
 
                             {getCookieAccessCustomer != 7 ? (
-                              <SelectCombo
-                                placeholder={"مشتری را انتخاب کنید"}
-                                options={customerData.map((i) => ({
-                                  value: i._id,
-                                  label: i.name,
-                                  data: i,
-                                }))}
-                                onChange={changeCustomerName}
-                              />
+                              <>
+                                <SelectCombo
+                                  placeholder={"مشتری را انتخاب کنید"}
+                                  options={customerData.map((i) => ({
+                                    value: i._id,
+                                    label: i.name,
+                                    data: i,
+                                  }))}
+                                  onChange={changeCustomerName}
+                                />
+                                <InputCom
+                                  onChenge={(e) => setPricePrd(e.target.value)}
+                                  type={"req"}
+                                  placeholder={"قیمت مخصوص این کالا برای مشتری"}
+                                />
+                              </>
                             ) : (
                               ""
                             )}
@@ -3444,6 +3452,9 @@ const sales = () => {
                   <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                     مقدار کالا
                   </div>
+                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    قیمت کالا
+                  </div>
                 </div>
 
                 {dataOrderDetail.products.map((data, index) => (
@@ -3459,6 +3470,9 @@ const sales = () => {
                     </div>
                     <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                       {data.count}
+                    </div>
+                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {separate(data.price) + " " + "ریال"}
                     </div>
                   </div>
                 ))}
@@ -3478,8 +3492,8 @@ const sales = () => {
                   </div>
                   <div className="w-1/3 flex flex-col">
                     <div className="flex">
-                      {/* <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                        جمع کل
+                      <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                        جمع کل با 10% ارزش افزوده
                       </div>
                       <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
                         {separate(
@@ -3490,14 +3504,20 @@ const sales = () => {
                                 parseInt(
                                   !transaction.price ? 0 : transaction.price
                                 ) *
-                                  parseInt(transaction.count)
+                                  parseInt(transaction.count) +
+                                ((accumulator +
+                                  parseInt(
+                                    !transaction.price ? 0 : transaction.price
+                                  ) *
+                                    parseInt(transaction.count)) *
+                                  10) /
+                                  100
                               );
                             },
                             0
                           )
                         ) + "ریال"}
                       </div>
-                      */}
                     </div>
                   </div>
                 </div>
