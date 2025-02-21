@@ -32,22 +32,22 @@ const InputCom = ({
   return (
     <>
       {type == "password" ? (
-       <div className="w-full flex flex-col gap-3">
-       <div className=" text-[#202224] text-[14px] font-bold">{legend}</div>
-       <div
-         className={`flex justify-center items-center p-[10px] w-full h-[45px] rounded-[8px] ${bgcolor} border border-[#D8D8D8]`}
-       >
-         <input
-         type={type}
-           value={value}
-           onChange={onChenge}
-           disabled={disabled}
-           name={name}
-           className="bg-inherit font-normal focus:outline-none w-full placeholder:font-normal text-black placeholder:text-[14px] text-[14px] placeholder:text-gray-400"
-           placeholder={placeholder}
-         />
-       </div>
-     </div>
+        <div className="w-full flex flex-col gap-3">
+          <div className=" text-[#202224] text-[14px] font-bold">{legend}</div>
+          <div
+            className={`flex justify-center items-center p-[10px] w-full h-[45px] rounded-[8px] ${bgcolor} border border-[#D8D8D8]`}
+          >
+            <input
+              type={type}
+              value={value}
+              onChange={onChenge}
+              disabled={disabled}
+              name={name}
+              className="bg-inherit font-normal focus:outline-none w-full placeholder:font-normal text-black placeholder:text-[14px] text-[14px] placeholder:text-gray-400"
+              placeholder={placeholder}
+            />
+          </div>
+        </div>
       ) : (
         ""
       )}

@@ -722,10 +722,68 @@ const pageOffice = () => {
 
       if (res.data.status == 200) {
         setDataLetter({ ...dataLetter, doc: upUrl(res.data.imageUrl) });
+
         Toast.fire({
           icon: "success",
           title: "با موفقیت آپلود شد",
         });
+      } else {
+        Toast.fire({
+          icon: "error",
+          title: "آپلود ناموفق",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [uploadedImageS, setUploadedImage] = useState(false);
+
+  const postHandlerAddSign = async (e) => {
+    try {
+      const token = getCookie("WuZiK");
+
+      const res = await axiosReq({
+        method: "post",
+        url: "/imageUpload/image",
+        data: { image: e.target.files[0] },
+        withCredentials: true,
+
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `bearer ${token}`,
+        },
+      });
+
+      if (res.data.status == 200) {
+        const token = getCookie("WuZiK");
+        setUploadedImage(upUrl(res.data.imageUrl));
+
+        const sendData = await fetch(baseUrl("/office/create-sign-image"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `bearer ${token}`,
+          },
+          body: JSON.stringify({
+            signImage: upUrl(res.data.imageUrl),
+            _id: showLoadUploadSignImageId,
+          }),
+        });
+        const getResponse = await sendData.json();
+
+        if (getResponse.status == 202) {
+          Toast.fire({
+            icon: "success",
+            title: "با موفقیت آپلود شد",
+          });
+
+          Toast.fire({
+            icon: "success",
+            title: "با موفقیت ثبت شد",
+          });
+        }
       } else {
         Toast.fire({
           icon: "error",
@@ -1136,6 +1194,7 @@ const pageOffice = () => {
       body: JSON.stringify({
         signStatus: "1",
         _id: data._id,
+        signRole: "1",
       }),
     })
       .then((response) => response.json())
@@ -1149,6 +1208,33 @@ const pageOffice = () => {
         // console.log(data);
       });
   };
+
+  const addSignStatusManage = (data) => {
+    const token = getCookie("WuZiK");
+    fetch(baseUrl("/office/create-sign"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signStatus: "1",
+        _id: data._id,
+        signRole: "2",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithUpdateSign("success");
+          personelRefresh();
+        } else {
+          openNotificationWithUpdateSign2("error");
+        }
+        // console.log(data);
+      });
+  };
+
   const removeSignStatus = (data) => {
     const token = getCookie("WuZiK");
     fetch(baseUrl("/office/create-sign"), {
@@ -1173,6 +1259,74 @@ const pageOffice = () => {
         // console.log(data);
       });
   };
+
+  const [showLoadUploadSignImage, setShowLoadSignImage] = useState(false);
+  const [showLoadUploadSignImageId, setShowLoadSignImageId] = useState("");
+
+  const [showLoadUploadSignImageLoad, setShowLoadSignImageLoad] =
+    useState(false);
+
+  const showUploadModal = (data) => {
+    setShowLoadSignImage(true);
+    setShowLoadSignImageLoad(true);
+    setShowLoadSignImageId(data._id);
+    setTimeout(() => setShowLoadSignImageLoad(false), 2000);
+  };
+
+  // const uploadFile = async (e) => {
+  //   try {
+  //     const token = getCookie("WuZiK");
+
+  //     const res = await axiosReq({
+  //       method: "post",
+  //       url: "/imageUpload/image",
+  //       data: { image: e.fileList[0] },
+  //       withCredentials: true,
+
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //         Authorization: `bearer ${token}`,
+  //       },
+  //     });
+
+  //     if (res.data.status == 200) {
+  //       setDataLetter({ ...dataLetter, doc: upUrl(res.data.imageUrl) });
+  //       Toast.fire({
+  //         icon: "success",
+  //         title: "با موفقیت آپلود شد",
+  //       });
+  //     } else {
+  //       Toast.fire({
+  //         icon: "error",
+  //         title: "آپلود ناموفق",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const props = {
+  //   name: "file",
+  //   multiple: true,
+  //   //action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+  //   onChange(info) {
+  //     console.log(info);
+
+  //     // const { status } = info.file;
+  //     // if (status !== "uploading") {
+  //     //   console.log(info.file, info.fileList);
+  //     // }
+  //     // if (status === "done") {
+  //     //   message.success(`${info.file.name} file uploaded successfully.`);
+  //     // } else if (status === "error") {
+  //     //   message.error(`${info.file.name} file upload failed.`);
+  //     // }
+  //   },
+  //   onDrop(e) {
+  //     console.log("Dropped files", e.dataTransfer.files);
+  //   },
+  // };
 
   const [chartTitle, setChartTitle] = useState("");
   const [chartActor, setChartActor] = useState("");
@@ -1695,7 +1849,7 @@ const pageOffice = () => {
                               : data.createDate,
                             operation: (
                               <>
-                                <div className="w-full flex  justify-center items-center gap-3">
+                                <div className="w-full grid grid-cols-2  justify-center items-center gap-3">
                                   {getCookieAccess == "1" ? (
                                     <>
                                       {data.signStatus == "1" ? (
@@ -1707,13 +1861,33 @@ const pageOffice = () => {
                                           حذف حق امضا
                                         </Tag>
                                       ) : (
-                                        <Tag
-                                          onClick={() => addSignStatus(data)}
-                                          className="cursor-pointer"
-                                          color="green"
-                                        >
-                                          افزودن حق امضا
-                                        </Tag>
+                                        <>
+                                          <Tag
+                                            onClick={() =>
+                                              showUploadModal(data)
+                                            }
+                                            className="cursor-pointer"
+                                            color="volcano"
+                                          >
+                                            آپلود امضا فیزیکی
+                                          </Tag>
+                                          <Tag
+                                            onClick={() => addSignStatus(data)}
+                                            className="cursor-pointer"
+                                            color="green"
+                                          >
+                                            افزودن حق امضا سرپرست
+                                          </Tag>
+                                          <Tag
+                                            onClick={() =>
+                                              addSignStatusManage(data)
+                                            }
+                                            className="cursor-pointer"
+                                            color="green"
+                                          >
+                                            افزودن حق امضا مدیر بخش
+                                          </Tag>
+                                        </>
                                       )}
 
                                       <Tag
@@ -1847,7 +2021,10 @@ const pageOffice = () => {
                                 value: "4",
                                 label: "انبار",
                               },
-
+                              {
+                                value: "8",
+                                label: "تدارکات",
+                              },
                               {
                                 value: "6",
                                 label: "دسترسی محدود کارمندان",
@@ -2763,7 +2940,10 @@ const pageOffice = () => {
                     value: "4",
                     label: "انبار",
                   },
-
+                  {
+                    value: "8",
+                    label: "تدارکات",
+                  },
                   {
                     value: "6",
                     label: "دسترسی محدود کارمندان",
@@ -2771,6 +2951,49 @@ const pageOffice = () => {
                 ]}
               />
             </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal Show Detail Anbar */}
+      <Modal
+        title={
+          <div className="w-[90%] flex gap-3">
+            <p>آپلود امضا فیزیکی</p>
+          </div>
+        }
+        footer={
+          <div className="w-full flex gap-3 mt-5 items-end">
+            <ButtonAfra
+              onClick={() => setShowLoadSignImage(false)}
+              type={"blue-dark"}
+              text={"بستن"}
+            />
+          </div>
+        }
+        loading={showLoadUploadSignImageLoad}
+        open={showLoadUploadSignImage}
+        onCancel={() => setShowLoadSignImage(false)}
+      >
+        <div className="w-full flex flex-col gap-5 justify-start items-center">
+          <div className="mt-3 flex flex-col gap-2 w-full">
+            <div className="text-lg font-bold">آپلود امضا فیزیکی کاربر</div>
+            <div className="text-[12px] font-normal text-zinc-500">
+              شما میتوانید از این بخش امضا فیزیکی خود را در سامانه آپلود کنید
+            </div>
+
+            <div className="w-full h-[250px] bg-zinc-500 rounded-lg overflow-hidden">
+              <img
+                className="w-full h-full"
+                src={!uploadedImageS ? "/image/plc.png" : uploadedImageS}
+              />
+            </div>
+
+            <InputCom
+              onChenge={postHandlerAddSign}
+              type={"upload-2"}
+              placeholder={"انتخاب امضا"}
+            />
           </div>
         </div>
       </Modal>

@@ -21,19 +21,66 @@ import separate from "@/utils/3Ragham";
 import { LineChart, PieChart } from "@mui/x-charts";
 
 const produtionPage = () => {
-  const router = useRouter();
+  const [getCookieAccess, setGetAccess] = useState("");
+
   const [showName, setShowName] = useState(true);
   const [showPersonel, setPersonel] = useState(false);
   const [showLeave, setLeave] = useState(false);
   const [showFormalision, setShowFormalision] = useState(false);
   const [showPishbini, setShowPishbini] = useState(false);
   const [showAmar, setShowAmar] = useState(false);
+  const [showBroker, setShowBroker] = useState(false);
+
   const [handleActive, setHandleActive] = useState("sub-menu-active");
   const [handleActive2, setHandleActive2] = useState("sub-menu-deactive");
   const [handleActive3, setHandleActive3] = useState("sub-menu-deactive");
   const [handleActive4, setHandleActive4] = useState("sub-menu-deactive");
   const [handleActive5, setHandleActive5] = useState("sub-menu-deactive");
   const [handleActive6, setHandleActive6] = useState("sub-menu-deactive");
+  const [handleActive7, setHandleActive7] = useState("sub-menu-deactive");
+
+  useEffect(() => {
+    const getCookies = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.customer ? "10" : data.user.access);
+
+          if (data.user.access == "8") {
+            setShowName(false);
+            setPersonel(false);
+            setLeave(false);
+            setShowFormalision(false);
+            setShowPishbini(false);
+            setShowAmar(false);
+            setShowBroker(true);
+            setHandleActive("sub-menu-deactive");
+            setHandleActive2("sub-menu-deactive");
+            setHandleActive3("sub-menu-deactive");
+            setHandleActive4("sub-menu-deactive");
+            setHandleActive5("sub-menu-deactive");
+            setHandleActive6("sub-menu-deactive");
+            setHandleActive7("sub-menu-active");
+          }
+        }
+      });
+
+    fetch(baseUrl("/product/get"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setDatePrd([]) : setDatePrd(data.data.dataGet);
+      });
+  }, []);
 
   const handleShowName = () => {
     setShowName(true);
@@ -42,12 +89,14 @@ const produtionPage = () => {
     setShowFormalision(false);
     setShowPishbini(false);
     setShowAmar(false);
+    setShowBroker(false);
     setHandleActive("sub-menu-active");
     setHandleActive2("sub-menu-deactive");
     setHandleActive3("sub-menu-deactive");
     setHandleActive4("sub-menu-deactive");
     setHandleActive5("sub-menu-deactive");
     setHandleActive6("sub-menu-deactive");
+    setHandleActive7("sub-menu-deactive");
   };
 
   const handleShowPersonel = () => {
@@ -57,6 +106,8 @@ const produtionPage = () => {
     setShowFormalision(false);
     setShowPishbini(false);
     setShowAmar(false);
+    setShowBroker(false);
+    setHandleActive7("sub-menu-deactive");
     setHandleActive("sub-menu-deactive");
     setHandleActive2("sub-menu-active");
     setHandleActive3("sub-menu-deactive");
@@ -86,6 +137,8 @@ const produtionPage = () => {
     setShowFormalision(true);
     setShowPishbini(false);
     setShowAmar(false);
+    setShowBroker(false);
+    setHandleActive7("sub-menu-deactive");
     setHandleActive("sub-menu-deactive");
     setHandleActive2("sub-menu-deactive");
     setHandleActive3("sub-menu-deactive");
@@ -100,6 +153,8 @@ const produtionPage = () => {
     setShowFormalision(false);
     setShowPishbini(true);
     setShowAmar(false);
+    setShowBroker(false);
+    setHandleActive7("sub-menu-deactive");
     setHandleActive("sub-menu-deactive");
     setHandleActive2("sub-menu-deactive");
     setHandleActive3("sub-menu-deactive");
@@ -114,6 +169,9 @@ const produtionPage = () => {
     setShowFormalision(false);
     setShowPishbini(false);
     setShowAmar(true);
+    setShowBroker(false);
+    setHandleActive7("sub-menu-deactive");
+
     setHandleActive("sub-menu-deactive");
     setHandleActive2("sub-menu-deactive");
     setHandleActive3("sub-menu-deactive");
@@ -122,37 +180,26 @@ const produtionPage = () => {
     setHandleActive6("sub-menu-active");
   };
 
+  const handleShowBroker = () => {
+    setShowName(false);
+    setPersonel(false);
+    setLeave(false);
+    setShowFormalision(false);
+    setShowPishbini(false);
+    setShowAmar(false);
+    setShowBroker(true);
+    setHandleActive("sub-menu-deactive");
+    setHandleActive2("sub-menu-deactive");
+    setHandleActive3("sub-menu-deactive");
+    setHandleActive4("sub-menu-deactive");
+    setHandleActive5("sub-menu-deactive");
+    setHandleActive6("sub-menu-deactive");
+    setHandleActive7("sub-menu-active");
+  };
+
   const [datePrd, setDatePrd] = useState([]);
 
   //const getCookieAccess = getCookie("UiS");
-
-  const [getCookieAccess, setGetAccess] = useState("");
-
-  useEffect(() => {
-    const getCookies = getCookie("WuZiK");
-
-    fetch(baseUrl("/auth/get-user-data"), {
-      method: "GET",
-      headers: { Authorization: `Bearer ${getCookies}` },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        if (!data.user) {
-          location.replace("/auth/login");
-        } else {
-          setGetAccess(data.customer ? "10" : data.user.access);
-        }
-      });
-
-    fetch(baseUrl("/product/get"), {
-      method: "GET",
-      headers: { Authorization: `Bearer ${getCookies}` },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        !data.data ? setDatePrd([]) : setDatePrd(data.data.dataGet);
-      });
-  }, []);
 
   //Category
 
@@ -167,6 +214,7 @@ const produtionPage = () => {
   const [dataFactor, setDataFactor] = useState({});
   const [dataFormula, setDataFormula] = useState([]);
   const [dataToolid, setDataToolid] = useState([]);
+  const [dataBroker, setDataBroker] = useState([]);
 
   const [data2, setData2] = useState({
     title: "",
@@ -288,6 +336,15 @@ const produtionPage = () => {
       .then((response) => response.json())
       .then((data) => {
         !data.data ? setDataToolid([]) : setDataToolid(data.data.dataGet);
+      });
+
+    fetch(baseUrl("/contact/get-buy-broker"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setDataBroker([]) : setDataBroker(data.data.dataGet);
       });
   }, []);
 
@@ -1002,6 +1059,67 @@ const produtionPage = () => {
     setResidDate(fullDate);
   };
 
+  const [countKar, setCountKar] = useState("");
+  const [nameKar, setNameKar] = useState("");
+  const [priceKar, setPriceKAr] = useState("");
+  const [desKar, setDesKAr] = useState("");
+
+  const [tableDataKar, setTableDataKar] = useState([]);
+  const [tableDataServerKar, setTableDataServerKar] = useState([]);
+
+  const addProductToTableKar = () => {
+    const newProduct = {
+      name: nameKar,
+      count: countKar,
+      price: priceKar,
+      operation: (
+        <Tag
+          color="red"
+          className="cursor-pointer"
+          onClick={() => removeProductFromTableKar(selectedProduct._id)}
+        >
+          حذف
+        </Tag>
+      ),
+    };
+
+    const PrdServer = {
+      title: nameKar,
+      products: tableDataKar,
+      des: desKar,
+    };
+
+    setTableDataServerKar([...tableDataServerKar, PrdServer]);
+
+    setTableDataKar([...tableDataKar, newProduct]);
+  };
+
+  const sendPrdToServerKar = () => {
+    const getCookies = getCookie("WuZiK");
+
+    fetch(baseUrl("/contact/add-buy-broker"), {
+      method: "POST",
+      body: JSON.stringify({
+        title: nameKar,
+        products: tableDataKar,
+        des: desKar,
+      }),
+      headers: {
+        Authorization: `Bearer ${getCookies}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithIcon("success");
+          dataRefresh();
+        } else {
+          openNotificationWithIcon2("error");
+        }
+      });
+  };
+
   const addProductToTable = () => {
     const newProduct = {
       name: selectedProduct,
@@ -1031,6 +1149,12 @@ const produtionPage = () => {
     setTableDataServer([...tableDataServer, PrdServer]);
 
     setTableData([...tableData, newProduct]);
+  };
+
+  const removeProductFromTableKar = (id) => {
+    const updatedData = tableData.filter((item) => item.name !== id);
+    setTableDataKar(updatedData);
+    setTableDataServerKar(updatedData);
   };
 
   const removeProductFromTable = (id) => {
@@ -1297,6 +1421,52 @@ const produtionPage = () => {
     setHavaleId(data._id);
   };
 
+  const confirmFactorDarxast = () => {
+    const getCookies = getCookie("WuZiK");
+    setLoadEstelam(true);
+    fetch(baseUrl("/auth/sign-check"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getCookies}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signCode: signCode2,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 200) {
+          openNotificationWithIconSign("success");
+          setLoadEstelam(false);
+
+          fetch(baseUrl("/contact/confirm-order-broker"), {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${getCookies}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              _id: idStatus,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status == 202) {
+                openNotificationWithIconSignConf("success");
+                setOpenShowResid(false);
+                dataRefresh();
+              } else {
+                openNotificationWithSignConf2("error");
+              }
+            });
+        } else {
+          setLoadEstelam(false);
+          openNotificationWithSign2("error");
+        }
+      });
+  };
+
   const confirmFactorHavale = () => {
     const getCookies = getCookie("WuZiK");
     setLoadEstelam(true);
@@ -1405,6 +1575,14 @@ const produtionPage = () => {
       .then((response) => response.json())
       .then((data) => {
         !data.data ? setDataToolid([]) : setDataToolid(data.data.dataGet);
+      });
+    fetch(baseUrl("/contact/get-buy-broker"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? setDataBroker([]) : setDataBroker(data.data.dataGet);
       });
   };
 
@@ -1524,6 +1702,23 @@ const produtionPage = () => {
           setShowLoad5(false);
         }
       });
+  };
+
+  const [dataBrokerShow, setDataBrokerShow] = useState(false);
+  const [dataBrokerShowLoad, setDataBrokerShowLoad] = useState(false);
+  const [dataBrokerShowObj, setDataBrokerShowLoadObj] = useState({
+    products: [],
+  });
+  const [signCode2, setSignCode2] = useState("");
+  const [idStatus, setIdStatus] = useState("");
+
+  const showModalKharid = (data) => {
+    setDataBrokerShow(true);
+    setDataBrokerShowLoad(true);
+
+    setDataBrokerShowLoadObj(data);
+    setIdStatus(data._id);
+    setTimeout(() => setDataBrokerShowLoad(false), 2000);
   };
 
   //toolid
@@ -1758,6 +1953,7 @@ const produtionPage = () => {
               data.data.esfand,
             ]);
       });
+
     fetch(baseUrl("/formula/get-pish-count"), {
       method: "GET",
       headers: { Authorization: `Bearer ${getCookies}` },
@@ -1820,42 +2016,71 @@ const produtionPage = () => {
 
             <span className="text-[14px] mt-5">بخش های داخلی</span>
             <div className="w-full flex flex-col gap-3 mt-5">
-              <span
-                onClick={handleShowName}
-                className={`w-full cursor-pointer p-2 ${handleActive} flex justify-between items-center rounded-lg`}
-              >
-                کالاها
-                <LuChevronLeft />
-              </span>
-              <span
-                onClick={handleShowPersonel}
-                className={`w-full cursor-pointer p-2 ${handleActive2} flex justify-between items-center rounded-lg`}
-              >
-                انبارداری
-                <LuChevronLeft />
-              </span>
+              {getCookieAccess == "8" ? (
+                ""
+              ) : (
+                <span
+                  onClick={handleShowName}
+                  className={`w-full cursor-pointer p-2 ${handleActive} flex justify-between items-center rounded-lg`}
+                >
+                  کالاها
+                  <LuChevronLeft />
+                </span>
+              )}
+
+              {getCookieAccess == "8" ? (
+                ""
+              ) : (
+                <span
+                  onClick={handleShowPersonel}
+                  className={`w-full cursor-pointer p-2 ${handleActive2} flex justify-between items-center rounded-lg`}
+                >
+                  انبارداری
+                  <LuChevronLeft />
+                </span>
+              )}
+
+              {getCookieAccess == "8" ? (
+                ""
+              ) : (
+                <span
+                  onClick={handleShowFormolasion}
+                  className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
+                >
+                  فرمولاسیون
+                  <LuChevronLeft />
+                </span>
+              )}
+              {getCookieAccess == "8" ? (
+                ""
+              ) : (
+                <span
+                  onClick={handleShowPishbini}
+                  className={`w-full cursor-pointer p-2 ${handleActive5} flex justify-between items-center rounded-lg`}
+                >
+                  برنامه ریزی تولید
+                  <LuChevronLeft />
+                </span>
+              )}
 
               <span
-                onClick={handleShowFormolasion}
-                className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
+                onClick={handleShowBroker}
+                className={`w-full cursor-pointer p-2 ${handleActive7} flex justify-between items-center rounded-lg`}
               >
-                فرمولاسیون
+                درخواست خرید کارپرداز
                 <LuChevronLeft />
               </span>
-              <span
-                onClick={handleShowPishbini}
-                className={`w-full cursor-pointer p-2 ${handleActive5} flex justify-between items-center rounded-lg`}
-              >
-                برنامه ریزی تولید
-                <LuChevronLeft />
-              </span>
-              <span
-                onClick={handleShowAmar}
-                className={`w-full cursor-pointer p-2 ${handleActive6} flex justify-between items-center rounded-lg`}
-              >
-                گزارشات و آمارها
-                <LuChevronLeft />
-              </span>
+              {getCookieAccess == "8" ? (
+                ""
+              ) : (
+                <span
+                  onClick={handleShowAmar}
+                  className={`w-full cursor-pointer p-2 ${handleActive6} flex justify-between items-center rounded-lg`}
+                >
+                  گزارشات و آمارها
+                  <LuChevronLeft />
+                </span>
+              )}
             </div>
           </div>
           <div className="w-4/5">
@@ -3401,6 +3626,175 @@ const produtionPage = () => {
             ) : (
               ""
             )}
+
+            {showBroker ? (
+              <CardStat
+                type={"10"}
+                title={"لیست خرید کارپرداز"}
+                des={"لیست خرید کارپرداز خود را در این بخش ببینید"}
+                data={
+                  <>
+                    <div
+                      role="tablist"
+                      className="tabs w-full grid-cols-7 tabs-bordered"
+                    >
+                      <input
+                        type="radio"
+                        name="my_tabs_1"
+                        role="tab"
+                        className="tab"
+                        aria-label="لیست کل خرید ها"
+                        defaultChecked
+                      />
+                      <div role="tabpanel" className="tab-content px-3 py-3">
+                        <TableAfra
+                          type={"green"}
+                          data={dataBroker.map((visitor) => ({
+                            key: visitor._id,
+                            name: !visitor.title ? "-" : visitor.title,
+                            des: !visitor.code ? "-" : visitor.code,
+                            type: !visitor.adminName ? "-" : visitor.adminName,
+                            status: !visitor.status ? "-" : "تائید شده",
+                            operation: (
+                              <>
+                                <Tag
+                                  onClick={() => showModalKharid(visitor)}
+                                  color="green"
+                                >
+                                  مشاهده
+                                </Tag>
+                              </>
+                            ),
+                          }))}
+                          columns={[
+                            {
+                              title: "نام",
+                              dataIndex: "name",
+                              key: "name",
+                              sorter: true,
+                            },
+                            {
+                              title: "کد",
+                              dataIndex: "des",
+                              key: "des",
+                              sorter: true,
+                            },
+                            {
+                              title: "ایجاد کننده",
+                              dataIndex: "type",
+                              key: "type",
+                              sorter: true,
+                            },
+                            {
+                              title: "وضعیت",
+                              dataIndex: "status",
+                              key: "status",
+                              sorter: true,
+                            },
+
+                            {
+                              title: "عملیات",
+                              dataIndex: "operation",
+                              key: "operation",
+                              sorter: true,
+                            },
+                          ]}
+                        />
+                      </div>
+
+                      <input
+                        type="radio"
+                        name="my_tabs_1"
+                        role="tab"
+                        className="tab"
+                        aria-label="افزودن خرید"
+                      />
+                      <div role="tabpanel" className="tab-content px-3 py-3">
+                        <div className="w-full grid grid-cols-4 gap-3 items-end">
+                          <InputCom
+                            onChenge={(e) => setNameKar(e.target.value)}
+                            type={"req"}
+                            placeholder={"نام را وارد کنید"}
+                          />
+
+                          <InputCom
+                            onChenge={(e) => setCountKar(e.target.value)}
+                            type={"req"}
+                            placeholder={"تعداد را وارد کنید"}
+                          />
+                          <InputCom
+                            type={"req"}
+                            onChenge={(e) => setPriceKAr(e.target.value)}
+                            placeholder={"قیمت را وارد کنید"}
+                          />
+
+                          <div className="w-full flex gap-3 ">
+                            <ButtonAfra
+                              type={"green"}
+                              text={"ثبت"}
+                              onClick={addProductToTableKar}
+                            />
+                            <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col gap-3 ">
+                          <InputCom
+                            col={5}
+                            row={5}
+                            type={"textarea"}
+                            onChenge={(e) => setDesKAr(e.target.value)}
+                            placeholder={"توضیحات درخواست خرید"}
+                          />
+                        </div>
+                        <div className="w-full mt-3">
+                          <TableAfra
+                            data={tableDataKar}
+                            type={"green"}
+                            columns={[
+                              {
+                                title: "نام",
+                                dataIndex: "name",
+                                key: "name",
+                              },
+                              {
+                                title: "تعداد",
+                                dataIndex: "count",
+                                key: "count",
+                              },
+
+                              {
+                                title: "قیمت",
+                                dataIndex: "price",
+                                key: "price",
+                              },
+                              {
+                                title: "عملیات",
+                                dataIndex: "operation",
+                                key: "operation",
+                              },
+                            ]}
+                          />
+                        </div>
+
+                        <div className="w-full mt-3 flex justify-center">
+                          <div className="w-[350px] flex justify-center gap-3 ">
+                            <ButtonAfra
+                              type={"green"}
+                              showLoad={showLoadRecive}
+                              text={"ثبت نهایی درخواست"}
+                              onClick={sendPrdToServerKar}
+                            />
+                            <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                }
+              />
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>
@@ -4463,6 +4857,189 @@ const produtionPage = () => {
                   },
                 ]}
               />
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal Show Havale Factor */}
+      <Modal
+        className="modal-big-data-2"
+        title={
+          <div className="w-[90%] flex gap-3">
+            <p>نمایش درخواست</p>
+
+            {dataBrokerShowObj.status == "true" ? (
+              <Tag color="green">فاکتور تائید شده</Tag>
+            ) : (
+              <Tag color="red">فاکتور تائید نشده</Tag>
+            )}
+          </div>
+        }
+        footer={
+          <div className="w-full flex justify-center gap-3 items-end mt-3">
+            {getCookieAccess == "1" ? (
+              <div
+                className={`w-2/3 ${dataBrokerShowObj.status == "true" ? "hidden" : ""} flex gap-3 items-end`}
+              >
+                <InputCom
+                  onChenge={(e) => setSignCode2(e.target.value)}
+                  type={"req"}
+                  placeholder={"کد امضای اپراتور یا مدیر جهت تایید فاکتور"}
+                />
+                <ButtonAfra
+                  onClick={confirmFactorDarxast}
+                  type={"blue"}
+                  showLoad={loadEstelam}
+                  text={"استعلام و احراز اپراتور یا مدیر"}
+                />
+              </div>
+            ) : (
+              ""
+            )}
+
+            <div className="w-1/3 flex gap-3 items-end">
+              <ButtonAfra
+                onClick={() => printDiv("print-order")}
+                type={"green"}
+                text={"چاپ فاکتور"}
+              />
+              <ButtonAfra
+                onClick={() => setDataBrokerShow(false)}
+                type={"blue-dark"}
+                text={"بستن"}
+              />
+            </div>
+          </div>
+        }
+        loading={dataBrokerShowLoad}
+        open={dataBrokerShow}
+        onCancel={() => setDataBrokerShow(false)}
+      >
+        <div className="w-full flex flex-col gap-5 justify-start items-center">
+          <div className="mt-3 flex flex-col gap-2 w-full">
+            <div className="text-lg font-bold">درخواست خرید کالا</div>
+            <div className="text-[12px] font-normal text-zinc-500">
+              می توانید درخواست خرید را با جزئیات و کالا ها ببینید.
+            </div>
+
+            <div className="w-full mt-3 flex flex-col gap-3">
+              <Tag color="red">
+                *نکته : این فاکتور بدون تایید مدیر فاقد اعتبار و اهمیت می باشد
+              </Tag>
+              <Tag color="blue">
+                *نکته : کد امضای مدیر توسط سیستم برای مدیر ایجاد شده است، از بخش
+                تنظیمات قابل مشاهده است
+              </Tag>
+            </div>
+
+            <div className="w-full mt-3">
+              <div
+                id="print-order"
+                className="w-full print:border print:border-zinc-300 border flex flex-col border-zinc-300 h-fit "
+              >
+                <div className="w-full h-[60px] px-3 flex justify-center items-center">
+                  <h2 className="text-lg w-[99%] flex justify-center items-center font-bold">
+                    درخواست خرید
+                  </h2>
+                  <span className="w-[1%] flex justify-end">
+                    {new Date().toLocaleDateString("fa-ir")}
+                  </span>
+                </div>
+
+                <div className=" border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات کالا</span>
+                </div>
+                <div className=" border-zinc-300 w-full flex h-fit">
+                  <div className="w-14 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    ردیف
+                  </div>
+                  <div className="w-1/6 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]"></div>
+                  <div className="w-2/3 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    شرح کالا
+                  </div>
+                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    مقدار کالا
+                  </div>
+                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    قیمت کالا
+                  </div>
+                </div>
+
+                {dataBrokerShowObj.products.map((data, index) => (
+                  <div className=" border-zinc-300 w-full flex h-fit">
+                    <div className="w-14 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {index + 1}
+                    </div>
+                    <div className="w-1/6 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]"></div>
+                    <div className="w-2/3 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {data.name}
+                    </div>
+                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {data.count}
+                    </div>
+                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {separate(data.price) + " " + "ریال"}
+                    </div>
+                  </div>
+                ))}
+                <div className="  border-zinc-300 w-full flex h-fit">
+                  <div className="w-2/3 border-l border-zinc-300 flex flex-col justify-center p-3">
+                    <div className="w-full grid grid-cols-3 gap-3">
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className=" w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیرعامل</span>
+
+                          {dataBrokerShowObj.status == "true" ? (
+                            <span className="mx-auto">
+                              {dataBrokerShowObj.statusSignImage == "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataBrokerShowObj.statusSignImage
+                                      ? "#"
+                                      : dataBrokerShowObj.statusSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col">
+                    <div className="flex">
+                      <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                        جمع کل
+                      </div>
+                      <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                        {separate(
+                          dataBrokerShowObj.products.reduce(
+                            (accumulator, transaction) => {
+                              return (
+                                accumulator +
+                                parseInt(
+                                  !transaction.price ? 0 : transaction.price
+                                ) *
+                                  parseInt(transaction.count)
+                              );
+                            },
+                            0
+                          )
+                        ) + "ریال"}
+                      </div>
+                    </div>
+                    <div className="mt-2 p-3">
+                      توضیحات : {dataBrokerShowObj.des}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

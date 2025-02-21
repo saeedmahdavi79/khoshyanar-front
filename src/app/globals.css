@@ -933,6 +933,9 @@ table {
 .modal-big-data {
   width: 55% !important;
 }
+.modal-big-data-2 {
+  width: 70% !important;
+}
 .factor-tbl tbody > tr > td {
   font-size: 0.875em;
   vertical-align: middle;

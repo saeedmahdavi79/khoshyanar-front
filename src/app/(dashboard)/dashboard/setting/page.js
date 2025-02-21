@@ -8,14 +8,17 @@ import { HiOutlineBeaker } from "react-icons/hi2";
 import { HiOutlinePresentationChartLine } from "react-icons/hi2";
 import { useRouter } from "next/navigation";
 import { LuChevronLeft } from "react-icons/lu";
+import Swal from "sweetalert2";
+import { axiosReq } from "@/utils/axios";
 
 import ButtonAfra from "@/app/components/modules/Buttons";
 import InputCom from "@/app/components/modules/Inputs";
 import { Camera02Icon } from "hugeicons-react";
-import { Tag, notification } from "antd";
+import { Modal, Tag, notification } from "antd";
 import baseUrl from "@/utils/baseUrl";
 import { getCookie } from "cookies-next";
 import TableAfra from "@/app/components/modules/TableAfra";
+import upUrl from "@/utils/upUrl";
 
 const SettingPage = () => {
   const router = useRouter();
@@ -35,6 +38,18 @@ const SettingPage = () => {
     { title: "اعلانات و اطلاع رسانی" },
     { title: "همگام سازی با تکروسیستم" },
   ];
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
 
   const handleButton = (button) => {
     if (button == 3 || button == 4) {
@@ -369,6 +384,76 @@ const SettingPage = () => {
         }
       });
   };
+
+  const [showLoadUploadSignImage, setShowLoadSignImage] = useState(false);
+  const [showLoadUploadSignImageId, setShowLoadSignImageId] = useState("");
+
+  const [showLoadUploadSignImageLoad, setShowLoadSignImageLoad] =
+    useState(false);
+
+  const showUploadModal = () => {
+    setShowLoadSignImage(true);
+    setShowLoadSignImageLoad(true);
+
+    setTimeout(() => setShowLoadSignImageLoad(false), 2000);
+  };
+
+  const [uploadedImageS, setUploadedImage] = useState(false);
+
+  const postHandlerAddSign = async (e) => {
+    try {
+      const token = getCookie("WuZiK");
+
+      const res = await axiosReq({
+        method: "post",
+        url: "/imageUpload/image",
+        data: { image: e.target.files[0] },
+        withCredentials: true,
+
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `bearer ${token}`,
+        },
+      });
+
+      if (res.data.status == 200) {
+        const token = getCookie("WuZiK");
+        setUploadedImage(upUrl(res.data.imageUrl));
+
+        const sendData = await fetch(baseUrl("/auth/create-sign-image"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `bearer ${token}`,
+          },
+          body: JSON.stringify({
+            signImage: upUrl(res.data.imageUrl),
+          }),
+        });
+        const getResponse = await sendData.json();
+
+        if (getResponse.status == 202) {
+          Toast.fire({
+            icon: "success",
+            title: "با موفقیت آپلود شد",
+          });
+
+          Toast.fire({
+            icon: "success",
+            title: "با موفقیت ثبت شد",
+          });
+        }
+      } else {
+        Toast.fire({
+          icon: "error",
+          title: "آپلود ناموفق",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="w-full flex flex-col h-full px-6 gap-4 py-1">
@@ -478,6 +563,12 @@ const SettingPage = () => {
                           type={"req"}
                           value={dataSetting.phone}
                           placeholder={"شماره تلفن"}
+                        />
+
+                        <ButtonAfra
+                          type={"green"}
+                          text={"آپلود امضا فیزیکی"}
+                          onClick={showUploadModal}
                         />
 
                         <div className="w-full flex gap-3 ">
@@ -735,6 +826,50 @@ const SettingPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Show Detail Anbar */}
+      <Modal
+        title={
+          <div className="w-[90%] flex gap-3">
+            <p>آپلود امضا فیزیکی</p>
+          </div>
+        }
+        footer={
+          <div className="w-full flex gap-3 mt-5 items-end">
+            <ButtonAfra
+              onClick={() => setShowLoadSignImage(false)}
+              type={"blue-dark"}
+              text={"بستن"}
+            />
+          </div>
+        }
+        loading={showLoadUploadSignImageLoad}
+        open={showLoadUploadSignImage}
+        onCancel={() => setShowLoadSignImage(false)}
+      >
+        <div className="w-full flex flex-col gap-5 justify-start items-center">
+          <div className="mt-3 flex flex-col gap-2 w-full">
+            <div className="text-lg font-bold">آپلود امضا فیزیکی کاربر</div>
+            <div className="text-[12px] font-normal text-zinc-500">
+              شما میتوانید از این بخش امضا فیزیکی خود را در سامانه آپلود کنید
+            </div>
+
+            <div className="w-full h-[250px] bg-zinc-500 rounded-lg overflow-hidden">
+              <img
+                className="w-full h-full"
+                src={!uploadedImageS ? "/image/plc.png" : uploadedImageS}
+              />
+            </div>
+
+            <InputCom
+              onChenge={postHandlerAddSign}
+              type={"upload-2"}
+              placeholder={"انتخاب امضا"}
+            />
+          </div>
+        </div>
+      </Modal>
+
       {contextHolder}
     </>
   );

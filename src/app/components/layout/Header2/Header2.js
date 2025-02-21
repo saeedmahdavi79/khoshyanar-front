@@ -27,6 +27,7 @@ import { LuPaperclip } from "react-icons/lu";
 import { IoIosNotifications } from "react-icons/io";
 import { IoIosClose } from "react-icons/io";
 import {
+  Add02Icon,
   AiBeautifyIcon,
   AiBrain02Icon,
   AiChat01Icon,
@@ -122,13 +123,7 @@ const Header2 = ({
       icon: "#545555",
       font: "font-normal",
     },
-    tadarokat: {
-      pointer: "bg-white",
-      bg: "bg-white",
-      text: "text-[#545555]",
-      icon: "#545555",
-      font: "font-normal",
-    },
+
     mali: {
       pointer: "bg-white",
       bg: "bg-white",
@@ -201,6 +196,13 @@ const Header2 = ({
       icon: "#545555",
       font: "font-normal",
     },
+    tadarokat: {
+      pointer: "bg-white",
+      bg: "bg-white",
+      text: "text-[#545555]",
+      icon: "#545555",
+      font: "font-normal",
+    },
   });
 
   useEffect(() => {
@@ -218,12 +220,13 @@ const Header2 = ({
     const activeKey = {
       "/dashboard": "dashboard",
       "/dashboard/office": "bakhshEdari",
+      // "/dashboard/prodution": "tadarokat",
       "/dashboard/correspondence": "namehvamoktebat",
       "/dashboard/tasks": "taskManagement",
       "/dashboard/prodution": "bakhshtoolid",
       "/dashboard/sales": "bakhshFroosh",
       "/dashboard/addnewcontact": "bakhshFroosh", // اینجا اضافه شده
-      "/dashboard/logistics": "tadarokat",
+      // "/dashboard/logistics": "tadarokat",
       "/dashboard/setting": "setting",
       "/dashboard/afraai": "afraai",
       "/dashboard/facilities": "estelam",
@@ -459,6 +462,7 @@ const Header2 = ({
             )}
 
             {/* چت */}
+
             {userAccess == "1" ? (
               <a className="w-full" href="/dashboard/prodution">
                 <div className="flex  w-full   items-center cursor-pointer">
@@ -508,6 +512,34 @@ const Header2 = ({
             ) : (
               ""
             )}
+
+            {userAccess == "8" ? (
+              <a className="w-full" href="/dashboard/prodution">
+                <div className="flex  w-full  items-center cursor-pointer ">
+                  <div
+                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshtoolid.pointer}`}
+                  ></div>
+                  <div
+                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.bakhshtoolid.bg} flex ${sideBarJustify} items-center rounded-md`}
+                  >
+                    <div className="flex gap-4 items-center justify-center">
+                      <span
+                        className={`text-[16px] ${hideText} ${state.bakhshtoolid.font} ${state.bakhshtoolid.text}`}
+                      >
+                        تدارکات
+                      </span>
+                    </div>
+                    <Add02Icon
+                      style={{ color: state.bakhshtoolid.icon }}
+                      size={"1.2rem"}
+                    />
+                  </div>
+                </div>
+              </a>
+            ) : (
+              ""
+            )}
+
             {/* نظرات */}
             {userAccess == "1" ? (
               <>

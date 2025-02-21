@@ -747,6 +747,7 @@ const sales = () => {
   const [selectedProductFrm, setSelectedProductFrm] = useState({});
   const [countData, setCountData] = useState("");
   const [pricePrd, setPricePrd] = useState("");
+  const [desOrder, setDesOrder] = useState("");
 
   const changePrdHandler = (e) => {
     setSelectedProductFrm(e.data);
@@ -800,6 +801,7 @@ const sales = () => {
         title: "پیش فاکتور",
         products: tableFrm,
         id: dataIdCustomer,
+        des: desOrder,
       }),
       headers: {
         Authorization: `Bearer ${getCookies}`,
@@ -825,6 +827,7 @@ const sales = () => {
   const [dataOrderDetail, setDataOrderDetail] = useState({
     products: [],
   });
+  const [dataOrderDetailBuyer, setDataOrderDetailBuyer] = useState({});
   const [dataFactor, setDataFactor] = useState({});
   const [signCode, setSignCode] = useState("");
   const [orderId, setOrderId] = useState("");
@@ -897,6 +900,7 @@ const sales = () => {
     setOpenOrder(true);
     setOrderId(data._id);
     setDataOrderDetail(data);
+    setDataOrderDetailBuyer(data);
     setTimeout(() => setLoadOrder(false), 2000);
   };
 
@@ -941,29 +945,56 @@ const sales = () => {
                 }
               });
           } else {
-            openNotificationWithIconSign("success");
-            setLoadEstelam(false);
+            if (data.thatsOpSarparast == true) {
+              openNotificationWithIconSign("success");
+              setLoadEstelam(false);
 
-            fetch(baseUrl("/contact/confirm-order-operator"), {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${getCookies}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                _id: orderId,
-              }),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                if (data.status == 202) {
-                  openNotificationWithIconSignConf("success");
-                  setOpenOrder(false);
-                  dataRefresh();
-                } else {
-                  openNotificationWithSignConf2("error");
-                }
-              });
+              fetch(baseUrl("/contact/confirm-order-operator"), {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${getCookies}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  _id: orderId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status == 202) {
+                    openNotificationWithIconSignConf("success");
+                    setOpenOrder(false);
+                    dataRefresh();
+                  } else {
+                    openNotificationWithSignConf2("error");
+                  }
+                });
+            }
+            if (data.thatsOpModir == true) {
+              openNotificationWithIconSign("success");
+              setLoadEstelam(false);
+
+              fetch(baseUrl("/contact/confirm-order-operator-manage"), {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${getCookies}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  _id: orderId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status == 202) {
+                    openNotificationWithIconSignConf("success");
+                    setOpenOrder(false);
+                    dataRefresh();
+                  } else {
+                    openNotificationWithSignConf2("error");
+                  }
+                });
+            }
           }
         } else {
           setLoadEstelam(false);
@@ -2207,6 +2238,10 @@ const sales = () => {
                               name: i.title + " " + i.code,
                               code: i.code,
                               signOp:
+                                i.statusOpAdmin == "true"
+                                  ? i.statusOpUserAdmin
+                                  : "-",
+                              signSarparast:
                                 i.statusOp == "true" ? i.statusOpUser : "-",
                               signAdmin:
                                 i.status == "false"
@@ -2264,9 +2299,15 @@ const sales = () => {
                                 sorter: true,
                               },
                               {
-                                title: "امضا توسط",
+                                title: "امضا مدیر مالی",
                                 dataIndex: "signOp",
                                 key: "signOp",
+                                sorter: true,
+                              },
+                              {
+                                title: "امضا سرپرست",
+                                dataIndex: "signSarparast",
+                                key: "signSarparast",
                                 sorter: true,
                               },
                               {
@@ -2336,8 +2377,17 @@ const sales = () => {
                               type={"req"}
                               placeholder={"تعداد درخواستی"}
                             />
+                          </div>
+                          <div className="w-full">
+                            <InputCom
+                              type={"textarea"}
+                              row={10}
+                              col={20}
+                              onChenge={(e) => setDesOrder(e.target.value)}
+                              placeholder={"توضیحات سفارش"}
+                            />
 
-                            <div className="w-full flex gap-3">
+                            <div className="w-[300px] flex gap-3 mt-3">
                               <ButtonAfra
                                 onClick={addProductToTableFrm}
                                 type={"green"}
@@ -3327,7 +3377,7 @@ const sales = () => {
 
       {/* Modal Show Havale Factor */}
       <Modal
-        className="modal-big-data"
+        className="modal-big-data-2"
         title={
           <div className="w-[90%] flex gap-3">
             <p>نمایش فاکتور</p>
@@ -3419,20 +3469,44 @@ const sales = () => {
                   <span>مشخصات فروشنده</span>
                 </div>
                 <div className=" border-b px-3 border-zinc-300 w-full grid grid-cols-3 gap-3 justify-center items-center h-[120px]">
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 items-center">
                     <span>نام فروشنده : {dataFactor.sellerName}</span>
                     <span>شناسه ملی : {dataFactor.nationalCode} </span>
                     <span>نشانی : {dataFactor.address}</span>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 items-center">
                     <span>شماره اقتصادی : {dataFactor.bussinessNumber}</span>
                     <span> کد پستی : {dataFactor.postalCode}</span>
                     <span></span>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 items-center">
                     <span>شماره ثبت : {dataFactor.sabtNmuber}</span>
                     <span> فکس : {dataFactor.fax}</span>
                     <span>تلفن : {dataFactor.phone}</span>
+                  </div>
+                </div>
+                <div className="border-t border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات خریدار</span>
+                </div>
+                <div className=" border-b px-3 border-zinc-300 w-full grid grid-cols-3 gap-3 justify-center items-center h-[120px]">
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>نام خریدار : {dataOrderDetailBuyer.buyerName}</span>
+                    <span>
+                      شناسه ملی : {dataOrderDetailBuyer.nationalCode}{" "}
+                    </span>
+                    <span>نشانی : {dataOrderDetailBuyer.address}</span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>
+                      شماره اقتصادی : {dataOrderDetailBuyer.buissCode}
+                    </span>
+                    <span> کد پستی : {dataOrderDetailBuyer.postalCode}</span>
+                    <span></span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>شماره ثبت : {"-"}</span>
+                    <span> فکس : {"-"}</span>
+                    <span>تلفن : {dataOrderDetailBuyer.phone}</span>
                   </div>
                 </div>
 
@@ -3478,17 +3552,81 @@ const sales = () => {
                 ))}
                 <div className="  border-zinc-300 w-full flex h-fit">
                   <div className="w-2/3 border-l border-zinc-300 flex flex-col justify-center p-3">
-                    {/* <div className="w-full font-black text-[14px]">
-                      کالاهای فوق در تاریخ{" "}
-                      <span dir="ltr">
-                        {reciveDateHavale.replaceAll("-", "/")}
-                      </span>{" "}
-                      توسط{" "}
-                      <span className="mr-1 ml-1">
-                        {reciverDetailHavale + " "}
-                      </span>
-                      از انبار {anbarDetailHavale} خارج شده است.
-                    </div> */}
+                    <div className="w-full grid grid-cols-3 gap-3">
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا سرپرست</span>
+                          {dataOrderDetailBuyer.statusOp == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusOpUserSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusOpUserSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusOpUserSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیر مالی</span>
+
+                          {dataOrderDetailBuyer.statusOpAdmin == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusOpUserAdminSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96  h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusOpUserAdminSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusOpUserAdminSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className=" w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیرعامل</span>
+
+                          {dataOrderDetailBuyer.status == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusSignImage == "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="w-1/3 flex flex-col">
                     <div className="flex">
@@ -3518,6 +3656,9 @@ const sales = () => {
                           )
                         ) + "ریال"}
                       </div>
+                    </div>
+                    <div className="mt-2 p-3">
+                      توضیحات : {dataOrderDetailBuyer.des}
                     </div>
                   </div>
                 </div>
