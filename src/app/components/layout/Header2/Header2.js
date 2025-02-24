@@ -461,6 +461,34 @@ const Header2 = ({
               ""
             )}
 
+{userAccess == "3" ? (
+              <a className="w-full" href="/dashboard/prodution">
+                <div className="flex  w-full  items-center cursor-pointer ">
+                  <div
+                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshtoolid.pointer}`}
+                  ></div>
+                  <div
+                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.bakhshtoolid.bg} flex ${sideBarJustify} items-center rounded-md`}
+                  >
+                    <div className="flex gap-4 items-center justify-center">
+                      <span
+                        className={`text-[16px] ${hideText} ${state.bakhshtoolid.font} ${state.bakhshtoolid.text}`}
+                      >
+                        حواله خروج از انبار
+                      </span>
+                    </div>
+                    <Add02Icon
+                      style={{ color: state.bakhshtoolid.icon }}
+                      size={"1.2rem"}
+                    />
+                  </div>
+                </div>
+              </a>
+            ) : (
+              ""
+            )}
+
+
             {/* چت */}
 
             {userAccess == "1" ? (

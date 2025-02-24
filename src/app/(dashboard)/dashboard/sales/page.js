@@ -36,10 +36,41 @@ const sales = () => {
 
   const baseUrlState = "https://iran-locations-api.ir/api/v1/fa/states";
   //const getCookieAccess = getCookie("UiS");
-  const getCookieAccessCustomer = getCookie("CusI");
+  //const getCookieAccess = getCookie("CusI");
 
   const [api, contextHolder] = notification.useNotification();
   const [getCookieAccess, setGetAccess] = useState("");
+
+
+  useEffect(() => {
+    try {
+      fetch(baseUrl("/sync/get-states"), {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setStatesData(data.getStatesData);
+          setStatesDataHg(data.getStatesData);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+
+    const token = getCookie("WuZiK");
+
+    fetch(baseUrl("/auth/get-user-data"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (!data.user) {
+          location.replace("/auth/login");
+        } else {
+          setGetAccess(data.user.access);
+        }
+      });
+  }, []);
 
   const openNotificationWithIcon = (type) => {
     api[type]({
@@ -68,9 +99,9 @@ const sales = () => {
   };
 
   const [showFirstPage, setShowFirstPage] = useState(
-    getCookieAccessCustomer == "7" ? 2 : 0
+    getCookieAccess == "7" ? 2 : 0
   );
-  const [activButton, setActivButton] = useState(0);
+  const [activButton, setActivButton] = useState(getCookieAccess == "7" ? 2 : 0);
   const [statesData, setStatesData] = useState([]);
   const [cityDataShow, setCityDataShow] = useState([]);
 
@@ -82,37 +113,9 @@ const sales = () => {
     { title: "دفترچه مخاطبین" },
   ];
 
-  const filteredMenu = getCookieAccessCustomer === "7" ? menu.slice(2) : menu;
+  const filteredMenu = getCookieAccess == "7" ? menu.slice(2,3,4) : menu;
 
-  useEffect(() => {
-    try {
-      fetch(baseUrl("/sync/get-states"), {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setStatesData(data.getStatesData);
-          setStatesDataHg(data.getStatesData);
-        });
-    } catch (error) {
-      console.log(error);
-    }
 
-    const token = getCookie("WuZiK");
-
-    fetch(baseUrl("/auth/get-user-data"), {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        if (!data.user) {
-          location.replace("/auth/login");
-        } else {
-          setGetAccess(data.customer ? "10" : data.user.access);
-        }
-      });
-  }, []);
 
   const handleButton = (button) => {
     setActivButton(button);
@@ -2248,7 +2251,7 @@ const sales = () => {
                                   ? "تائید نشده"
                                   : "تائید مدیریت",
                               status:
-                                i.status == "false"
+                                i.statusOp == "false"
                                   ? "تائید نشده"
                                   : "تائید مدیریت",
                               cr: !i.creatorName ? i.adminName : i.creatorName,
@@ -2351,7 +2354,7 @@ const sales = () => {
                               onChange={changePrdHandler}
                             />
 
-                            {getCookieAccessCustomer != 7 ? (
+                            {getCookieAccess != 7 ? (
                               <>
                                 <SelectCombo
                                   placeholder={"مشتری را انتخاب کنید"}
@@ -3382,7 +3385,7 @@ const sales = () => {
           <div className="w-[90%] flex gap-3">
             <p>نمایش فاکتور</p>
 
-            {dataOrderDetail.status == "true" ? (
+            {dataOrderDetail.statusOp == "true" ? (
               <Tag color="green">فاکتور تائید شده</Tag>
             ) : (
               <Tag color="red">فاکتور تائید نشده</Tag>
@@ -3393,7 +3396,7 @@ const sales = () => {
           <div className="w-full flex justify-center gap-3 items-end mt-3">
             {getCookieAccess == "1" || getCookieAccess == "3" ? (
               <div
-                className={`w-2/3 ${dataOrderDetail.status == "true" ? "hidden" : ""} flex gap-3 items-end`}
+                className={`w-2/3 ${dataOrderDetail.statusOp == "true" ? "hidden" : ""} flex gap-3 items-end`}
               >
                 <InputCom
                   onChenge={(e) => setSignCode(e.target.value)}
@@ -3577,7 +3580,7 @@ const sales = () => {
                           )}
                         </div>
                       </div>
-                      <div className="flex justify-center items-center h-[200px]">
+                      {/* <div className="flex justify-center items-center h-[200px]">
                         <div className="border-l w-full h-full flex flex-col gap-3 ">
                           <span>امضا مدیر مالی</span>
 
@@ -3625,7 +3628,7 @@ const sales = () => {
                             "تائید نشده"
                           )}
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className="w-1/3 flex flex-col">

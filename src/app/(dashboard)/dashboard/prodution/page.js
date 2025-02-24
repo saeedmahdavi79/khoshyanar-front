@@ -38,6 +38,7 @@ const produtionPage = () => {
   const [handleActive5, setHandleActive5] = useState("sub-menu-deactive");
   const [handleActive6, setHandleActive6] = useState("sub-menu-deactive");
   const [handleActive7, setHandleActive7] = useState("sub-menu-deactive");
+  const [dataOrderDetailBuyer, setDataOrderDetailBuyer] = useState({});
 
   useEffect(() => {
     const getCookies = getCookie("WuZiK");
@@ -68,6 +69,22 @@ const produtionPage = () => {
             setHandleActive5("sub-menu-deactive");
             setHandleActive6("sub-menu-deactive");
             setHandleActive7("sub-menu-active");
+          }
+          if(data.user.access == "3"){
+            setShowName(false);
+            setPersonel(true);
+            setLeave(false);
+            setShowFormalision(false);
+            setShowPishbini(false);
+            setShowAmar(false);
+            setShowBroker(false);
+            setHandleActive("sub-menu-deactive");
+            setHandleActive2("sub-menu-active");
+            setHandleActive3("sub-menu-deactive");
+            setHandleActive4("sub-menu-deactive");
+            setHandleActive5("sub-menu-deactive");
+            setHandleActive6("sub-menu-deactive");
+            setHandleActive7("sub-menu-deactive");
           }
         }
       });
@@ -1415,7 +1432,8 @@ const produtionPage = () => {
     setTimeout(() => setLoadingShowHavale(false), 2000);
     setReciverDetailHavale(data.reciver);
     setReciveDateHavale(data.date);
-    setfactorStatusHavale(data.status);
+    setfactorStatusHavale(data.statusOpAdminAnbardar);
+    setDataOrderDetailBuyer(data);
     setAnbarDetailResidHavale(data.sourceName);
 
     setHavaleId(data._id);
@@ -1470,47 +1488,174 @@ const produtionPage = () => {
   const confirmFactorHavale = () => {
     const getCookies = getCookie("WuZiK");
     setLoadEstelam(true);
-    fetch(baseUrl("/auth/sign-check"), {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${getCookies}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        signCode: signCode,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status == 200) {
-          openNotificationWithIconSign("success");
-          setLoadEstelam(false);
+    // fetch(baseUrl("/auth/sign-check"), {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: `Bearer ${getCookies}`,
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     signCode: signCode,
+    //   }),
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     if (data.status == 200) {
+    //       openNotificationWithIconSign("success");
+    //       setLoadEstelam(false);
 
-          fetch(baseUrl("/product/admin-havale-confirm"), {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${getCookies}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              _id: havaleId,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status == 202) {
-                openNotificationWithIconSignConf("success");
-                setOpenShowResid(false);
-                dataRefresh();
-              } else {
-                openNotificationWithSignConf2("error");
+    //       fetch(baseUrl("/product/admin-havale-confirm"), {
+    //         method: "POST",
+    //         headers: {
+    //           Authorization: `Bearer ${getCookies}`,
+    //           "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //           _id: havaleId,
+    //         }),
+    //       })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //           if (data.status == 202) {
+    //             openNotificationWithIconSignConf("success");
+    //             setOpenShowResid(false);
+    //             dataRefresh();
+    //           } else {
+    //             openNotificationWithSignConf2("error");
+    //           }
+    //         });
+    //     } else {
+    //       setLoadEstelam(false);
+    //       openNotificationWithSign2("error");
+    //     }
+    //   });
+
+
+
+    //   setLoadEstelam(true);
+      fetch(baseUrl("/auth/sign-check"), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getCookies}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          signCode: signCode,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status == 200) {
+            if (data.thatsOp == false) {
+              openNotificationWithIconSign("success");
+              setLoadEstelam(false);
+  
+              fetch(baseUrl("/product/admin-havale-confirm"), {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${getCookies}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  _id: havaleId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status == 202) {
+                    openNotificationWithIconSignConf("success");
+                    // setDataShowFactorHavaleDetail(false);
+                    dataRefresh();
+                  } else {
+                    openNotificationWithSignConf2("error");
+                  }
+                });
+            } else {
+              if (data.thatsOpSarparast == true) {
+                openNotificationWithIconSign("success");
+                setLoadEstelam(false);
+  
+                fetch(baseUrl("/product/sarparast-confirm"), {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${getCookies}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    _id: havaleId,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.status == 202) {
+                      openNotificationWithIconSignConf("success");
+                     
+                      dataRefresh();
+                    } else {
+                      openNotificationWithSignConf2("error");
+                    }
+                  });
               }
-            });
-        } else {
-          setLoadEstelam(false);
-          openNotificationWithSign2("error");
-        }
-      });
+              if (data.thatsOpModir == true) {
+                openNotificationWithIconSign("success");
+                setLoadEstelam(false);
+  
+                fetch(baseUrl("/product/manage-confirm"), {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${getCookies}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    _id: havaleId,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.status == 202) {
+                      openNotificationWithIconSignConf("success");
+                     
+                      dataRefresh();
+                    } else {
+                      openNotificationWithSignConf2("error");
+                    }
+                  });
+              }
+              if(data.thatsAnbar == true){
+                openNotificationWithIconSign("success");
+                setLoadEstelam(false);
+  
+                fetch(baseUrl("/product/anbar-confirm"), {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${getCookies}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    _id: havaleId,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.status == 202) {
+                      openNotificationWithIconSignConf("success");
+                      
+                      dataRefresh();
+                    } else {
+                      openNotificationWithSignConf2("error");
+                    }
+                  });
+              }
+            }
+          } else {
+            setLoadEstelam(false);
+            openNotificationWithSign2("error");
+          }
+        });
+
+
+
+
   };
 
   const dataRefresh = () => {
@@ -2018,7 +2163,7 @@ const produtionPage = () => {
             <div className="w-full flex flex-col gap-3 mt-5">
               {getCookieAccess == "8" ? (
                 ""
-              ) : (
+              ) :getCookieAccess == "3" ?"" : (
                 <span
                   onClick={handleShowName}
                   className={`w-full cursor-pointer p-2 ${handleActive} flex justify-between items-center rounded-lg`}
@@ -2042,7 +2187,7 @@ const produtionPage = () => {
 
               {getCookieAccess == "8" ? (
                 ""
-              ) : (
+              ) :getCookieAccess == "3" ?"" : (
                 <span
                   onClick={handleShowFormolasion}
                   className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
@@ -2053,7 +2198,7 @@ const produtionPage = () => {
               )}
               {getCookieAccess == "8" ? (
                 ""
-              ) : (
+              ) :getCookieAccess == "3" ?"" : (
                 <span
                   onClick={handleShowPishbini}
                   className={`w-full cursor-pointer p-2 ${handleActive5} flex justify-between items-center rounded-lg`}
@@ -2072,7 +2217,7 @@ const produtionPage = () => {
               </span>
               {getCookieAccess == "8" ? (
                 ""
-              ) : (
+              ) :getCookieAccess == "3" ?"" : (
                 <span
                   onClick={handleShowAmar}
                   className={`w-full cursor-pointer p-2 ${handleActive6} flex justify-between items-center rounded-lg`}
@@ -2516,7 +2661,10 @@ const produtionPage = () => {
                       role="tablist"
                       className="tabs w-full grid-cols-7 tabs-bordered"
                     >
-                      <input
+                     
+                      {getCookieAccess == "3" ?"" : 
+                      <>
+                       <input
                         type="radio"
                         name="my_tabs_1"
                         role="tab"
@@ -2525,326 +2673,365 @@ const produtionPage = () => {
                         defaultChecked
                       />
                       <div role="tabpanel" className="tab-content px-3 py-3">
-                        <TableAfra
-                          type={"green"}
-                          data={dataSource.map((visitor) => ({
-                            key: visitor._id,
-                            name: !visitor.sourceName
-                              ? "-"
-                              : visitor.sourceName,
-                            type: !visitor.id ? "-" : visitor.id,
-                            vahed: !visitor.vahed ? "-" : visitor.vahed,
-                            dama: !visitor.dama ? "-" : visitor.dama,
-                            des: !visitor.sourceDes ? "-" : visitor.sourceDes,
-                            exp: !visitor.expireDate
-                              ? "ندارد"
-                              : visitor.expireDate,
-                            operation: (
-                              <>
-                                <div className="flex justify-center gap-3 items-center">
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() =>
-                                      showModalDetailAnbar(visitor)
-                                    }
-                                    color="blue"
-                                  >
-                                    مشاهده اطلاعات
-                                  </Tag>
-
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => showDetailAnbar(visitor)}
-                                    color="green"
-                                  >
-                                    مشاهده موجودی
-                                  </Tag>
-                                  <Tag
-                                    className=" cursor-pointer"
-                                    onClick={() => showDeleteAnbar(visitor)}
-                                    color="red"
-                                  >
-                                    حذف انبار
-                                  </Tag>
-                                </div>
-                              </>
-                            ),
-                          }))}
-                          columns={[
-                            {
-                              title: "نام",
-                              dataIndex: "name",
-                              key: "name",
-                              sorter: true,
-                            },
-                            {
-                              title: "توضیحات",
-                              dataIndex: "des",
-                              key: "des",
-                              sorter: true,
-                            },
-                            {
-                              title: "کد",
-                              dataIndex: "type",
-                              key: "type",
-                              sorter: true,
-                            },
-                            {
-                              title: "واحد",
-                              dataIndex: "vahed",
-                              key: "vahed",
-                              sorter: true,
-                            },
-                            {
-                              title: "دما",
-                              dataIndex: "dama",
-                              key: "dama",
-                              sorter: true,
-                            },
-
-                            {
-                              title: "تاریخ انقضا",
-                              dataIndex: "exp",
-                              key: "exp",
-                              sorter: true,
-                            },
-                            {
-                              title: "عملیات",
-                              dataIndex: "operation",
-                              key: "operation",
-                              sorter: true,
-                            },
-                          ]}
-                        />
-                      </div>
-                      <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="افزودن انبار"
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                        <div className="w-full">
-                          <Tag color="blue">
-                            *نکته : در صورتی که انبار مورد نظر دارای تاریخ انقضا
-                            نیست خالی بماند
-                          </Tag>
-                        </div>
-                        <div className="w-full grid grid-cols-4 gap-3 items-end">
-                          <InputCom
-                            onChenge={changeHandlerAnbar}
-                            name={"sourceName"}
-                            type={"req"}
-                            placeholder={"نام انبار را وارد کنید"}
-                          />
-
-                          <InputCom
-                            onChenge={changeCalAnbar}
-                            name={"expireDate"}
-                            type={"date"}
-                            placeholder={"تاریخ انقضا انبار را وارد کنید"}
-                          />
-
-                          <InputCom
-                            onChenge={changeHandlerAnbar}
-                            name={"sourceDes"}
-                            type={"req"}
-                            placeholder={"توضیحات انبار را وارد کنید"}
-                          />
-                          <SelectCombo
-                            defaultValue={typeUser}
-                            options={[
-                              {
-                                value: "1",
-                                label: "کیلو",
-                              },
-                              {
-                                value: "3",
-                                label: "گرم",
-                              },
-                              {
-                                value: "4",
-                                label: "تن",
-                              },
-                              {
-                                value: "5",
-                                label: "عدد",
-                              },
-                            ]}
-                            name="vahed"
-                            onChange={changeHandlerVahedAnbar}
-                            placeholder={"واحد شمارش را انتخاب کنید"}
-                          />
-                          <SelectCombo
-                            defaultValue={typeUser}
-                            options={[
-                              {
-                                value: "1",
-                                label: "انبار لوازم فاسد نشدنی",
-                              },
-                              {
-                                value: "3",
-                                label: "انبار لوازم فاسد شدنی",
-                              },
-                            ]}
-                            name="type"
-                            onChange={changeHandlerTypeAnbar}
-                            placeholder={"نوع انبار را انتخاب کنید"}
-                          />
-                          <InputCom
-                            onChenge={changeHandlerAnbar}
-                            name={"dama"}
-                            type={"req"}
-                            placeholder={"دمای مورد نظر انبار را وارد کنید"}
-                          />
-                          <div className="flex gap-3 w-full">
-                            <ButtonAfra
-                              showLoad={showLoadAnbar}
-                              onClick={sendDataToServerAnbar}
-                              text={"ثبت"}
-                              type={"green"}
-                            />
-                            <ButtonAfra
-                              onClick={() => location.reload()}
-                              text={"انصراف"}
-                              type={"blue-dark"}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="رسید به انبار"
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                        <div className="w-full grid grid-cols-4 gap-3 items-end">
-                          <SelectCombo
-                            placeholder={"کالا را انتخاب کنید"}
-                            options={datePrd.map((data) => ({
-                              value: data._id,
-                              label: data.title,
-                              data: data,
-                            }))}
-                            onChange={changeKalaHandler}
-                          />
-
-                          <InputCom
-                            onChenge={(e) => setCount(e.target.value)}
-                            type={"req"}
-                            placeholder={"تعداد را وارد کنید"}
-                          />
-                          <InputCom type={"dis"} placeholder={dataVahedPrd} />
-
-                          <div className="w-full flex gap-3 ">
-                            <ButtonAfra
-                              type={"green"}
-                              text={"ثبت"}
-                              onClick={addProductToTable}
-                            />
-                            <ButtonAfra type={"blue-dark"} text={"انصراف"} />
-                          </div>
-                        </div>
-                        <div className="w-full flex flex-col gap-3 ">
-                          <InputCom
-                            col={5}
-                            row={5}
-                            type={"textareaDis"}
-                            placeholder={dataDesPrd}
-                          />
-                        </div>
-
-                        <div className="mt-3 w-full">
-                          <div className="font-black text-black text-[18px]">
-                            اطلاعات رسید انبار
-                          </div>
-                          <div className="font-normal mt-2 text-zinc-500 text-[11px]">
-                            اطلاعات مندرج در فاکتور خرید یا همان رسید به انبار
-                            که از این فرم وارد می شود
-                          </div>
-                        </div>
-
-                        <div className="w-full mt-3 grid grid-cols-5 items-end gap-3">
-                          <InputCom
-                            onChenge={(e) => setReciver(e.target.value)}
-                            type={"req"}
-                            placeholder={"تحویل گیرنده را وارد کنید"}
-                          />
-                          <InputCom
-                            onChenge={(e) => setCode(e.target.value)}
-                            type={"req"}
-                            placeholder={"شماره برگه را وارد کنید"}
-                          />
-                          <InputCom
-                            onChenge={changeCalResid}
-                            type={"date"}
-                            placeholder={"تاریخ را انتخاب کنید"}
-                          />
-                          <InputCom
-                            onChenge={(e) => setLocation(e.target.value)}
-                            type={"req"}
-                            placeholder={"محل خرید را وارد کنید"}
-                          />
-                          <SelectCombo
-                            placeholder={"انبار را انتخاب کنید"}
-                            options={dataSource.map((data) => ({
-                              value: data._id,
-                              label: data.sourceName,
-                            }))}
-                            onChange={changeSoruceResid}
-                          />
-                        </div>
-
-                        <div className="w-full mt-3">
                           <TableAfra
-                            data={tableData}
                             type={"green"}
+                            data={dataSource.map((visitor) => ({
+                              key: visitor._id,
+                              name: !visitor.sourceName
+                                ? "-"
+                                : visitor.sourceName,
+                              type: !visitor.id ? "-" : visitor.id,
+                              vahed: !visitor.vahed ? "-" : visitor.vahed,
+                              dama: !visitor.dama ? "-" : visitor.dama,
+                              des: !visitor.sourceDes ? "-" : visitor.sourceDes,
+                              exp: !visitor.expireDate
+                                ? "ندارد"
+                                : visitor.expireDate,
+                              operation: (
+                                <>
+                                  <div className="flex justify-center gap-3 items-center">
+                                    <Tag
+                                      className=" cursor-pointer"
+                                      onClick={() => showModalDetailAnbar(visitor)}
+                                      color="blue"
+                                    >
+                                      مشاهده اطلاعات
+                                    </Tag>
+
+                                    <Tag
+                                      className=" cursor-pointer"
+                                      onClick={() => showDetailAnbar(visitor)}
+                                      color="green"
+                                    >
+                                      مشاهده موجودی
+                                    </Tag>
+                                    <Tag
+                                      className=" cursor-pointer"
+                                      onClick={() => showDeleteAnbar(visitor)}
+                                      color="red"
+                                    >
+                                      حذف انبار
+                                    </Tag>
+                                  </div>
+                                </>
+                              ),
+                            }))}
                             columns={[
                               {
-                                title: "نام کالا",
+                                title: "نام",
                                 dataIndex: "name",
                                 key: "name",
+                                sorter: true,
                               },
                               {
-                                title: "تعداد کالا",
-                                dataIndex: "count",
-                                key: "count",
+                                title: "توضیحات",
+                                dataIndex: "des",
+                                key: "des",
+                                sorter: true,
                               },
                               {
-                                title: "واحد کالا",
+                                title: "کد",
+                                dataIndex: "type",
+                                key: "type",
+                                sorter: true,
+                              },
+                              {
+                                title: "واحد",
                                 dataIndex: "vahed",
                                 key: "vahed",
+                                sorter: true,
                               },
                               {
-                                title: "موجودی کالا",
-                                dataIndex: "mojoodi",
-                                key: "mojoodi",
+                                title: "دما",
+                                dataIndex: "dama",
+                                key: "dama",
+                                sorter: true,
+                              },
+
+                              {
+                                title: "تاریخ انقضا",
+                                dataIndex: "exp",
+                                key: "exp",
+                                sorter: true,
                               },
                               {
                                 title: "عملیات",
                                 dataIndex: "operation",
                                 key: "operation",
+                                sorter: true,
                               },
-                            ]}
-                          />
-                        </div>
+                            ]} />
+                        </div><input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="افزودن انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            <div className="w-full">
+                              <Tag color="blue">
+                                *نکته : در صورتی که انبار مورد نظر دارای تاریخ انقضا
+                                نیست خالی بماند
+                              </Tag>
+                            </div>
+                            <div className="w-full grid grid-cols-4 gap-3 items-end">
+                              <InputCom
+                                onChenge={changeHandlerAnbar}
+                                name={"sourceName"}
+                                type={"req"}
+                                placeholder={"نام انبار را وارد کنید"} />
 
-                        <div className="w-full mt-3 flex justify-center">
-                          <div className="w-[350px] flex justify-center gap-3 ">
-                            <ButtonAfra
-                              type={"green"}
-                              showLoad={showLoadRecive}
-                              text={"ثبت نهایی فاکتور"}
-                              onClick={addPrdIncrase}
-                            />
-                            <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                              <InputCom
+                                onChenge={changeCalAnbar}
+                                name={"expireDate"}
+                                type={"date"}
+                                placeholder={"تاریخ انقضا انبار را وارد کنید"} />
+
+                              <InputCom
+                                onChenge={changeHandlerAnbar}
+                                name={"sourceDes"}
+                                type={"req"}
+                                placeholder={"توضیحات انبار را وارد کنید"} />
+                              <SelectCombo
+                                defaultValue={typeUser}
+                                options={[
+                                  {
+                                    value: "1",
+                                    label: "کیلو",
+                                  },
+                                  {
+                                    value: "3",
+                                    label: "گرم",
+                                  },
+                                  {
+                                    value: "4",
+                                    label: "تن",
+                                  },
+                                  {
+                                    value: "5",
+                                    label: "عدد",
+                                  },
+                                ]}
+                                name="vahed"
+                                onChange={changeHandlerVahedAnbar}
+                                placeholder={"واحد شمارش را انتخاب کنید"} />
+                              <SelectCombo
+                                defaultValue={typeUser}
+                                options={[
+                                  {
+                                    value: "1",
+                                    label: "انبار لوازم فاسد نشدنی",
+                                  },
+                                  {
+                                    value: "3",
+                                    label: "انبار لوازم فاسد شدنی",
+                                  },
+                                ]}
+                                name="type"
+                                onChange={changeHandlerTypeAnbar}
+                                placeholder={"نوع انبار را انتخاب کنید"} />
+                              <InputCom
+                                onChenge={changeHandlerAnbar}
+                                name={"dama"}
+                                type={"req"}
+                                placeholder={"دمای مورد نظر انبار را وارد کنید"} />
+                              <div className="flex gap-3 w-full">
+                                <ButtonAfra
+                                  showLoad={showLoadAnbar}
+                                  onClick={sendDataToServerAnbar}
+                                  text={"ثبت"}
+                                  type={"green"} />
+                                <ButtonAfra
+                                  onClick={() => location.reload()}
+                                  text={"انصراف"}
+                                  type={"blue-dark"} />
+                              </div>
+                            </div>
+                          </div><input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="رسید به انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            <div className="w-full grid grid-cols-4 gap-3 items-end">
+                              <SelectCombo
+                                placeholder={"کالا را انتخاب کنید"}
+                                options={datePrd.map((data) => ({
+                                  value: data._id,
+                                  label: data.title,
+                                  data: data,
+                                }))}
+                                onChange={changeKalaHandler} />
+
+                              <InputCom
+                                onChenge={(e) => setCount(e.target.value)}
+                                type={"req"}
+                                placeholder={"تعداد را وارد کنید"} />
+                              <InputCom type={"dis"} placeholder={dataVahedPrd} />
+
+                              <div className="w-full flex gap-3 ">
+                                <ButtonAfra
+                                  type={"green"}
+                                  text={"ثبت"}
+                                  onClick={addProductToTable} />
+                                <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                              </div>
+                            </div>
+                            <div className="w-full flex flex-col gap-3 ">
+                              <InputCom
+                                col={5}
+                                row={5}
+                                type={"textareaDis"}
+                                placeholder={dataDesPrd} />
+                            </div>
+
+                            <div className="mt-3 w-full">
+                              <div className="font-black text-black text-[18px]">
+                                اطلاعات رسید انبار
+                              </div>
+                              <div className="font-normal mt-2 text-zinc-500 text-[11px]">
+                                اطلاعات مندرج در فاکتور خرید یا همان رسید به انبار
+                                که از این فرم وارد می شود
+                              </div>
+                            </div>
+
+                            <div className="w-full mt-3 grid grid-cols-5 items-end gap-3">
+                              <InputCom
+                                onChenge={(e) => setReciver(e.target.value)}
+                                type={"req"}
+                                placeholder={"تحویل گیرنده را وارد کنید"} />
+                              <InputCom
+                                onChenge={(e) => setCode(e.target.value)}
+                                type={"req"}
+                                placeholder={"شماره برگه را وارد کنید"} />
+                              <InputCom
+                                onChenge={changeCalResid}
+                                type={"date"}
+                                placeholder={"تاریخ را انتخاب کنید"} />
+                              <InputCom
+                                onChenge={(e) => setLocation(e.target.value)}
+                                type={"req"}
+                                placeholder={"محل خرید را وارد کنید"} />
+                              <SelectCombo
+                                placeholder={"انبار را انتخاب کنید"}
+                                options={dataSource.map((data) => ({
+                                  value: data._id,
+                                  label: data.sourceName,
+                                }))}
+                                onChange={changeSoruceResid} />
+                            </div>
+
+                            <div className="w-full mt-3">
+                              <TableAfra
+                                data={tableData}
+                                type={"green"}
+                                columns={[
+                                  {
+                                    title: "نام کالا",
+                                    dataIndex: "name",
+                                    key: "name",
+                                  },
+                                  {
+                                    title: "تعداد کالا",
+                                    dataIndex: "count",
+                                    key: "count",
+                                  },
+                                  {
+                                    title: "واحد کالا",
+                                    dataIndex: "vahed",
+                                    key: "vahed",
+                                  },
+                                  {
+                                    title: "موجودی کالا",
+                                    dataIndex: "mojoodi",
+                                    key: "mojoodi",
+                                  },
+                                  {
+                                    title: "عملیات",
+                                    dataIndex: "operation",
+                                    key: "operation",
+                                  },
+                                ]} />
+                            </div>
+
+                            <div className="w-full mt-3 flex justify-center">
+                              <div className="w-[350px] flex justify-center gap-3 ">
+                                <ButtonAfra
+                                  type={"green"}
+                                  showLoad={showLoadRecive}
+                                  text={"ثبت نهایی فاکتور"}
+                                  onClick={addPrdIncrase} />
+                                <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                          </>}
+                     
+                          <input
+                          type="radio"
+                          name="my_tabs_1"
+                          role="tab"
+                          className="tab"
+                          aria-label="لیست حواله های انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            <TableAfra
+                              type={"green"}
+                              data={dataHavale.map((visitor) => ({
+                                key: visitor._id,
+                                name: visitor.code,
+                                code: visitor.adminName,
+                                status: visitor.statusOpAdminAnbardar == "false"
+                                  ? "تایید نشده"
+                                  : "تایید انبار",
+                                count: visitor.date,
 
+                                opr: (
+                                  <>
+                                    <div className="w-full flex gap-3 justify-center">
+                                      <Tag
+                                        onClick={() => showHavaleFactor(visitor)}
+                                        color="green"
+                                        className="text-[14px] cursor-pointer"
+                                      >
+                                        مشاهده / چاپ
+                                      </Tag>
+                                    </div>
+                                  </>
+                                ),
+                              }))}
+                              columns={[
+                                {
+                                  title: "کد رسید",
+                                  dataIndex: "name",
+                                  key: "name",
+                                  sorter: true,
+                                },
+
+                                {
+                                  title: "صادر کننده",
+                                  dataIndex: "code",
+                                  key: "code",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "وضعیت",
+                                  dataIndex: "status",
+                                  key: "status",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "تاریخ",
+                                  dataIndex: "count",
+                                  key: "count",
+                                  sorter: true,
+                                },
+
+                                {
+                                  title: "عملیات",
+                                  dataIndex: "opr",
+                                  key: "opr",
+                                  sorter: true,
+                                },
+                              ]} />
+                          </div>
                       <input
                         type="radio"
                         name="my_tabs_1"
@@ -2995,146 +3182,75 @@ const produtionPage = () => {
                           </div>
                         </div>
                       </div>
-                      <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="لیست حواله های انبار"
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                        <TableAfra
-                          type={"green"}
-                          data={dataHavale.map((visitor) => ({
-                            key: visitor._id,
-                            name: visitor.code,
-                            code: visitor.adminName,
-                            status:
-                              visitor.status == "false"
-                                ? "تایید نشده"
-                                : "تایید مدیر",
-                            count: visitor.date,
+                      {getCookieAccess == "3" ?"" :
+                      <>
+                      
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="لیست رسید های انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            <TableAfra
+                              type={"green"}
+                              data={dataResid.map((visitor) => ({
+                                key: visitor._id,
+                                name: visitor.code,
+                                code: visitor.adminName,
+                                status: visitor.status == "false"
+                                  ? "تایید نشده"
+                                  : "تایید مدیر",
+                                count: visitor.date,
 
-                            opr: (
-                              <>
-                                <div className="w-full flex gap-3 justify-center">
-                                  <Tag
-                                    onClick={() => showHavaleFactor(visitor)}
-                                    color="green"
-                                    className="text-[14px] cursor-pointer"
-                                  >
-                                    مشاهده / چاپ
-                                  </Tag>
-                                </div>
-                              </>
-                            ),
-                          }))}
-                          columns={[
-                            {
-                              title: "کد رسید",
-                              dataIndex: "name",
-                              key: "name",
-                              sorter: true,
-                            },
+                                opr: (
+                                  <>
+                                    <div className="w-full flex gap-3 justify-center">
+                                      <Tag
+                                        onClick={() => showResidFactor(visitor)}
+                                        color="green"
+                                        className="text-[14px] cursor-pointer"
+                                      >
+                                        مشاهده / چاپ
+                                      </Tag>
+                                    </div>
+                                  </>
+                                ),
+                              }))}
+                              columns={[
+                                {
+                                  title: "کد رسید",
+                                  dataIndex: "name",
+                                  key: "name",
+                                  sorter: true,
+                                },
 
-                            {
-                              title: "صادر کننده",
-                              dataIndex: "code",
-                              key: "code",
-                              sorter: true,
-                            },
-                            {
-                              title: "وضعیت",
-                              dataIndex: "status",
-                              key: "status",
-                              sorter: true,
-                            },
-                            {
-                              title: "تاریخ",
-                              dataIndex: "count",
-                              key: "count",
-                              sorter: true,
-                            },
+                                {
+                                  title: "صادر کننده",
+                                  dataIndex: "code",
+                                  key: "code",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "وضعیت",
+                                  dataIndex: "status",
+                                  key: "status",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "تاریخ",
+                                  dataIndex: "count",
+                                  key: "count",
+                                  sorter: true,
+                                },
 
-                            {
-                              title: "عملیات",
-                              dataIndex: "opr",
-                              key: "opr",
-                              sorter: true,
-                            },
-                          ]}
-                        />
-                      </div>
-                      <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="لیست رسید های انبار"
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                        <TableAfra
-                          type={"green"}
-                          data={dataResid.map((visitor) => ({
-                            key: visitor._id,
-                            name: visitor.code,
-                            code: visitor.adminName,
-                            status:
-                              visitor.status == "false"
-                                ? "تایید نشده"
-                                : "تایید مدیر",
-                            count: visitor.date,
-
-                            opr: (
-                              <>
-                                <div className="w-full flex gap-3 justify-center">
-                                  <Tag
-                                    onClick={() => showResidFactor(visitor)}
-                                    color="green"
-                                    className="text-[14px] cursor-pointer"
-                                  >
-                                    مشاهده / چاپ
-                                  </Tag>
-                                </div>
-                              </>
-                            ),
-                          }))}
-                          columns={[
-                            {
-                              title: "کد رسید",
-                              dataIndex: "name",
-                              key: "name",
-                              sorter: true,
-                            },
-
-                            {
-                              title: "صادر کننده",
-                              dataIndex: "code",
-                              key: "code",
-                              sorter: true,
-                            },
-                            {
-                              title: "وضعیت",
-                              dataIndex: "status",
-                              key: "status",
-                              sorter: true,
-                            },
-                            {
-                              title: "تاریخ",
-                              dataIndex: "count",
-                              key: "count",
-                              sorter: true,
-                            },
-
-                            {
-                              title: "عملیات",
-                              dataIndex: "opr",
-                              key: "opr",
-                              sorter: true,
-                            },
-                          ]}
-                        />
-                      </div>
+                                {
+                                  title: "عملیات",
+                                  dataIndex: "opr",
+                                  key: "opr",
+                                  sorter: true,
+                                },
+                              ]} />
+                          </div></>}
                     </div>
                   </>
                 }
@@ -4510,7 +4626,7 @@ const produtionPage = () => {
 
       {/* Modal Show Havale Factor */}
       <Modal
-        className="modal-big-data"
+        className="modal-big-data-2"
         title={
           <div className="w-[90%] flex gap-3">
             <p>نمایش فاکتور</p>
@@ -4524,7 +4640,7 @@ const produtionPage = () => {
         }
         footer={
           <div className="w-full flex justify-center gap-3 items-end mt-3">
-            {getCookieAccess == "1" ? (
+            {getCookieAccess == "1" || getCookieAccess == "3" || getCookieAccess == "4" ? (
               <div
                 className={`w-2/3 ${factorStatusHavale == "true" ? "hidden" : ""} flex gap-3 items-end`}
               >
@@ -4633,10 +4749,10 @@ const produtionPage = () => {
                     مقدار کالا
                   </div>
                   <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                    مبلغ واحد
+                   -
                   </div>
                   <div className="w-1/4 border-b  border-zinc-300 flex justify-center items-center h-[35px]">
-                    مبلغ کل
+                    -
                   </div>
                 </div>
 
@@ -4655,13 +4771,15 @@ const produtionPage = () => {
                       {data.newVal}
                     </div>
                     <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                      {separate(!data.price ? 0 : data.price)}
+                      {/* {separate(!data.price ? 0 : data.price)} */}
+                      -
                     </div>
                     <div className="w-1/4 border-b  border-zinc-300 flex justify-center items-center h-[35px]">
-                      {separate(
+                      -
+                      {/* {separate(
                         parseInt(!data.price ? 0 : data.price) *
                           parseInt(data.newVal)
-                      ) + "ریال"}
+                      ) + "ریال"} */}
                     </div>
                   </div>
                 ))}
@@ -4678,9 +4796,110 @@ const produtionPage = () => {
                       </span>
                       از انبار {anbarDetailHavale} خارج شده است.
                     </div>
+                    <div className="w-full grid grid-cols-4 gap-3 mt-2">
+                    <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا سرپرست</span>
+                          {dataOrderDetailBuyer.statusOp == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusOpUserSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusOpUserSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusOpUserSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیر مالی</span>
+
+                          {dataOrderDetailBuyer.statusOpAdmin == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusOpUserAdminSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96  h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusOpUserAdminSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusOpUserAdminSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا انبار دار</span>
+
+                          {dataOrderDetailBuyer.statusOpAdminAnbardar == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusOpUserAdminSignImageAnbardar ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96  h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusOpUserAdminSignImageAnbardar
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusOpUserAdminSignImageAnbardar
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className=" w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیرعامل</span>
+
+                          {dataOrderDetailBuyer.status == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyer.statusSignImage == "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyer.statusSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyer.statusSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  
                   </div>
                   <div className="w-1/3 flex flex-col">
-                    <div className="flex">
+                   {/* " <div className="flex">
                       <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                         جمع کل
                       </div>
@@ -4700,7 +4919,7 @@ const produtionPage = () => {
                           )
                         ) + "ریال"}
                       </div>
-                    </div>
+                    </div>" */}
                   </div>
                 </div>
               </div>
@@ -4869,7 +5088,7 @@ const produtionPage = () => {
           <div className="w-[90%] flex gap-3">
             <p>نمایش درخواست</p>
 
-            {dataBrokerShowObj.status == "true" ? (
+            {dataBrokerShowObj.statusOpAdminAnbardar == "true" ? (
               <Tag color="green">فاکتور تائید شده</Tag>
             ) : (
               <Tag color="red">فاکتور تائید نشده</Tag>

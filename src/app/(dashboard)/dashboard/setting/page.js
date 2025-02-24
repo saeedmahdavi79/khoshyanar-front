@@ -799,7 +799,7 @@ const SettingPage = () => {
                             text={"شروع همگام سازی پرسنل"}
                           />
                           <ButtonAfra
-                            // onClick={syncCustomerTakro}
+                             onClick={syncCustomerTakro}
                             showLoad={syncCustomerLoad}
                             type={"green"}
                             text={"شروع همگام سازی مشتریان"}

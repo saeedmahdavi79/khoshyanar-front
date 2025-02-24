@@ -1235,6 +1235,34 @@ const pageOffice = () => {
       });
   };
 
+  const addSignStatusManageAnbar = (data) => {
+    const token = getCookie("WuZiK");
+    fetch(baseUrl("/office/create-sign"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signStatus: "1",
+        _id: data._id,
+        signRole: "3",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithUpdateSign("success");
+          personelRefresh();
+        } else {
+          openNotificationWithUpdateSign2("error");
+        }
+        // console.log(data);
+      });
+  };
+
+  
+
   const removeSignStatus = (data) => {
     const token = getCookie("WuZiK");
     fetch(baseUrl("/office/create-sign"), {
@@ -1886,6 +1914,15 @@ const pageOffice = () => {
                                             color="green"
                                           >
                                             افزودن حق امضا مدیر بخش
+                                          </Tag>
+                                          <Tag
+                                            onClick={() =>
+                                              addSignStatusManageAnbar(data)
+                                            }
+                                            className="cursor-pointer"
+                                            color="green"
+                                          >
+                                           افزودن حق امضا مدیر انبار
                                           </Tag>
                                         </>
                                       )}
