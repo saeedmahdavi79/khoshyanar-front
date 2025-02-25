@@ -221,7 +221,7 @@ const HeaderDashboard = ({ child }) => {
               activePlanExpireTime: data.user.activePlanExpireTime,
               activePlanName: data.user.activePlanName,
               joinDate: data.user.createDate,
-              accessUser: data.customer ? "10" : data.user.access,
+              accessUser: data.user.access,
             });
 
             setCookie("X0*_m", data.user._id, {

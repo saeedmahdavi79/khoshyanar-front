@@ -41,7 +41,6 @@ const sales = () => {
   const [api, contextHolder] = notification.useNotification();
   const [getCookieAccess, setGetAccess] = useState("");
 
-
   useEffect(() => {
     try {
       fetch(baseUrl("/sync/get-states"), {
@@ -68,6 +67,9 @@ const sales = () => {
           location.replace("/auth/login");
         } else {
           setGetAccess(data.user.access);
+          if (data.user.access == "7") {
+            setShowFirstPage(2);
+          }
         }
       });
   }, []);
@@ -98,10 +100,10 @@ const sales = () => {
     });
   };
 
-  const [showFirstPage, setShowFirstPage] = useState(
+  const [showFirstPage, setShowFirstPage] = useState(0);
+  const [activButton, setActivButton] = useState(
     getCookieAccess == "7" ? 2 : 0
   );
-  const [activButton, setActivButton] = useState(getCookieAccess == "7" ? 2 : 0);
   const [statesData, setStatesData] = useState([]);
   const [cityDataShow, setCityDataShow] = useState([]);
 
@@ -109,13 +111,12 @@ const sales = () => {
     { title: "مشتریان" },
     { title: "سرنخ ها" },
     { title: " سفارشات" },
+    { title: "حواله های فروش" },
     { title: " معاملات" },
     { title: "دفترچه مخاطبین" },
   ];
 
-  const filteredMenu = getCookieAccess == "7" ? menu.slice(2,3,4) : menu;
-
-
+  const filteredMenu = getCookieAccess == "7" ? menu.slice(2, 3, 4) : menu;
 
   const handleButton = (button) => {
     setActivButton(button);
@@ -323,6 +324,15 @@ const sales = () => {
 
   useEffect(() => {
     const getCookies = getCookie("WuZiK");
+
+    fetch(baseUrl("/contact/get-havale-sell"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? seHavaleSell([]) : seHavaleSell(data.data.dataGet);
+      });
 
     fetch(baseUrl("/contact/get-customers"), {
       method: "GET",
@@ -760,6 +770,8 @@ const sales = () => {
     const newProduct = {
       name: selectedProductFrm.title,
       count: countData,
+      code: selectedProductFrm.code,
+
       vahed: selectedProductFrm.vahed,
       price: pricePrd == "" ? 0 : pricePrd,
 
@@ -834,6 +846,21 @@ const sales = () => {
   const [dataFactor, setDataFactor] = useState({});
   const [signCode, setSignCode] = useState("");
   const [orderId, setOrderId] = useState("");
+  const [havaleSell, seHavaleSell] = useState([]);
+
+  const [havaleData, setHavaleData] = useState([]);
+  const [loadHavale, setLoadHavale] = useState(false);
+  const [openHavale, setOpenHavale] = useState(false);
+
+  const [loadEstelamHavale, setLoadEstelamHavale] = useState(false);
+  const [dataOrderDetailHavale, setDataOrderDetailHavale] = useState({
+    products: [],
+  });
+  const [dataOrderDetailBuyerHavale, setDataOrderDetailBuyerHavale] = useState(
+    {}
+  );
+  const [signCodeHavale, setSignCodeHavale] = useState("");
+  const [havaleId, setHavaleId] = useState("");
 
   const orderRefresh = () => {
     const getCookies = getCookie("WuZiK");
@@ -909,6 +936,8 @@ const sales = () => {
 
   const confirmFactorHavale = () => {
     const getCookies = getCookie("WuZiK");
+    const tokenTak = getCookie("TakSess");
+
     setLoadEstelam(true);
     fetch(baseUrl("/auth/sign-check"), {
       method: "POST",
@@ -960,6 +989,7 @@ const sales = () => {
                 },
                 body: JSON.stringify({
                   _id: orderId,
+                  tokenTak,
                 }),
               })
                 .then((response) => response.json())
@@ -1006,6 +1036,91 @@ const sales = () => {
       });
   };
 
+  const confirmFactorHavaleSell = () => {
+    const getCookies = getCookie("WuZiK");
+    const tokenTak = getCookie("TakSess");
+
+    setLoadEstelam(true);
+    fetch(baseUrl("/auth/sign-check"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getCookies}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signCode: signCodeHavale,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 200) {
+          if (data.thatsOp == false) {
+            openNotificationWithIconSign("success");
+            setLoadEstelam(false);
+
+            fetch(baseUrl("/contact/confirm-havale-manage"), {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${getCookies}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                _id: havaleId,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.status == 202) {
+                  openNotificationWithIconSignConf("success");
+                  setOpenHavale(false);
+                  dataRefresh();
+                } else {
+                  openNotificationWithSignConf2("error");
+                }
+              });
+          } else {
+            if (data.thatsOpModir == true) {
+              openNotificationWithIconSign("success");
+              setLoadEstelam(false);
+
+              fetch(baseUrl("/contact/confirm-havale-operator-manage"), {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${getCookies}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  _id: havaleId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status == 202) {
+                    openNotificationWithIconSignConf("success");
+                    setOpenHavale(false);
+                    dataRefresh();
+                  } else {
+                    openNotificationWithSignConf2("error");
+                  }
+                });
+            }
+          }
+        } else {
+          setLoadEstelam(false);
+          openNotificationWithSign2("error");
+        }
+      });
+  };
+
+  const showHavaleDetail = (data) => {
+    setLoadHavale(true);
+    setOpenHavale(true);
+    setHavaleId(data._id);
+    setDataOrderDetailHavale(data);
+    setDataOrderDetailBuyerHavale(data);
+    setTimeout(() => setLoadHavale(false), 2000);
+  };
+
   const dataRefresh = () => {
     const getCookies = getCookie("WuZiK");
 
@@ -1016,6 +1131,15 @@ const sales = () => {
       .then((response) => response.json())
       .then((data) => {
         !data.data ? setOrderData([]) : setOrderData(data.data.dataGet);
+      });
+
+    fetch(baseUrl("/contact/get-havale-sell"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        !data.data ? seHavaleSell([]) : seHavaleSell(data.data.dataGet);
       });
 
     fetch(baseUrl("/auth/get-setting"), {
@@ -2247,9 +2371,9 @@ const sales = () => {
                               signSarparast:
                                 i.statusOp == "true" ? i.statusOpUser : "-",
                               signAdmin:
-                                i.status == "false"
+                                i.statusOp == "false"
                                   ? "تائید نشده"
-                                  : "تائید مدیریت",
+                                  : "تائید سرپرست",
                               status:
                                 i.statusOp == "false"
                                   ? "تائید نشده"
@@ -2301,12 +2425,12 @@ const sales = () => {
                                 key: "cu",
                                 sorter: true,
                               },
-                              {
-                                title: "امضا مدیر مالی",
-                                dataIndex: "signOp",
-                                key: "signOp",
-                                sorter: true,
-                              },
+                              // {
+                              //   title: "امضا مدیر مالی",
+                              //   dataIndex: "signOp",
+                              //   key: "signOp",
+                              //   sorter: true,
+                              // },
                               {
                                 title: "امضا سرپرست",
                                 dataIndex: "signSarparast",
@@ -2458,6 +2582,130 @@ const sales = () => {
               ""
             )}
             {showFirstPage == 3 ? (
+              <CardStat
+                type={"10"}
+                title={"حواله های فروش"}
+                des={
+                  "حواله های فروش که توسط سرپرست تائید شده است را در این بخش ببینید"
+                }
+                data={
+                  <>
+                    <div className="w-full">
+                      <div
+                        role="tablist"
+                        className="tabs w-full mt-3 grid-cols-7 tabs-bordered"
+                      >
+                        <input
+                          type="radio"
+                          name="my_tabs_2"
+                          role="tab"
+                          className="tab"
+                          aria-label="لیست حواله ها"
+                          defaultChecked
+                        />
+                        <div role="tabpanel" className="tab-content px-3 py-3">
+                          <TableAfra
+                            type={"green"}
+                            data={havaleSell.map((i) => ({
+                              name: i.title + " " + i.takroPish,
+                              code: i.takroPish,
+                              signOp:
+                                i.statusOpAdmin == "true"
+                                  ? i.statusOpUserAdmin
+                                  : "-",
+                              signSarparast:
+                                i.statusOp == "true" ? i.statusOpUser : "-",
+                              signAdmin:
+                                i.status == "false"
+                                  ? "تائید نشده"
+                                  : "تائید مدیریت",
+                              status:
+                                i.status == "false"
+                                  ? "تائید نشده"
+                                  : "تائید مدیریت",
+                              cr: !i.creatorName ? i.adminName : i.creatorName,
+                              cu: !i.creatorName ? "-" : i.adminName,
+
+                              opr: (
+                                <>
+                                  <Tag
+                                    onClick={() => showHavaleDetail(i)}
+                                    color="green"
+                                    className=" cursor-pointer"
+                                  >
+                                    مشاهده
+                                  </Tag>
+                                </>
+                              ),
+                            }))}
+                            columns={[
+                              {
+                                title: "نام",
+                                dataIndex: "name",
+                                key: "name",
+                                sorter: true,
+                              },
+                              {
+                                title: "کد حواله",
+                                dataIndex: "code",
+                                key: "code",
+                                sorter: true,
+                              },
+                              {
+                                title: "وضعیت",
+                                dataIndex: "status",
+                                key: "status",
+                                sorter: true,
+                              },
+
+                              {
+                                title: "ایجاد کننده",
+                                dataIndex: "cr",
+                                key: "cr",
+                                sorter: true,
+                              },
+                              {
+                                title: "نام مشتری",
+                                dataIndex: "cu",
+                                key: "cu",
+                                sorter: true,
+                              },
+                              {
+                                title: "امضا مدیر مالی",
+                                dataIndex: "signOp",
+                                key: "signOp",
+                                sorter: true,
+                              },
+                              {
+                                title: "امضا سرپرست",
+                                dataIndex: "signSarparast",
+                                key: "signSarparast",
+                                sorter: true,
+                              },
+                              {
+                                title: "امضا مدیرعامل",
+                                dataIndex: "signAdmin",
+                                key: "signAdmin",
+                                sorter: true,
+                              },
+                              {
+                                title: "عملیات",
+                                dataIndex: "opr",
+                                key: "opr",
+                                sorter: true,
+                              },
+                            ]}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                }
+              />
+            ) : (
+              ""
+            )}
+            {showFirstPage == 4 ? (
               <CardStat
                 type={"10"}
                 title={"کاریز معاملات"}
@@ -2641,7 +2889,7 @@ const sales = () => {
             ) : (
               ""
             )}
-            {showFirstPage == 4 ? (
+            {showFirstPage == 5 ? (
               <CardStat
                 type={"10"}
                 title={"دفترچه مخاطبین"}
@@ -4026,6 +4274,306 @@ const sales = () => {
                   *نکته : به منظور تکمیل می بایست برای مشتری پیش فاکتور صادر
                   شود.
                 </Tag>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal Show Havale Factor */}
+      <Modal
+        className="modal-big-data-2"
+        title={
+          <div className="w-[90%] flex gap-3">
+            <p>نمایش حواله فروش</p>
+
+            {dataOrderDetailHavale.status == "true" ? (
+              <Tag color="green">حواله تائید شده</Tag>
+            ) : (
+              <Tag color="red">حواله تائید نشده</Tag>
+            )}
+          </div>
+        }
+        footer={
+          <div className="w-full flex justify-center gap-3 items-end mt-3">
+            {getCookieAccess == "1" || getCookieAccess == "3" ? (
+              <div
+                className={`w-2/3 ${dataOrderDetailHavale.status == "true" ? "hidden" : ""} flex gap-3 items-end`}
+              >
+                <InputCom
+                  onChenge={(e) => setSignCodeHavale(e.target.value)}
+                  type={"req"}
+                  placeholder={"کد امضای اپراتور یا مدیر جهت تایید فاکتور"}
+                />
+                <ButtonAfra
+                  onClick={confirmFactorHavaleSell}
+                  type={"blue"}
+                  showLoad={loadEstelam}
+                  text={"استعلام و احراز اپراتور یا مدیر"}
+                />
+              </div>
+            ) : (
+              ""
+            )}
+
+            <div className="w-1/3 flex gap-3 items-end">
+              <ButtonAfra
+                onClick={() => printDiv("print-order")}
+                type={"green"}
+                text={"چاپ حواله"}
+              />
+              <ButtonAfra
+                onClick={() => setOpenHavale(false)}
+                type={"blue-dark"}
+                text={"بستن"}
+              />
+            </div>
+          </div>
+        }
+        loading={loadHavale}
+        open={openHavale}
+        onCancel={() => setOpenHavale(false)}
+      >
+        <div className="w-full flex flex-col gap-5 justify-start items-center">
+          <div className="mt-3 flex flex-col gap-2 w-full">
+            <div className="text-lg font-bold">حواله فروش</div>
+            <div className="text-[12px] font-normal text-zinc-500">
+              می توانید حواله فروش را با جزئیات و کالا ها ببینید.
+            </div>
+
+            <div className="w-full mt-3 flex flex-col gap-3">
+              <Tag color="red">
+                *نکته : این فاکتور بدون تایید مدیر فاقد اعتبار و اهمیت می باشد
+              </Tag>
+              <Tag color="red">
+                *نکته : تائید اپراتور به منزله تائید نهائی نمی باشد
+              </Tag>
+              <Tag color="red">
+                *نکته : برای ویرایش اطلاعات شرکت یا ثبت آن از تنظیمات اقدام کنید
+              </Tag>
+              <Tag color="blue">
+                *نکته : کد امضای مدیر توسط سیستم برای مدیر ایجاد شده است، از بخش
+                تنظیمات قابل مشاهده است
+              </Tag>
+            </div>
+
+            <div className="w-full mt-3">
+              <div
+                id="print-order"
+                className="w-full print:border print:border-zinc-300 border flex flex-col border-zinc-300 h-fit "
+              >
+                <div className="w-full h-[60px] px-3 flex justify-center items-center">
+                  <h2 className="text-lg w-[99%] flex justify-center items-center font-bold">
+                    حواله فروش
+                  </h2>
+                  <span className="w-[1%] flex justify-end">
+                    {new Date().toLocaleDateString("fa-ir")}
+                  </span>
+                </div>
+                <div className="border-t border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات فروشنده</span>
+                </div>
+                <div className=" border-b px-3 border-zinc-300 w-full grid grid-cols-3 gap-3 justify-center items-center h-[120px]">
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>نام فروشنده : {dataFactor.sellerName}</span>
+                    <span>شناسه ملی : {dataFactor.nationalCode} </span>
+                    <span>نشانی : {dataFactor.address}</span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>شماره اقتصادی : {dataFactor.bussinessNumber}</span>
+                    <span> کد پستی : {dataFactor.postalCode}</span>
+                    <span></span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>شماره ثبت : {dataFactor.sabtNmuber}</span>
+                    <span> فکس : {dataFactor.fax}</span>
+                    <span>تلفن : {dataFactor.phone}</span>
+                  </div>
+                </div>
+                <div className="border-t border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات خریدار</span>
+                </div>
+                <div className=" border-b px-3 border-zinc-300 w-full grid grid-cols-3 gap-3 justify-center items-center h-[120px]">
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>
+                      نام خریدار : {dataOrderDetailBuyerHavale.buyerName}
+                    </span>
+                    <span>
+                      شناسه ملی : {dataOrderDetailBuyerHavale.nationalCode}{" "}
+                    </span>
+                    <span>نشانی : {dataOrderDetailBuyerHavale.address}</span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>
+                      شماره اقتصادی : {dataOrderDetailBuyerHavale.buissCode}
+                    </span>
+                    <span>
+                      {" "}
+                      کد پستی : {dataOrderDetailBuyerHavale.postalCode}
+                    </span>
+                    <span></span>
+                  </div>
+                  <div className="flex flex-col gap-3 items-center">
+                    <span>شماره ثبت : {"-"}</span>
+                    <span> فکس : {"-"}</span>
+                    <span>تلفن : {dataOrderDetailBuyerHavale.phone}</span>
+                  </div>
+                </div>
+
+                <div className=" border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات کالا</span>
+                </div>
+                <div className=" border-zinc-300 w-full flex h-fit">
+                  <div className="w-14 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    ردیف
+                  </div>
+                  <div className="w-40 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    کد کالا
+                  </div>
+                  <div className="w-2/3 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    شرح کالا
+                  </div>
+                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    مقدار کالا
+                  </div>
+                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    قیمت کالا
+                  </div>
+                </div>
+
+                {dataOrderDetailHavale.products.map((data, index) => (
+                  <div className=" border-zinc-300 w-full flex h-fit">
+                    <div className="w-14 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {index + 1}
+                    </div>
+                    <div className="w-40 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {data.code}
+                    </div>
+                    <div className="w-2/3 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {data.name}
+                    </div>
+                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {data.count}
+                    </div>
+                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                      {separate(data.price) + " " + "ریال"}
+                    </div>
+                  </div>
+                ))}
+                <div className="  border-zinc-300 w-full flex h-fit">
+                  <div className="w-2/3 border-l border-zinc-300 flex flex-col justify-center p-3">
+                    <div className="w-full grid grid-cols-3 gap-3">
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا سرپرست</span>
+                          {dataOrderDetailBuyerHavale.statusOp == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyerHavale.statusOpUserSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyerHavale.statusOpUserSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyerHavale.statusOpUserSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className="border-l w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیر مالی</span>
+
+                          {dataOrderDetailBuyerHavale.statusOpAdmin ==
+                          "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyerHavale.statusOpUserAdminSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96  h-32"
+                                  src={
+                                    !dataOrderDetailBuyerHavale.statusOpUserAdminSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyerHavale.statusOpUserAdminSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center h-[200px]">
+                        <div className=" w-full h-full flex flex-col gap-3 ">
+                          <span>امضا مدیرعامل</span>
+
+                          {dataOrderDetailBuyerHavale.status == "true" ? (
+                            <span className="mx-auto">
+                              {dataOrderDetailBuyerHavale.statusSignImage ==
+                              "-" ? (
+                                ""
+                              ) : (
+                                <img
+                                  className="w-96 h-32"
+                                  src={
+                                    !dataOrderDetailBuyerHavale.statusSignImage
+                                      ? "#"
+                                      : dataOrderDetailBuyerHavale.statusSignImage
+                                  }
+                                />
+                              )}
+                            </span>
+                          ) : (
+                            "تائید نشده"
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col">
+                    <div className="flex">
+                      <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                        جمع کل با 10% ارزش افزوده
+                      </div>
+                      <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                        {separate(
+                          dataOrderDetailHavale.products.reduce(
+                            (accumulator, transaction) => {
+                              return (
+                                accumulator +
+                                parseInt(
+                                  !transaction.price ? 0 : transaction.price
+                                ) *
+                                  parseInt(transaction.count) +
+                                ((accumulator +
+                                  parseInt(
+                                    !transaction.price ? 0 : transaction.price
+                                  ) *
+                                    parseInt(transaction.count)) *
+                                  10) /
+                                  100
+                              );
+                            },
+                            0
+                          )
+                        ) + "ریال"}
+                      </div>
+                    </div>
+                    <div className="mt-2 p-3">
+                      توضیحات : {dataOrderDetailBuyerHavale.des}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

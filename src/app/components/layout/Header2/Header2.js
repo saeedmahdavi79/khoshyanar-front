@@ -310,78 +310,28 @@ const Header2 = ({
             </a>
             {/* سفارش */}
 
-            {userAccess != "1" ? (
-              <a className="w-full" href="/dashboard/office">
-                <div className="flex w-full   items-center cursor-pointer">
-                  <div
-                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshEdari.pointer}`}
-                  ></div>
-                  <div
-                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] gap-2 ${sideBarPadding} ${state.bakhshEdari.bg} flex ${sideBarJustify} items-center rounded-md`}
-                  >
-                    <div className="flex gap-4 items-center justify-center">
-                      <span
-                        className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
-                      >
-                        مکاتبات و مرخصی ها
-                      </span>
-                    </div>
-                    <OfficeIcon
-                      style={{ color: state.bakhshEdari.icon }}
-                      size={"1.2rem"}
-                    />
+            <a className="w-full" href="/dashboard/office">
+              <div className="flex w-full   items-center cursor-pointer">
+                <div
+                  className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshEdari.pointer}`}
+                ></div>
+                <div
+                  className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] gap-2 ${sideBarPadding} ${state.bakhshEdari.bg} flex ${sideBarJustify} items-center rounded-md`}
+                >
+                  <div className="flex gap-4 items-center justify-center">
+                    <span
+                      className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
+                    >
+                      مکاتبات و مرخصی ها
+                    </span>
                   </div>
+                  <OfficeIcon
+                    style={{ color: state.bakhshEdari.icon }}
+                    size={"1.2rem"}
+                  />
                 </div>
-              </a>
-            ) : userAccess == "1" ? (
-              <a className="w-full" href="/dashboard/office">
-                <div className="flex w-full   items-center cursor-pointer">
-                  <div
-                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshEdari.pointer}`}
-                  ></div>
-                  <div
-                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] gap-2 ${sideBarPadding} ${state.bakhshEdari.bg} flex ${sideBarJustify} items-center rounded-md`}
-                  >
-                    <div className="flex gap-4 items-center justify-center">
-                      <span
-                        className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
-                      >
-                        اداری و پرسنل{" "}
-                      </span>
-                    </div>
-                    <OfficeIcon
-                      style={{ color: state.bakhshEdari.icon }}
-                      size={"1.2rem"}
-                    />
-                  </div>
-                </div>
-              </a>
-            ) : userAccess == "2" ? (
-              <a className="w-full" href="/dashboard/office">
-                <div className="flex w-full   items-center cursor-pointer">
-                  <div
-                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.bakhshEdari.pointer}`}
-                  ></div>
-                  <div
-                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] gap-2 ${sideBarPadding} ${state.bakhshEdari.bg} flex ${sideBarJustify} items-center rounded-md`}
-                  >
-                    <div className="flex gap-4 items-center justify-center">
-                      <span
-                        className={`text-[16px] truncate ${hideText} ${state.bakhshEdari.font} ${state.bakhshEdari.text}`}
-                      >
-                        اداری و پرسنل{" "}
-                      </span>
-                    </div>
-                    <OfficeIcon
-                      style={{ color: state.bakhshEdari.icon }}
-                      size={"1.2rem"}
-                    />
-                  </div>
-                </div>
-              </a>
-            ) : (
-              ""
-            )}
+              </div>
+            </a>
 
             {/* <a className="w-full" href="/dashboard/correspondence">
       <div className="flex w-full   items-center cursor-pointer">
@@ -461,7 +411,7 @@ const Header2 = ({
               ""
             )}
 
-{userAccess == "3" ? (
+            {/* {userAccess == "3" ? (
               <a className="w-full" href="/dashboard/prodution">
                 <div className="flex  w-full  items-center cursor-pointer ">
                   <div
@@ -486,8 +436,7 @@ const Header2 = ({
               </a>
             ) : (
               ""
-            )}
-
+            )} */}
 
             {/* چت */}
 
@@ -655,7 +604,7 @@ const Header2 = ({
                         <span
                           className={`text-[16px] ${hideText} ${state.bakhshFroosh.font} ${state.bakhshFroosh.text}`}
                         >
-                          فروش و مشتریان
+                          سفارشات و پیش فاکتور
                         </span>
                       </div>
                       <ShoppingBag01Icon
@@ -665,7 +614,7 @@ const Header2 = ({
                     </div>
                   </div>
                 </a>
-                <a className="w-full" href="/dashboard/marketing">
+                {/* <a className="w-full" href="/dashboard/marketing">
                   <div className="flex w-full   items-center cursor-pointer">
                     <div
                       className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.marketing.pointer}`}
@@ -686,36 +635,39 @@ const Header2 = ({
                       />
                     </div>
                   </div>
-                </a>
+                </a> */}
               </>
             ) : (
               ""
             )}
 
             {/* آمار */}
-
-            <a className="w-full" href="/dashboard/messenger">
-              <div className="flex  w-full   items-center cursor-pointer ">
-                <div
-                  className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.message.pointer}`}
-                ></div>
-                <div
-                  className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.message.bg} flex ${sideBarJustify} items-center rounded-md`}
-                >
-                  <div className="flex gap-4 items-center justify-center">
-                    <span
-                      className={`text-[16px] ${hideText} ${state.message.font} ${state.message.text}`}
-                    >
-                      پیام رسان داخلی
-                    </span>
+            {userAccess == "7" ? (
+              ""
+            ) : (
+              <a className="w-full" href="/dashboard/messenger">
+                <div className="flex  w-full   items-center cursor-pointer ">
+                  <div
+                    className={`flex justify-start transition-all duration-500 w-1 h-8 rounded-l-[4px] ${state.message.pointer}`}
+                  ></div>
+                  <div
+                    className={`${sideBarEleman} truncate transition-all mx-2 duration-500 h-[45.81px] ${sideBarPadding} gap-2 ${state.message.bg} flex ${sideBarJustify} items-center rounded-md`}
+                  >
+                    <div className="flex gap-4 items-center justify-center">
+                      <span
+                        className={`text-[16px] ${hideText} ${state.message.font} ${state.message.text}`}
+                      >
+                        پیام رسان داخلی
+                      </span>
+                    </div>
+                    <Message01Icon
+                      style={{ color: state.message.icon }}
+                      size={"1.2rem"}
+                    />
                   </div>
-                  <Message01Icon
-                    style={{ color: state.message.icon }}
-                    size={"1.2rem"}
-                  />
                 </div>
-              </div>
-            </a>
+              </a>
+            )}
 
             {userAccess == "1" || userAccess == "3" ? (
               <a className="w-full" href="/dashboard/facilities">

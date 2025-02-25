@@ -70,7 +70,7 @@ const produtionPage = () => {
             setHandleActive6("sub-menu-deactive");
             setHandleActive7("sub-menu-active");
           }
-          if(data.user.access == "3"){
+          if (data.user.access == "3") {
             setShowName(false);
             setPersonel(true);
             setLeave(false);
@@ -1325,6 +1325,7 @@ const produtionPage = () => {
   const [dataShowFactorHavaleDetail, setDataShowFactorHavaleDetail] = useState(
     []
   );
+  const [havaleOBJ, setHavaleOBJ] = useState({});
   const [havaleId, setHavaleId] = useState(false);
 
   const [tableDataHavale, setTableDataHavale] = useState([]);
@@ -1429,10 +1430,11 @@ const produtionPage = () => {
     setOpenShowHavale(true);
     setLoadingShowHavale(true);
     setDataShowFactorHavaleDetail(data.products);
+    setHavaleOBJ(data);
     setTimeout(() => setLoadingShowHavale(false), 2000);
     setReciverDetailHavale(data.reciver);
     setReciveDateHavale(data.date);
-    setfactorStatusHavale(data.statusOpAdminAnbardar);
+    setfactorStatusHavale(data.statusOpUserAdminAnbardar);
     setDataOrderDetailBuyer(data);
     setAnbarDetailResidHavale(data.sourceName);
 
@@ -1487,6 +1489,8 @@ const produtionPage = () => {
 
   const confirmFactorHavale = () => {
     const getCookies = getCookie("WuZiK");
+    const tokenTak = getCookie("TakSess");
+
     setLoadEstelam(true);
     // fetch(baseUrl("/auth/sign-check"), {
     //   method: "POST",
@@ -1530,132 +1534,79 @@ const produtionPage = () => {
     //     }
     //   });
 
-
-
     //   setLoadEstelam(true);
-      fetch(baseUrl("/auth/sign-check"), {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${getCookies}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          signCode: signCode,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status == 200) {
-            if (data.thatsOp == false) {
-              openNotificationWithIconSign("success");
-              setLoadEstelam(false);
-  
-              fetch(baseUrl("/product/admin-havale-confirm"), {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${getCookies}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  _id: havaleId,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status == 202) {
-                    openNotificationWithIconSignConf("success");
-                    // setDataShowFactorHavaleDetail(false);
-                    dataRefresh();
-                  } else {
-                    openNotificationWithSignConf2("error");
-                  }
-                });
-            } else {
-              if (data.thatsOpSarparast == true) {
-                openNotificationWithIconSign("success");
-                setLoadEstelam(false);
-  
-                fetch(baseUrl("/product/sarparast-confirm"), {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${getCookies}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    _id: havaleId,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.status == 202) {
-                      openNotificationWithIconSignConf("success");
-                     
-                      dataRefresh();
-                    } else {
-                      openNotificationWithSignConf2("error");
-                    }
-                  });
-              }
-              if (data.thatsOpModir == true) {
-                openNotificationWithIconSign("success");
-                setLoadEstelam(false);
-  
-                fetch(baseUrl("/product/manage-confirm"), {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${getCookies}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    _id: havaleId,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.status == 202) {
-                      openNotificationWithIconSignConf("success");
-                     
-                      dataRefresh();
-                    } else {
-                      openNotificationWithSignConf2("error");
-                    }
-                  });
-              }
-              if(data.thatsAnbar == true){
-                openNotificationWithIconSign("success");
-                setLoadEstelam(false);
-  
-                fetch(baseUrl("/product/anbar-confirm"), {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${getCookies}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    _id: havaleId,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.status == 202) {
-                      openNotificationWithIconSignConf("success");
-                      
-                      dataRefresh();
-                    } else {
-                      openNotificationWithSignConf2("error");
-                    }
-                  });
-              }
-            }
-          } else {
+    fetch(baseUrl("/auth/sign-check"), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getCookies}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signCode: signCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 200) {
+          // if (data.thatsOpSarparast == true) {
+          //   openNotificationWithIconSign("success");
+          //   setLoadEstelam(false);
+
+          //   fetch(baseUrl("/product/anbar-havale-confirm"), {
+          //     method: "POST",
+          //     headers: {
+          //       Authorization: `Bearer ${getCookies}`,
+          //       "Content-Type": "application/json",
+          //     },
+          //     body: JSON.stringify({
+          //       _id: havaleId,
+          //     }),
+          //   })
+          //     .then((response) => response.json())
+          //     .then((data) => {
+          //       if (data.status == 202) {
+          //         openNotificationWithIconSignConf("success");
+          //         setOpenShowHavale(false);
+
+          //         dataRefresh();
+          //       } else {
+          //         openNotificationWithSignConf2("error");
+          //       }
+          //     });
+          // }
+
+          if (data.thatsAnbar == true) {
+            openNotificationWithIconSign("success");
             setLoadEstelam(false);
-            openNotificationWithSign2("error");
+
+            fetch(baseUrl("/product/anbar-havale-confirm"), {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${getCookies}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                _id: havaleId,
+                tokenTak,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.status == 202) {
+                  openNotificationWithIconSignConf("success");
+                  setOpenShowHavale(false);
+
+                  dataRefresh();
+                } else {
+                  openNotificationWithSignConf2("error");
+                }
+              });
           }
-        });
-
-
-
-
+        } else {
+          setLoadEstelam(false);
+          openNotificationWithSign2("error");
+        }
+      });
   };
 
   const dataRefresh = () => {
@@ -1669,6 +1620,15 @@ const produtionPage = () => {
       .then((data) => {
         !data.data ? setDatePrd([]) : setDatePrd(data.data.dataGet);
       });
+
+    fetch(baseUrl("/product/get-havale-anbar"), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getCookies}` },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        !data.data ? setDataHavale([]) : setDataHavale(data.data.dataGet)
+      );
 
     fetch(baseUrl("/category/get-id"), {
       method: "GET",
@@ -2163,7 +2123,9 @@ const produtionPage = () => {
             <div className="w-full flex flex-col gap-3 mt-5">
               {getCookieAccess == "8" ? (
                 ""
-              ) :getCookieAccess == "3" ?"" : (
+              ) : getCookieAccess == "3" ? (
+                ""
+              ) : (
                 <span
                   onClick={handleShowName}
                   className={`w-full cursor-pointer p-2 ${handleActive} flex justify-between items-center rounded-lg`}
@@ -2187,7 +2149,9 @@ const produtionPage = () => {
 
               {getCookieAccess == "8" ? (
                 ""
-              ) :getCookieAccess == "3" ?"" : (
+              ) : getCookieAccess == "3" ? (
+                ""
+              ) : (
                 <span
                   onClick={handleShowFormolasion}
                   className={`w-full cursor-pointer p-2 ${handleActive4} flex justify-between items-center rounded-lg`}
@@ -2198,7 +2162,9 @@ const produtionPage = () => {
               )}
               {getCookieAccess == "8" ? (
                 ""
-              ) :getCookieAccess == "3" ?"" : (
+              ) : getCookieAccess == "3" ? (
+                ""
+              ) : (
                 <span
                   onClick={handleShowPishbini}
                   className={`w-full cursor-pointer p-2 ${handleActive5} flex justify-between items-center rounded-lg`}
@@ -2217,7 +2183,9 @@ const produtionPage = () => {
               </span>
               {getCookieAccess == "8" ? (
                 ""
-              ) :getCookieAccess == "3" ?"" : (
+              ) : getCookieAccess == "3" ? (
+                ""
+              ) : (
                 <span
                   onClick={handleShowAmar}
                   className={`w-full cursor-pointer p-2 ${handleActive6} flex justify-between items-center rounded-lg`}
@@ -2661,116 +2629,131 @@ const produtionPage = () => {
                       role="tablist"
                       className="tabs w-full grid-cols-7 tabs-bordered"
                     >
-                     
-                      {getCookieAccess == "3" ?"" : 
-                      <>
-                       <input
-                        type="radio"
-                        name="my_tabs_1"
-                        role="tab"
-                        className="tab"
-                        aria-label="لیست کل انبار ها"
-                        defaultChecked
-                      />
-                      <div role="tabpanel" className="tab-content px-3 py-3">
-                          <TableAfra
-                            type={"green"}
-                            data={dataSource.map((visitor) => ({
-                              key: visitor._id,
-                              name: !visitor.sourceName
-                                ? "-"
-                                : visitor.sourceName,
-                              type: !visitor.id ? "-" : visitor.id,
-                              vahed: !visitor.vahed ? "-" : visitor.vahed,
-                              dama: !visitor.dama ? "-" : visitor.dama,
-                              des: !visitor.sourceDes ? "-" : visitor.sourceDes,
-                              exp: !visitor.expireDate
-                                ? "ندارد"
-                                : visitor.expireDate,
-                              operation: (
-                                <>
-                                  <div className="flex justify-center gap-3 items-center">
-                                    <Tag
-                                      className=" cursor-pointer"
-                                      onClick={() => showModalDetailAnbar(visitor)}
-                                      color="blue"
-                                    >
-                                      مشاهده اطلاعات
-                                    </Tag>
-
-                                    <Tag
-                                      className=" cursor-pointer"
-                                      onClick={() => showDetailAnbar(visitor)}
-                                      color="green"
-                                    >
-                                      مشاهده موجودی
-                                    </Tag>
-                                    <Tag
-                                      className=" cursor-pointer"
-                                      onClick={() => showDeleteAnbar(visitor)}
-                                      color="red"
-                                    >
-                                      حذف انبار
-                                    </Tag>
-                                  </div>
-                                </>
-                              ),
-                            }))}
-                            columns={[
-                              {
-                                title: "نام",
-                                dataIndex: "name",
-                                key: "name",
-                                sorter: true,
-                              },
-                              {
-                                title: "توضیحات",
-                                dataIndex: "des",
-                                key: "des",
-                                sorter: true,
-                              },
-                              {
-                                title: "کد",
-                                dataIndex: "type",
-                                key: "type",
-                                sorter: true,
-                              },
-                              {
-                                title: "واحد",
-                                dataIndex: "vahed",
-                                key: "vahed",
-                                sorter: true,
-                              },
-                              {
-                                title: "دما",
-                                dataIndex: "dama",
-                                key: "dama",
-                                sorter: true,
-                              },
-
-                              {
-                                title: "تاریخ انقضا",
-                                dataIndex: "exp",
-                                key: "exp",
-                                sorter: true,
-                              },
-                              {
-                                title: "عملیات",
-                                dataIndex: "operation",
-                                key: "operation",
-                                sorter: true,
-                              },
-                            ]} />
-                        </div><input
+                      {getCookieAccess == "3" ? (
+                        ""
+                      ) : (
+                        <>
+                          <input
                             type="radio"
                             name="my_tabs_1"
                             role="tab"
                             className="tab"
-                            aria-label="افزودن انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            aria-label="لیست کل انبار ها"
+                            defaultChecked
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
+                            <TableAfra
+                              type={"green"}
+                              data={dataSource.map((visitor) => ({
+                                key: visitor._id,
+                                name: !visitor.sourceName
+                                  ? "-"
+                                  : visitor.sourceName,
+                                type: !visitor.id ? "-" : visitor.id,
+                                vahed: !visitor.vahed ? "-" : visitor.vahed,
+                                dama: !visitor.dama ? "-" : visitor.dama,
+                                des: !visitor.sourceDes
+                                  ? "-"
+                                  : visitor.sourceDes,
+                                exp: !visitor.expireDate
+                                  ? "ندارد"
+                                  : visitor.expireDate,
+                                operation: (
+                                  <>
+                                    <div className="flex justify-center gap-3 items-center">
+                                      <Tag
+                                        className=" cursor-pointer"
+                                        onClick={() =>
+                                          showModalDetailAnbar(visitor)
+                                        }
+                                        color="blue"
+                                      >
+                                        مشاهده اطلاعات
+                                      </Tag>
+
+                                      <Tag
+                                        className=" cursor-pointer"
+                                        onClick={() => showDetailAnbar(visitor)}
+                                        color="green"
+                                      >
+                                        مشاهده موجودی
+                                      </Tag>
+                                      <Tag
+                                        className=" cursor-pointer"
+                                        onClick={() => showDeleteAnbar(visitor)}
+                                        color="red"
+                                      >
+                                        حذف انبار
+                                      </Tag>
+                                    </div>
+                                  </>
+                                ),
+                              }))}
+                              columns={[
+                                {
+                                  title: "نام",
+                                  dataIndex: "name",
+                                  key: "name",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "توضیحات",
+                                  dataIndex: "des",
+                                  key: "des",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "کد",
+                                  dataIndex: "type",
+                                  key: "type",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "واحد",
+                                  dataIndex: "vahed",
+                                  key: "vahed",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "دما",
+                                  dataIndex: "dama",
+                                  key: "dama",
+                                  sorter: true,
+                                },
+
+                                {
+                                  title: "تاریخ انقضا",
+                                  dataIndex: "exp",
+                                  key: "exp",
+                                  sorter: true,
+                                },
+                                {
+                                  title: "عملیات",
+                                  dataIndex: "operation",
+                                  key: "operation",
+                                  sorter: true,
+                                },
+                              ]}
+                            />
+                          </div>
+                          <input
+                            type="radio"
+                            name="my_tabs_1"
+                            role="tab"
+                            className="tab"
+                            aria-label="افزودن انبار"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
                             <div className="w-full">
                               <Tag color="blue">
-                                *نکته : در صورتی که انبار مورد نظر دارای تاریخ انقضا
-                                نیست خالی بماند
+                                *نکته : در صورتی که انبار مورد نظر دارای تاریخ
+                                انقضا نیست خالی بماند
                               </Tag>
                             </div>
                             <div className="w-full grid grid-cols-4 gap-3 items-end">
@@ -2778,19 +2761,22 @@ const produtionPage = () => {
                                 onChenge={changeHandlerAnbar}
                                 name={"sourceName"}
                                 type={"req"}
-                                placeholder={"نام انبار را وارد کنید"} />
+                                placeholder={"نام انبار را وارد کنید"}
+                              />
 
                               <InputCom
                                 onChenge={changeCalAnbar}
                                 name={"expireDate"}
                                 type={"date"}
-                                placeholder={"تاریخ انقضا انبار را وارد کنید"} />
+                                placeholder={"تاریخ انقضا انبار را وارد کنید"}
+                              />
 
                               <InputCom
                                 onChenge={changeHandlerAnbar}
                                 name={"sourceDes"}
                                 type={"req"}
-                                placeholder={"توضیحات انبار را وارد کنید"} />
+                                placeholder={"توضیحات انبار را وارد کنید"}
+                              />
                               <SelectCombo
                                 defaultValue={typeUser}
                                 options={[
@@ -2813,7 +2799,8 @@ const produtionPage = () => {
                                 ]}
                                 name="vahed"
                                 onChange={changeHandlerVahedAnbar}
-                                placeholder={"واحد شمارش را انتخاب کنید"} />
+                                placeholder={"واحد شمارش را انتخاب کنید"}
+                              />
                               <SelectCombo
                                 defaultValue={typeUser}
                                 options={[
@@ -2828,30 +2815,40 @@ const produtionPage = () => {
                                 ]}
                                 name="type"
                                 onChange={changeHandlerTypeAnbar}
-                                placeholder={"نوع انبار را انتخاب کنید"} />
+                                placeholder={"نوع انبار را انتخاب کنید"}
+                              />
                               <InputCom
                                 onChenge={changeHandlerAnbar}
                                 name={"dama"}
                                 type={"req"}
-                                placeholder={"دمای مورد نظر انبار را وارد کنید"} />
+                                placeholder={"دمای مورد نظر انبار را وارد کنید"}
+                              />
                               <div className="flex gap-3 w-full">
                                 <ButtonAfra
                                   showLoad={showLoadAnbar}
                                   onClick={sendDataToServerAnbar}
                                   text={"ثبت"}
-                                  type={"green"} />
+                                  type={"green"}
+                                />
                                 <ButtonAfra
                                   onClick={() => location.reload()}
                                   text={"انصراف"}
-                                  type={"blue-dark"} />
+                                  type={"blue-dark"}
+                                />
                               </div>
                             </div>
-                          </div><input
+                          </div>
+                          <input
                             type="radio"
                             name="my_tabs_1"
                             role="tab"
                             className="tab"
-                            aria-label="رسید به انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            aria-label="رسید به انبار"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
                             <div className="w-full grid grid-cols-4 gap-3 items-end">
                               <SelectCombo
                                 placeholder={"کالا را انتخاب کنید"}
@@ -2860,20 +2857,29 @@ const produtionPage = () => {
                                   label: data.title,
                                   data: data,
                                 }))}
-                                onChange={changeKalaHandler} />
+                                onChange={changeKalaHandler}
+                              />
 
                               <InputCom
                                 onChenge={(e) => setCount(e.target.value)}
                                 type={"req"}
-                                placeholder={"تعداد را وارد کنید"} />
-                              <InputCom type={"dis"} placeholder={dataVahedPrd} />
+                                placeholder={"تعداد را وارد کنید"}
+                              />
+                              <InputCom
+                                type={"dis"}
+                                placeholder={dataVahedPrd}
+                              />
 
                               <div className="w-full flex gap-3 ">
                                 <ButtonAfra
                                   type={"green"}
                                   text={"ثبت"}
-                                  onClick={addProductToTable} />
-                                <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                                  onClick={addProductToTable}
+                                />
+                                <ButtonAfra
+                                  type={"blue-dark"}
+                                  text={"انصراف"}
+                                />
                               </div>
                             </div>
                             <div className="w-full flex flex-col gap-3 ">
@@ -2881,7 +2887,8 @@ const produtionPage = () => {
                                 col={5}
                                 row={5}
                                 type={"textareaDis"}
-                                placeholder={dataDesPrd} />
+                                placeholder={dataDesPrd}
+                              />
                             </div>
 
                             <div className="mt-3 w-full">
@@ -2889,8 +2896,8 @@ const produtionPage = () => {
                                 اطلاعات رسید انبار
                               </div>
                               <div className="font-normal mt-2 text-zinc-500 text-[11px]">
-                                اطلاعات مندرج در فاکتور خرید یا همان رسید به انبار
-                                که از این فرم وارد می شود
+                                اطلاعات مندرج در فاکتور خرید یا همان رسید به
+                                انبار که از این فرم وارد می شود
                               </div>
                             </div>
 
@@ -2898,26 +2905,31 @@ const produtionPage = () => {
                               <InputCom
                                 onChenge={(e) => setReciver(e.target.value)}
                                 type={"req"}
-                                placeholder={"تحویل گیرنده را وارد کنید"} />
+                                placeholder={"تحویل گیرنده را وارد کنید"}
+                              />
                               <InputCom
                                 onChenge={(e) => setCode(e.target.value)}
                                 type={"req"}
-                                placeholder={"شماره برگه را وارد کنید"} />
+                                placeholder={"شماره برگه را وارد کنید"}
+                              />
                               <InputCom
                                 onChenge={changeCalResid}
                                 type={"date"}
-                                placeholder={"تاریخ را انتخاب کنید"} />
+                                placeholder={"تاریخ را انتخاب کنید"}
+                              />
                               <InputCom
                                 onChenge={(e) => setLocation(e.target.value)}
                                 type={"req"}
-                                placeholder={"محل خرید را وارد کنید"} />
+                                placeholder={"محل خرید را وارد کنید"}
+                              />
                               <SelectCombo
                                 placeholder={"انبار را انتخاب کنید"}
                                 options={dataSource.map((data) => ({
                                   value: data._id,
                                   label: data.sourceName,
                                 }))}
-                                onChange={changeSoruceResid} />
+                                onChange={changeSoruceResid}
+                              />
                             </div>
 
                             <div className="w-full mt-3">
@@ -2950,7 +2962,8 @@ const produtionPage = () => {
                                     dataIndex: "operation",
                                     key: "operation",
                                   },
-                                ]} />
+                                ]}
+                              />
                             </div>
 
                             <div className="w-full mt-3 flex justify-center">
@@ -2959,79 +2972,88 @@ const produtionPage = () => {
                                   type={"green"}
                                   showLoad={showLoadRecive}
                                   text={"ثبت نهایی فاکتور"}
-                                  onClick={addPrdIncrase} />
-                                <ButtonAfra type={"blue-dark"} text={"انصراف"} />
+                                  onClick={addPrdIncrase}
+                                />
+                                <ButtonAfra
+                                  type={"blue-dark"}
+                                  text={"انصراف"}
+                                />
                               </div>
                             </div>
                           </div>
-                          </>}
-                     
-                          <input
-                          type="radio"
-                          name="my_tabs_1"
-                          role="tab"
-                          className="tab"
-                          aria-label="لیست حواله های انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
-                            <TableAfra
-                              type={"green"}
-                              data={dataHavale.map((visitor) => ({
-                                key: visitor._id,
-                                name: visitor.code,
-                                code: visitor.adminName,
-                                status: visitor.statusOpAdminAnbardar == "false"
-                                  ? "تایید نشده"
-                                  : "تایید انبار",
-                                count: visitor.date,
+                        </>
+                      )}
 
-                                opr: (
-                                  <>
-                                    <div className="w-full flex gap-3 justify-center">
-                                      <Tag
-                                        onClick={() => showHavaleFactor(visitor)}
-                                        color="green"
-                                        className="text-[14px] cursor-pointer"
-                                      >
-                                        مشاهده / چاپ
-                                      </Tag>
-                                    </div>
-                                  </>
-                                ),
-                              }))}
-                              columns={[
-                                {
-                                  title: "کد رسید",
-                                  dataIndex: "name",
-                                  key: "name",
-                                  sorter: true,
-                                },
+                      <input
+                        type="radio"
+                        name="my_tabs_1"
+                        role="tab"
+                        className="tab"
+                        aria-label="لیست حواله های انبار"
+                      />
+                      <div role="tabpanel" className="tab-content px-3 py-3">
+                        <TableAfra
+                          type={"green"}
+                          data={dataHavale.map((visitor) => ({
+                            key: visitor._id,
+                            name: visitor.code,
+                            code: visitor.adminName,
+                            status:
+                              visitor.statusOpUserAdminAnbardar == "false"
+                                ? "تایید نشده"
+                                : "تایید انبار",
+                            count: visitor.date,
 
-                                {
-                                  title: "صادر کننده",
-                                  dataIndex: "code",
-                                  key: "code",
-                                  sorter: true,
-                                },
-                                {
-                                  title: "وضعیت",
-                                  dataIndex: "status",
-                                  key: "status",
-                                  sorter: true,
-                                },
-                                {
-                                  title: "تاریخ",
-                                  dataIndex: "count",
-                                  key: "count",
-                                  sorter: true,
-                                },
+                            opr: (
+                              <>
+                                <div className="w-full flex gap-3 justify-center">
+                                  <Tag
+                                    onClick={() => showHavaleFactor(visitor)}
+                                    color="green"
+                                    className="text-[14px] cursor-pointer"
+                                  >
+                                    مشاهده / چاپ
+                                  </Tag>
+                                </div>
+                              </>
+                            ),
+                          }))}
+                          columns={[
+                            {
+                              title: "کد رسید",
+                              dataIndex: "name",
+                              key: "name",
+                              sorter: true,
+                            },
 
-                                {
-                                  title: "عملیات",
-                                  dataIndex: "opr",
-                                  key: "opr",
-                                  sorter: true,
-                                },
-                              ]} />
-                          </div>
+                            {
+                              title: "صادر کننده",
+                              dataIndex: "code",
+                              key: "code",
+                              sorter: true,
+                            },
+                            {
+                              title: "وضعیت",
+                              dataIndex: "status",
+                              key: "status",
+                              sorter: true,
+                            },
+                            {
+                              title: "تاریخ",
+                              dataIndex: "count",
+                              key: "count",
+                              sorter: true,
+                            },
+
+                            {
+                              title: "عملیات",
+                              dataIndex: "opr",
+                              key: "opr",
+                              sorter: true,
+                            },
+                          ]}
+                        />
+                      </div>
                       <input
                         type="radio"
                         name="my_tabs_1"
@@ -3182,24 +3204,31 @@ const produtionPage = () => {
                           </div>
                         </div>
                       </div>
-                      {getCookieAccess == "3" ?"" :
-                      <>
-                      
+                      {getCookieAccess == "3" ? (
+                        ""
+                      ) : (
+                        <>
                           <input
                             type="radio"
                             name="my_tabs_1"
                             role="tab"
                             className="tab"
-                            aria-label="لیست رسید های انبار" /><div role="tabpanel" className="tab-content px-3 py-3">
+                            aria-label="لیست رسید های انبار"
+                          />
+                          <div
+                            role="tabpanel"
+                            className="tab-content px-3 py-3"
+                          >
                             <TableAfra
                               type={"green"}
                               data={dataResid.map((visitor) => ({
                                 key: visitor._id,
                                 name: visitor.code,
                                 code: visitor.adminName,
-                                status: visitor.status == "false"
-                                  ? "تایید نشده"
-                                  : "تایید مدیر",
+                                status:
+                                  visitor.status == "false"
+                                    ? "تایید نشده"
+                                    : "تایید مدیر",
                                 count: visitor.date,
 
                                 opr: (
@@ -3249,8 +3278,11 @@ const produtionPage = () => {
                                   key: "opr",
                                   sorter: true,
                                 },
-                              ]} />
-                          </div></>}
+                              ]}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   </>
                 }
@@ -4640,7 +4672,9 @@ const produtionPage = () => {
         }
         footer={
           <div className="w-full flex justify-center gap-3 items-end mt-3">
-            {getCookieAccess == "1" || getCookieAccess == "3" || getCookieAccess == "4" ? (
+            {getCookieAccess == "1" ||
+            getCookieAccess == "3" ||
+            getCookieAccess == "4" ? (
               <div
                 className={`w-2/3 ${factorStatusHavale == "true" ? "hidden" : ""} flex gap-3 items-end`}
               >
@@ -4731,6 +4765,26 @@ const produtionPage = () => {
                     <span>تلفن : {dataFactor.phone}</span>
                   </div>
                 </div>
+                <div className="border-t border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
+                  <span>مشخصات خریدار</span>
+                </div>
+                <div className=" border-b px-3 border-zinc-300 w-full grid grid-cols-3 gap-3 justify-center items-center h-[120px]">
+                  <div className="flex flex-col gap-3">
+                    <span>نام خریدار : {havaleOBJ.reciver}</span>
+                    <span>شناسه ملی : - </span>
+                    <span>نشانی : {havaleOBJ.location}</span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <span>شماره اقتصادی : -</span>
+                    <span> کد پستی : -</span>
+                    <span></span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <span>شماره ثبت : -</span>
+                    <span> فکس : -</span>
+                    <span>تلفن : -</span>
+                  </div>
+                </div>
 
                 <div className=" border-b border-zinc-300 w-full flex justify-center items-center h-[35px]">
                   <span>مشخصات کالا</span>
@@ -4748,11 +4802,8 @@ const produtionPage = () => {
                   <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                     مقدار کالا
                   </div>
-                  <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                   -
-                  </div>
-                  <div className="w-1/4 border-b  border-zinc-300 flex justify-center items-center h-[35px]">
-                    -
+                  <div className="w-[7.2rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                    قیمت کالا
                   </div>
                 </div>
 
@@ -4768,36 +4819,17 @@ const produtionPage = () => {
                       {data.name}
                     </div>
                     <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                      {data.newVal}
+                      {!data.newVal ? data.count : data.newVal}
                     </div>
-                    <div className="w-24 border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                      {/* {separate(!data.price ? 0 : data.price)} */}
+                    <div className="w-[7.2rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                       -
-                    </div>
-                    <div className="w-1/4 border-b  border-zinc-300 flex justify-center items-center h-[35px]">
-                      -
-                      {/* {separate(
-                        parseInt(!data.price ? 0 : data.price) *
-                          parseInt(data.newVal)
-                      ) + "ریال"} */}
                     </div>
                   </div>
                 ))}
                 <div className="  border-zinc-300 w-full flex h-fit">
                   <div className="w-2/3 border-l border-zinc-300 flex flex-col justify-center p-3">
-                    <div className="w-full font-black text-[14px]">
-                      کالاهای فوق در تاریخ{" "}
-                      <span dir="ltr">
-                        {reciveDateHavale.replaceAll("-", "/")}
-                      </span>{" "}
-                      توسط{" "}
-                      <span className="mr-1 ml-1">
-                        {reciverDetailHavale + " "}
-                      </span>
-                      از انبار {anbarDetailHavale} خارج شده است.
-                    </div>
-                    <div className="w-full grid grid-cols-4 gap-3 mt-2">
-                    <div className="flex justify-center items-center h-[200px]">
+                    <div className="w-full grid grid-cols-2 gap-3 mt-2">
+                      {/* <div className="flex justify-center items-center h-[200px]">
                         <div className="border-l w-full h-full flex flex-col gap-3 ">
                           <span>امضا سرپرست</span>
                           {dataOrderDetailBuyer.statusOp == "true" ? (
@@ -4845,12 +4877,13 @@ const produtionPage = () => {
                             "تائید نشده"
                           )}
                         </div>
-                      </div>
+                      </div> */}
                       <div className="flex justify-center items-center h-[200px]">
                         <div className="border-l w-full h-full flex flex-col gap-3 ">
                           <span>امضا انبار دار</span>
 
-                          {dataOrderDetailBuyer.statusOpAdminAnbardar == "true" ? (
+                          {dataOrderDetailBuyer.statusOpUserAdminAnbardar ==
+                          "true" ? (
                             <span className="mx-auto">
                               {dataOrderDetailBuyer.statusOpUserAdminSignImageAnbardar ==
                               "-" ? (
@@ -4871,7 +4904,7 @@ const produtionPage = () => {
                           )}
                         </div>
                       </div>
-                      <div className="flex justify-center items-center h-[200px]">
+                      {/* <div className="flex justify-center items-center h-[200px]">
                         <div className=" w-full h-full flex flex-col gap-3 ">
                           <span>امضا مدیرعامل</span>
 
@@ -4894,12 +4927,11 @@ const produtionPage = () => {
                             "تائید نشده"
                           )}
                         </div>
-                      </div>
+                      </div> */}
                     </div>
-                  
                   </div>
-                  <div className="w-1/3 flex flex-col">
-                   {/* " <div className="flex">
+                  <div className="w-1/3 flex flex-col p-4">
+                    {/* " <div className="flex">
                       <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                         جمع کل
                       </div>
@@ -4920,6 +4952,18 @@ const produtionPage = () => {
                         ) + "ریال"}
                       </div>
                     </div>" */}
+
+                    <div className="w-full font-black text-[14px]">
+                      کالاهای فوق در تاریخ{" "}
+                      <span dir="ltr">
+                        {reciveDateHavale.replaceAll("-", "/")}
+                      </span>{" "}
+                      توسط{" "}
+                      <span className="mr-1 ml-1">
+                        {reciverDetailHavale + " "}
+                      </span>
+                      از انبار {anbarDetailHavale} خارج شده است.
+                    </div>
                   </div>
                 </div>
               </div>
