@@ -1403,6 +1403,33 @@ const sales = () => {
       });
   };
 
+  const totalAmount = dataOrderDetailHavale.products.reduce(
+    (accumulator, transaction) => {
+      const price = parseInt(!transaction.price ? 0 : transaction.price); // قیمت هر تراکنش
+      const count = parseInt(transaction.count); // تعداد هر تراکنش
+      const subtotal = price * count; // مبلغ هر تراکنش
+      return accumulator + subtotal; // جمع کل مبالغ
+    },
+    0
+  );
+
+  // اضافه کردن ۱۰ درصد به جمع کل
+  const totalAmountWithTax = totalAmount + (totalAmount * 10) / 100;
+
+  const totalAmountFactor = dataOrderDetail.products.reduce(
+    (accumulator, transaction) => {
+      const price = parseInt(!transaction.price ? 0 : transaction.price); // قیمت هر تراکنش
+      const count = parseInt(transaction.count); // تعداد هر تراکنش
+      const subtotal = price * count; // مبلغ هر تراکنش
+      return accumulator + subtotal; // جمع کل مبالغ
+    },
+    0
+  );
+
+  // اضافه کردن ۱۰ درصد به جمع کل
+  const totalAmountWithFacTax =
+    totalAmountFactor + (totalAmountFactor * 10) / 100;
+
   return (
     <>
       <div className="w-full flex flex-col  h-full px-6 gap-4 py-1">
@@ -3886,25 +3913,26 @@ const sales = () => {
                       </div>
                       <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
                         {separate(
-                          dataOrderDetail.products.reduce(
-                            (accumulator, transaction) => {
-                              return (
-                                accumulator +
-                                parseInt(
-                                  !transaction.price ? 0 : transaction.price
-                                ) *
-                                  parseInt(transaction.count) +
-                                ((accumulator +
-                                  parseInt(
-                                    !transaction.price ? 0 : transaction.price
-                                  ) *
-                                    parseInt(transaction.count)) *
-                                  10) /
-                                  100
-                              );
-                            },
-                            0
-                          )
+                          // dataOrderDetail.products.reduce(
+                          //   (accumulator, transaction) => {
+                          //     return (
+                          //       accumulator +
+                          //       parseInt(
+                          //         !transaction.price ? 0 : transaction.price
+                          //       ) *
+                          //         parseInt(transaction.count) +
+                          //       ((accumulator +
+                          //         parseInt(
+                          //           !transaction.price ? 0 : transaction.price
+                          //         ) *
+                          //           parseInt(transaction.count)) *
+                          //         10) /
+                          //         100
+                          //     );
+                          //   },
+                          //   0
+                          // )
+                          totalAmountWithFacTax
                         ) + "ریال"}
                       </div>
                     </div>
@@ -4547,25 +4575,26 @@ const sales = () => {
                       </div>
                       <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
                         {separate(
-                          dataOrderDetailHavale.products.reduce(
-                            (accumulator, transaction) => {
-                              return (
-                                accumulator +
-                                parseInt(
-                                  !transaction.price ? 0 : transaction.price
-                                ) *
-                                  parseInt(transaction.count) +
-                                ((accumulator +
-                                  parseInt(
-                                    !transaction.price ? 0 : transaction.price
-                                  ) *
-                                    parseInt(transaction.count)) *
-                                  10) /
-                                  100
-                              );
-                            },
-                            0
-                          )
+                          // dataOrderDetailHavale.products.reduce(
+                          //   (accumulator, transaction) => {
+                          //     return (
+                          //       accumulator +
+                          //       parseInt(
+                          //         !transaction.price ? 0 : transaction.price
+                          //       ) *
+                          //         parseInt(transaction.count) +
+                          //       ((accumulator +
+                          //         parseInt(
+                          //           !transaction.price ? 0 : transaction.price
+                          //         ) *
+                          //           parseInt(transaction.count)) *
+                          //         10) /
+                          //         100
+                          //     );
+                          //   },
+                          //   0
+                          // )
+                          totalAmountWithTax
                         ) + "ریال"}
                       </div>
                     </div>
