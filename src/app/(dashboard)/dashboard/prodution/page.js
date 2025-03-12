@@ -5032,7 +5032,7 @@ const produtionPage = () => {
                       </span>{" "}
                       توسط{" "}
                       <span className="mr-1 ml-1">
-                        {dataOrderDetailBuyer.reciver + " "}
+                        {dataOrderDetailBuyer.reciver2 + " "}
                       </span>
                       با شماره پلاک خودرو
                       <span className="mr-1 ml-1">
