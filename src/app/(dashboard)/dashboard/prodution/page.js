@@ -592,6 +592,13 @@ const produtionPage = () => {
     });
   };
 
+  const openNotificationWithSignConf2Mess = (type, mess) => {
+    api[type]({
+      message: "تایید نا موفق",
+      description: mess,
+    });
+  };
+
   const sendDataToServer = async () => {
     const getCookiess = await getCookie("WuZiK");
     setShowLoad(true);
@@ -1435,7 +1442,7 @@ const produtionPage = () => {
     setReciverDetailHavale(data.reciver);
     setReciveDateHavale(data.date);
     console.log(data);
-    
+
     setfactorStatusHavale(data.statusOpAdminAnbardar);
     setDataOrderDetailBuyer(data);
     setAnbarDetailResidHavale(data.sourceName);
@@ -1600,7 +1607,17 @@ const produtionPage = () => {
 
                   dataRefresh();
                 } else {
-                  openNotificationWithSignConf2("error");
+                  openNotificationWithSignConf2Mess(
+                    "error",
+                    data.err
+                      .toString()
+                      .replaceAll("$", "")
+                      .replaceAll("#", "")
+                      .replaceAll(
+                        "Uncommittable transaction is detected at the end of the batch. The transaction is rolled back.",
+                        " "
+                      )
+                  );
                 }
               });
           }
@@ -2099,6 +2116,52 @@ const produtionPage = () => {
             ]);
       });
   }, []);
+
+  //edit havale
+  const [havaleReciverCarName, setHavaleCarReciver] = useState("");
+  const [havaleReciverId, setHavaleCarReciverId] = useState("");
+
+  const [carNum, setCarNum] = useState("");
+  const [locationBar, setLocationBar] = useState("");
+  const [exitReasonHavale, setExitResHavale] = useState("");
+  const [showEditHavale, setShowEditHavale] = useState(false);
+  const [showEditLoadHavale, setShowEditLoadHavale] = useState(false);
+
+  const showModalApp = (data) => {
+    setShowEditHavale(true);
+    setShowEditLoadHavale(true);
+    setTimeout(() => setShowEditLoadHavale(false), 2000);
+    setHavaleCarReciverId(data._id);
+  };
+
+  const addEditHavale = () => {
+    const getCookies = getCookie("WuZiK");
+
+    fetch(baseUrl("/product/edit-order"), {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getCookies}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id: havaleReciverId,
+        reciver: havaleReciverCarName,
+        exitRes: exitReasonHavale,
+        location: locationBar,
+        carNum,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status == 202) {
+          openNotificationWithIcon("success");
+          dataRefresh();
+          setShowEditHavale(false);
+        } else {
+          openNotificationWithIcon2("error");
+        }
+      });
+  };
 
   return (
     <>
@@ -3015,6 +3078,13 @@ const produtionPage = () => {
                                     className="text-[14px] cursor-pointer"
                                   >
                                     مشاهده / چاپ
+                                  </Tag>
+                                  <Tag
+                                    onClick={() => showModalApp(visitor)}
+                                    color="purple"
+                                    className="text-[14px] cursor-pointer"
+                                  >
+                                    ویرایش حواله
                                   </Tag>
                                 </div>
                               </>
@@ -5305,6 +5375,62 @@ const produtionPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal edit havale */}
+      <Modal
+        title={
+          <div className="w-[90%] flex gap-3">
+            <p>ویرایش حواله از انبار</p>
+            <p>{dataAnbarShow.title}</p>
+          </div>
+        }
+        footer={
+          <div className="w-full flex gap-3 mt-5">
+            <ButtonAfra onClick={addEditHavale} type={"green"} text={"ثبت"} />
+            <ButtonAfra
+              onClick={() => setShowEditHavale(false)}
+              type={"blue-dark"}
+              text={"بستن"}
+            />
+          </div>
+        }
+        loading={showEditLoadHavale}
+        open={showEditHavale}
+        onCancel={() => setShowEditHavale(false)}
+      >
+        <div className="w-full flex flex-col gap-5 justify-start items-center">
+          <div className="mt-3 flex flex-col gap-2 w-full">
+            <div className="text-lg font-bold">ویرایش حواله از انبار</div>
+            <div className="text-[12px] font-normal text-zinc-500">
+              در این بخش می توانید حواله های از انبار خود را مشاهده کنید
+            </div>
+
+            <div className="w-full mt-3 grid grid-cols-2 gap-3">
+              <InputCom
+                type={"req"}
+                placeholder={"شماره خودرو"}
+                onChenge={(e) => setCarNum(e.target.value)}
+              />
+              <InputCom
+                type={"req"}
+                placeholder={"نام راننده"}
+                onChenge={(e) => setHavaleCarReciver(e.target.value)}
+              />
+
+              <InputCom
+                type={"req"}
+                placeholder={"محل بارگیری"}
+                onChenge={(e) => setLocationBar(e.target.value)}
+              />
+              <InputCom
+                type={"req"}
+                placeholder={"دلیل خروج"}
+                onChenge={(e) => setExitResHavale(e.target.value)}
+              />
             </div>
           </div>
         </div>
