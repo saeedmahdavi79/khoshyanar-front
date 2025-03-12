@@ -5032,9 +5032,17 @@ const produtionPage = () => {
                       </span>{" "}
                       توسط{" "}
                       <span className="mr-1 ml-1">
-                        {reciverDetailHavale + " "}
+                        {dataOrderDetailBuyer.reciver + " "}
                       </span>
-                      از انبار {anbarDetailHavale} خارج شده است.
+                      با شماره پلاک خودرو
+                      <span className="mr-1 ml-1">
+                        {dataOrderDetailBuyer.carNumber + " "}
+                      </span>
+                      از محل
+                      <span className="mr-1 ml-1">
+                        {dataOrderDetailBuyer.location + " "}
+                      </span>
+                      خارج شده است
                     </div>
                   </div>
                 </div>
