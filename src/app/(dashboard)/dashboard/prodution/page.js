@@ -1434,7 +1434,9 @@ const produtionPage = () => {
     setTimeout(() => setLoadingShowHavale(false), 2000);
     setReciverDetailHavale(data.reciver);
     setReciveDateHavale(data.date);
-    setfactorStatusHavale(data.statusOpUserAdminAnbardar);
+    console.log(data);
+    
+    setfactorStatusHavale(data.statusOpAdminAnbardar);
     setDataOrderDetailBuyer(data);
     setAnbarDetailResidHavale(data.sourceName);
 
@@ -2999,7 +3001,7 @@ const produtionPage = () => {
                             name: visitor.code,
                             code: visitor.adminName,
                             status:
-                              visitor.statusOpUserAdminAnbardar == "false"
+                              visitor.statusOpAdminAnbardar == "false"
                                 ? "تایید نشده"
                                 : "تایید انبار",
                             count: visitor.date,
@@ -4663,7 +4665,7 @@ const produtionPage = () => {
           <div className="w-[90%] flex gap-3">
             <p>نمایش فاکتور</p>
 
-            {factorStatusHavale == "true" ? (
+            {dataOrderDetailBuyer.statusOpAdminAnbardar == "true" ? (
               <Tag color="green">فاکتور تائید شده</Tag>
             ) : (
               <Tag color="red">فاکتور تائید نشده</Tag>
@@ -4676,7 +4678,7 @@ const produtionPage = () => {
             getCookieAccess == "3" ||
             getCookieAccess == "4" ? (
               <div
-                className={`w-2/3 ${factorStatusHavale == "true" ? "hidden" : ""} flex gap-3 items-end`}
+                className={`w-2/3 ${dataOrderDetailBuyer.statusOpAdminAnbardar == "true" ? "hidden" : ""} flex gap-3 items-end`}
               >
                 <InputCom
                   onChenge={(e) => setSignCode(e.target.value)}
@@ -4882,7 +4884,7 @@ const produtionPage = () => {
                         <div className="border-l w-full h-full flex flex-col gap-3 ">
                           <span>امضا انبار دار</span>
 
-                          {dataOrderDetailBuyer.statusOpUserAdminAnbardar ==
+                          {dataOrderDetailBuyer.statusOpAdminAnbardar ==
                           "true" ? (
                             <span className="mx-auto">
                               {dataOrderDetailBuyer.statusOpUserAdminSignImageAnbardar ==
