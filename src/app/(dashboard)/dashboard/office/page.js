@@ -1832,6 +1832,7 @@ const pageOffice = () => {
                               className="classletter"
                             /> */}
                             <RichTextEditor
+                              type={"1"}
                               onChange={changeHandlerLetterContent}
                               data={dataLetter.content}
                             />
@@ -2724,7 +2725,7 @@ const pageOffice = () => {
                 data={
                   <>
                     <div className="w-full" id="print-letter">
-                      {/* <JoditEditor
+                      <JoditEditor
                         value={dataLetterContent}
                         className="classletter"
                         config={{
@@ -2733,13 +2734,13 @@ const pageOffice = () => {
                           disablePlugins:
                             "add-new-line,print,about,ai-assistant,backspace,bold,class-span,clean-html,clipboard,color,copyformat,delete-command,drag-and-drop,dtd,drag-and-drop-element,enter,file,focus,font,format-block,fullsize,hotkeys,hr,iframe,image,image-processor,image-properties,indent,inline-popup,key-arrow-outside,line-height,limit,link,media,mobile,ordered-list,paste,paste-from-word,paste-storage,placeholder,powered-by-jodit,preview,redo-undo,resize-cells,resize-handler,resizer,search,select-cells,select,source,size,spellcheck,speech-recognize,stat,sticky,symbols,tab,table,table-keyboard-navigation,video,xpath,wrap-nodes,justify",
                         }}
-                      /> */}
-                      <div className="w-full cursor-not-allowed">
+                      />
+                      {/* <div className="w-full cursor-not-allowed">
                         <RichTextEditor
                           readOnly={true}
                           data={dataLetterContent}
                         />
-                      </div>
+                      </div> */}
                     </div>
                   </>
                 }

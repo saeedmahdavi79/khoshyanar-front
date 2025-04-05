@@ -123,7 +123,7 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
       // CollaborationCursor, // نیاز به Collaboration دارد
     ],
     content: initialContent,
-    editable: type == "2" ? false : false,
+    editable: type == "2" ? false : true,
     editorProps: {
       attributes: {
         class: "letter-editor",
@@ -167,8 +167,7 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
     </div>
   ) : (
     <div className="editor-container">
-      {/* <div className="menu-bar">
-     
+      <div className="menu-bar">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={editor.isActive("bold") ? "is-active" : ""}
@@ -200,7 +199,6 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
           Highlight
         </button>
 
-        
         <select
           value={editor.getAttributes("heading").level || "paragraph"}
           onChange={(e) => {
@@ -222,7 +220,6 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
           <option value="3">عنوان 3</option>
         </select>
 
-       
         <button
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
           className={editor.isActive({ textAlign: "right" }) ? "is-active" : ""}
@@ -252,7 +249,6 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
           justify
         </button>
 
-       
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={editor.isActive("bulletList") ? "is-active" : ""}
@@ -272,7 +268,6 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
           لیست کاری
         </button>
 
-        
         <button
           onClick={() =>
             editor
@@ -303,7 +298,6 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
           حذف جدول
         </button>
 
-        
         <button
           onClick={() => editor.chain().focus().toggleCode().run()}
           className={editor.isActive("code") ? "is-active" : ""}
@@ -407,7 +401,7 @@ const RichTextEditor = ({ data, type, onChange, value }) => {
             Table
           </button>
         </div>
-      </FloatingMenu> */}
+      </FloatingMenu>
 
       <EditorContent editor={editor} />
       <div className="character-count">

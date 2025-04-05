@@ -1375,3 +1375,13 @@ table {
   margin-right: 0;
   margin-left: 8px;
 }
+
+.jodit-wysiwyg table {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.jodit-wysiwyg table td {
+  width: 80% !important;
+  padding: 15px !important;
+}
