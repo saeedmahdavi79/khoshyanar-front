@@ -1036,3 +1036,342 @@ table {
   width: 100%;
   height: 100%;
 }
+
+/* tiptap */
+/* styles/LetterEditor.css */
+/* styles/TiptapEditor.css */
+
+.editor-container {
+  width: 100%;
+
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+/* منوی اصلی */
+.menu-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #ddd;
+  border-bottom: none;
+}
+
+.menu-bar button,
+.menu-bar select,
+.menu-bar input {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.menu-bar button:hover,
+.menu-bar select:hover {
+  background-color: #e9e9e9;
+}
+
+.menu-bar button.is-active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+.menu-bar select {
+  min-width: 120px;
+}
+
+.menu-bar input[type="color"] {
+  width: 40px;
+  height: 30px;
+  padding: 2px;
+}
+
+/* ویرایشگر اصلی */
+.letter-editor {
+  min-height: 500px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 0 0 8px 8px;
+  background-color: white;
+  outline: none;
+}
+
+/* استایل‌های عمومی متن */
+.letter-editor p {
+  margin: 1em 0;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.letter-editor h1 {
+  font-size: 1.8em;
+  margin: 1.5em 0 0.8em;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.letter-editor h2 {
+  font-size: 1.5em;
+  margin: 1.3em 0 0.7em;
+  font-weight: bold;
+  color: #1e1e1e;
+}
+
+.letter-editor h3 {
+  font-size: 1.3em;
+  margin: 1.1em 0 0.6em;
+  font-weight: bold;
+  color: #222;
+}
+
+/* لیست‌ها */
+.letter-editor ul,
+.letter-editor ol {
+  padding-right: 2em;
+  margin: 1em 0;
+}
+
+.letter-editor ul {
+  list-style-type: disc;
+}
+
+.letter-editor ol {
+  list-style-type: decimal;
+}
+
+.letter-editor li {
+  margin-bottom: 0.5em;
+}
+
+/* جدول */
+.letter-editor table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.letter-editor th,
+.letter-editor td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: right;
+  width: 80%;
+}
+
+.letter-editor th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+/* کد و بلوک کد */
+.letter-editor code {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+  color: #d63384;
+}
+
+.letter-editor pre {
+  background-color: #1e1e1e;
+  color: #f8f8f2;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1em 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.letter-editor pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* نقل قول */
+.letter-editor blockquote {
+  border-right: 4px solid #ddd;
+  margin: 1em 0;
+  padding-right: 1em;
+  color: #555;
+  font-style: italic;
+}
+
+/* خط افقی */
+.letter-editor hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2em 0;
+}
+
+/* تصاویر */
+.letter-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 1em 0;
+}
+
+/* لینک‌ها */
+.letter-editor a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.letter-editor a:hover {
+  color: #2563eb;
+}
+
+/* تسک لیست */
+.letter-editor .task-item {
+  display: flex;
+  align-items: center;
+}
+
+.letter-editor .task-item input[type="checkbox"] {
+  margin-left: 8px;
+}
+
+/* منوی حبابی */
+.bubble-menu {
+  display: flex;
+  background-color: #333;
+  padding: 6px;
+  border-radius: 6px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-menu button {
+  background-color: #555;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.bubble-menu button.is-active {
+  background-color: white;
+  color: #333;
+}
+
+/* منوی شناور */
+.floating-menu {
+  display: flex;
+  background-color: white;
+  padding: 6px;
+  border-radius: 6px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
+}
+
+.floating-menu button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.floating-menu button.is-active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* کاراکتر کانت */
+.character-count {
+  text-align: left;
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* استایل‌های خاص برای محتوای نامه */
+#letterDivId {
+  padding: 50px;
+  padding-top: 41px !important;
+  color: #000 !important;
+  line-height: 33px !important;
+  font-size: 18px !important;
+}
+
+/* تراز متن */
+.text-align-right {
+  text-align: right !important;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.text-align-left {
+  text-align: left !important;
+}
+
+.text-align-justify {
+  text-align: justify !important;
+  text-justify: inter-word;
+}
+
+/* رنگ‌های highlight */
+.letter-editor .highlight {
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
+}
+
+.highlight-yellow {
+  background-color: #fef08a;
+}
+
+.highlight-green {
+  background-color: #bbf7d0;
+}
+
+.highlight-blue {
+  background-color: #bfdbfe;
+}
+
+.highlight-pink {
+  background-color: #fbcfe8;
+}
+
+/* فونت‌ها */
+.font-iran-sans {
+  font-family: "Iranian Sans", sans-serif;
+}
+
+.font-b-yekan {
+  font-family: "B Yekan", sans-serif;
+}
+
+.font-iransansx {
+  font-family: "IRANSansX", sans-serif;
+}
+
+/* برای محتوای RTL */
+[dir="rtl"] .letter-editor ul,
+[dir="rtl"] .letter-editor ol {
+  padding-right: 2em;
+  padding-left: 0;
+}
+
+[dir="rtl"] .letter-editor .task-item input[type="checkbox"] {
+  margin-right: 0;
+  margin-left: 8px;
+}

@@ -3909,6 +3909,35 @@ const sales = () => {
                   <div className="w-1/3 flex flex-col">
                     <div className="flex">
                       <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                        جمع کل
+                      </div>
+                      <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                        {separate(
+                          // dataOrderDetail.products.reduce(
+                          //   (accumulator, transaction) => {
+                          //     return (
+                          //       accumulator +
+                          //       parseInt(
+                          //         !transaction.price ? 0 : transaction.price
+                          //       ) *
+                          //         parseInt(transaction.count) +
+                          //       ((accumulator +
+                          //         parseInt(
+                          //           !transaction.price ? 0 : transaction.price
+                          //         ) *
+                          //           parseInt(transaction.count)) *
+                          //         10) /
+                          //         100
+                          //     );
+                          //   },
+                          //   0
+                          // )
+                          totalAmountFactor
+                        ) + "ریال"}
+                      </div>
+                    </div>
+                    <div className="flex">
+                      <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
                         جمع کل با 10% ارزش افزوده
                       </div>
                       <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">

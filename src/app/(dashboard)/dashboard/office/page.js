@@ -16,6 +16,8 @@ import upUrl from "@/utils/upUrl";
 import TableAfra from "@/app/components/modules/TableAfra";
 import ChartOrg from "@/app/components/modules/OrgChart";
 import OrganizationChartData from "@/app/components/modules/OrgChart";
+import Tiptap from "@/app/components/modules/RichTextAfra";
+import RichTextEditor from "@/app/components/modules/RichTextAfra";
 
 const pageOffice = () => {
   const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -612,6 +614,33 @@ const pageOffice = () => {
     <p style="text-align: justify; !important;">متن نامه را در این قسمت بنویسید...</p>
     <br>
     </div>`,
+    //   content: `
+    //   <table>
+    //   <tbody>
+    //     <tr>
+    //       <th colwidth="200">Name</th>
+    //       <th colspan="3" colwidth="150,100">Description</th>
+    //     </tr>
+    //     <tr>
+    //       <td>Cyndi Lauper</td>
+    //       <td>Singer</td>
+    //       <td>Songwriter</td>
+    //       <td>Actress</td>
+    //     </tr>
+    //     <tr>
+    //       <td>Marie Curie</td>
+    //       <td>Scientist</td>
+    //       <td>Chemist</td>
+    //       <td>Physicist</td>
+    //     </tr>
+    //     <tr>
+    //       <td>Indira Gandhi</td>
+    //       <td>Prime minister</td>
+    //       <td colspan="2">Politician</td>
+    //     </tr>
+    //   </tbody>
+    // </table>
+    //   `,
   });
   const [showLoadLetter, setShowLoadLetter] = useState(false);
   const [dataLetterContent, setDataLetterContent] = useState("");
@@ -1261,8 +1290,6 @@ const pageOffice = () => {
       });
   };
 
-  
-
   const removeSignStatus = (data) => {
     const token = getCookie("WuZiK");
     fetch(baseUrl("/office/create-sign"), {
@@ -1799,10 +1826,14 @@ const pageOffice = () => {
                         </div>
                         <div className="w-full mt-3">
                           <div className="h-[300px] ">
-                            <JoditEditor
+                            {/* <JoditEditor
                               onChange={changeHandlerLetterContent}
                               value={dataLetter.content}
                               className="classletter"
+                            /> */}
+                            <RichTextEditor
+                              onChange={changeHandlerLetterContent}
+                              data={dataLetter.content}
                             />
                           </div>
                         </div>
@@ -1922,7 +1953,7 @@ const pageOffice = () => {
                                             className="cursor-pointer"
                                             color="green"
                                           >
-                                           افزودن حق امضا مدیر انبار
+                                            افزودن حق امضا مدیر انبار
                                           </Tag>
                                         </>
                                       )}
@@ -2693,7 +2724,7 @@ const pageOffice = () => {
                 data={
                   <>
                     <div className="w-full" id="print-letter">
-                      <JoditEditor
+                      {/* <JoditEditor
                         value={dataLetterContent}
                         className="classletter"
                         config={{
@@ -2702,7 +2733,13 @@ const pageOffice = () => {
                           disablePlugins:
                             "add-new-line,print,about,ai-assistant,backspace,bold,class-span,clean-html,clipboard,color,copyformat,delete-command,drag-and-drop,dtd,drag-and-drop-element,enter,file,focus,font,format-block,fullsize,hotkeys,hr,iframe,image,image-processor,image-properties,indent,inline-popup,key-arrow-outside,line-height,limit,link,media,mobile,ordered-list,paste,paste-from-word,paste-storage,placeholder,powered-by-jodit,preview,redo-undo,resize-cells,resize-handler,resizer,search,select-cells,select,source,size,spellcheck,speech-recognize,stat,sticky,symbols,tab,table,table-keyboard-navigation,video,xpath,wrap-nodes,justify",
                         }}
-                      />
+                      /> */}
+                      <div className="w-full cursor-not-allowed">
+                        <RichTextEditor
+                          readOnly={true}
+                          data={dataLetterContent}
+                        />
+                      </div>
                     </div>
                   </>
                 }
