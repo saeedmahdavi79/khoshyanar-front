@@ -761,9 +761,14 @@ const sales = () => {
   const [countData, setCountData] = useState("");
   const [pricePrd, setPricePrd] = useState("");
   const [desOrder, setDesOrder] = useState("");
+  const [taxHandlerData, setTaxHandler] = useState("");
 
   const changePrdHandler = (e) => {
     setSelectedProductFrm(e.data);
+  };
+
+  const changeTaxHandler = (e) => {
+    setTaxHandler(e.value);
   };
 
   const addProductToTableFrm = () => {
@@ -817,6 +822,7 @@ const sales = () => {
         products: tableFrm,
         id: dataIdCustomer,
         des: desOrder,
+        tax: taxHandlerData,
       }),
       headers: {
         Authorization: `Bearer ${getCookies}`,
@@ -1415,6 +1421,7 @@ const sales = () => {
 
   // اضافه کردن ۱۰ درصد به جمع کل
   const totalAmountWithTax = totalAmount + (totalAmount * 10) / 100;
+  const totalAmountWithTaxApp = (totalAmount * 10) / 100;
 
   const totalAmountFactor = dataOrderDetail.products.reduce(
     (accumulator, transaction) => {
@@ -1429,6 +1436,7 @@ const sales = () => {
   // اضافه کردن ۱۰ درصد به جمع کل
   const totalAmountWithFacTax =
     totalAmountFactor + (totalAmountFactor * 10) / 100;
+  const totalAmountWithFacTaxApp = (totalAmountFactor * 10) / 100;
 
   return (
     <>
@@ -2525,6 +2533,21 @@ const sales = () => {
                             ) : (
                               ""
                             )}
+
+                            <SelectCombo
+                              placeholder={"دارای مالیات یا ارزش افزوده است؟"}
+                              options={[
+                                {
+                                  value: "1",
+                                  label: "بله",
+                                },
+                                {
+                                  value: "0",
+                                  label: "خیر",
+                                },
+                              ]}
+                              onChange={changeTaxHandler}
+                            />
 
                             <InputCom
                               onChenge={(e) => setCountData(e.target.value)}
@@ -3936,35 +3959,70 @@ const sales = () => {
                         ) + "ریال"}
                       </div>
                     </div>
-                    <div className="flex">
-                      <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                        جمع کل با 10% ارزش افزوده
-                      </div>
-                      <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
-                        {separate(
-                          // dataOrderDetail.products.reduce(
-                          //   (accumulator, transaction) => {
-                          //     return (
-                          //       accumulator +
-                          //       parseInt(
-                          //         !transaction.price ? 0 : transaction.price
-                          //       ) *
-                          //         parseInt(transaction.count) +
-                          //       ((accumulator +
-                          //         parseInt(
-                          //           !transaction.price ? 0 : transaction.price
-                          //         ) *
-                          //           parseInt(transaction.count)) *
-                          //         10) /
-                          //         100
-                          //     );
-                          //   },
-                          //   0
-                          // )
-                          totalAmountWithFacTax
-                        ) + "ریال"}
-                      </div>
-                    </div>
+                    {dataOrderDetailBuyer.tax == "1" ? (
+                      <>
+                        <div className="flex">
+                          <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                            مالیات و ارزش افزوده
+                          </div>
+                          <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                            {separate(
+                              // dataOrderDetailHavale.products.reduce(
+                              //   (accumulator, transaction) => {
+                              //     return (
+                              //       accumulator +
+                              //       parseInt(
+                              //         !transaction.price ? 0 : transaction.price
+                              //       ) *
+                              //         parseInt(transaction.count) +
+                              //       ((accumulator +
+                              //         parseInt(
+                              //           !transaction.price ? 0 : transaction.price
+                              //         ) *
+                              //           parseInt(transaction.count)) *
+                              //         10) /
+                              //         100
+                              //     );
+                              //   },
+                              //   0
+                              // )
+                              totalAmountWithFacTaxApp
+                            ) + "ریال"}
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                            جمع کل با 10% ارزش افزوده
+                          </div>
+                          <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                            {separate(
+                              // dataOrderDetailHavale.products.reduce(
+                              //   (accumulator, transaction) => {
+                              //     return (
+                              //       accumulator +
+                              //       parseInt(
+                              //         !transaction.price ? 0 : transaction.price
+                              //       ) *
+                              //         parseInt(transaction.count) +
+                              //       ((accumulator +
+                              //         parseInt(
+                              //           !transaction.price ? 0 : transaction.price
+                              //         ) *
+                              //           parseInt(transaction.count)) *
+                              //         10) /
+                              //         100
+                              //     );
+                              //   },
+                              //   0
+                              // )
+                              totalAmountWithFacTax
+                            ) + "ریال"}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
                     <div className="mt-2 p-3">
                       توضیحات : {dataOrderDetailBuyer.des}
                     </div>
@@ -4597,10 +4655,11 @@ const sales = () => {
                       </div>
                     </div>
                   </div>
+
                   <div className="w-1/3 flex flex-col">
                     <div className="flex">
                       <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
-                        جمع کل با 10% ارزش افزوده
+                        جمع کل
                       </div>
                       <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
                         {separate(
@@ -4623,10 +4682,75 @@ const sales = () => {
                           //   },
                           //   0
                           // )
-                          totalAmountWithTax
+                          totalAmount
                         ) + "ریال"}
                       </div>
                     </div>
+                    {dataOrderDetailBuyerHavale.tax == "1" ? (
+                      <>
+                        <div className="flex">
+                          <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                            مالیات و ارزش افزوده
+                          </div>
+                          <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                            {separate(
+                              // dataOrderDetailHavale.products.reduce(
+                              //   (accumulator, transaction) => {
+                              //     return (
+                              //       accumulator +
+                              //       parseInt(
+                              //         !transaction.price ? 0 : transaction.price
+                              //       ) *
+                              //         parseInt(transaction.count) +
+                              //       ((accumulator +
+                              //         parseInt(
+                              //           !transaction.price ? 0 : transaction.price
+                              //         ) *
+                              //           parseInt(transaction.count)) *
+                              //         10) /
+                              //         100
+                              //     );
+                              //   },
+                              //   0
+                              // )
+                              totalAmountWithTaxApp
+                            ) + "ریال"}
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="w-[18.4rem] border-b border-l border-zinc-300 flex justify-center items-center h-[35px]">
+                            جمع کل با 10% ارزش افزوده
+                          </div>
+                          <div className="w-full border-b  border-zinc-300 flex justify-center items-center h-[35px]">
+                            {separate(
+                              // dataOrderDetailHavale.products.reduce(
+                              //   (accumulator, transaction) => {
+                              //     return (
+                              //       accumulator +
+                              //       parseInt(
+                              //         !transaction.price ? 0 : transaction.price
+                              //       ) *
+                              //         parseInt(transaction.count) +
+                              //       ((accumulator +
+                              //         parseInt(
+                              //           !transaction.price ? 0 : transaction.price
+                              //         ) *
+                              //           parseInt(transaction.count)) *
+                              //         10) /
+                              //         100
+                              //     );
+                              //   },
+                              //   0
+                              // )
+                              totalAmountWithTax
+                            ) + "ریال"}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
+
                     <div className="mt-2 p-3">
                       توضیحات : {dataOrderDetailBuyerHavale.des}
                     </div>
