@@ -2505,11 +2505,13 @@ const sales = () => {
                           <div className="w-full grid grid-cols-4 gap-3 items-end">
                             <SelectCombo
                               placeholder={"کالا را انتخاب کنید"}
-                              options={datePrd.map((i) => ({
-                                value: i.code,
-                                label: i.title,
-                                data: i,
-                              }))}
+                              options={datePrd
+                                .filter((i) => i.sourceId == "104")
+                                .map((i) => ({
+                                  value: i.code,
+                                  label: i.title,
+                                  data: i,
+                                }))}
                               onChange={changePrdHandler}
                             />
 
